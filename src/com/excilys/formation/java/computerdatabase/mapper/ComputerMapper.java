@@ -31,7 +31,9 @@ public enum ComputerMapper {
 	}
 
 	public Computer fillFieldsForComputer(ResultSet rs, Computer c) throws SQLException {
-		c.setName(rs.getString("cu_name"));
+		if (rs.getString("cu_name") != null) {
+			c.setName(rs.getString("cu_name"));
+		}
 		if (rs.getDate("cu_introduced") != null) {
 			c.setIntroduced(rs.getDate("cu_introduced").toLocalDate());
 		}
