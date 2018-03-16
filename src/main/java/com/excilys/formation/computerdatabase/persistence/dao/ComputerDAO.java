@@ -24,25 +24,20 @@ public enum ComputerDAO implements IComputerDAO {
 
 	INSTANCE;
 
-	/**
-	 * 
-	 */
-
 	private DBConnection dbConnection = DBConnection.INSTANCE;
 	private ComputerMapper computerMapper = ComputerMapper.INSTANCE;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.excilys.formation.java.computerdatabase.persistence.dao.IComputerDAO#
-	 * createComputer(com.excilys.formation.java.computerdatabase.model.Computer)
-	 */
+	private String SELECT_LIST_COMPUTERS = "SELECT * FROM computer ORDER BY ca_id LIMIT ? OFFSET ?;";
+	private String COUNT_COMPUTERS = "SELECT count(*) FROM computer;";
+	private String SELECT_ONE_COMPUTER = "SELECT * FROM computer WHERE ca_id = ?;";
+	private String INSERT_NEW_COMPUTER = "INSERT INTO Computer (cu_name, cu_introduced, cu_discontinued, cu_ca_id) VALUES (?, ?, ?, ?)";
+	private String DELETE_EXISTING_COMPUTER = "DELETE FROM computer WHERE cu_id = ?";
+	private String UPDATE_EXISTING_COMPUTER = "UPDATE computer SET cu_name = ?, cu_introduced = ?, cu_discontinued = ?, cu_ca_id = ? WHERE cuid = ?";
+
 	@Override
 	public void createComputer(Computer c) {
 		try (Connection conn = dbConnection.getConnection();
-				PreparedStatement stat = conn.prepareStatement(
-						"INSERT INTO Computer (cu_name, cu_introduced, cu_discontinued, cu_ca_id) VALUES (?, ?, ?, ?)");) {
+				PreparedStatement stat = conn.prepareStatement(INSERT_NEW_COMPUTER);) {
 			setStatementsSQL(c, stat);
 			stat.executeUpdate();
 		} catch (ClassNotFoundException e) {
@@ -57,18 +52,11 @@ public enum ComputerDAO implements IComputerDAO {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.excilys.formation.java.computerdatabase.persistence.dao.IComputerDAO#
-	 * deleteComputer(com.excilys.formation.java.computerdatabase.model.Computer)
-	 */
 	@Override
 	public void deleteComputer(Computer c) {
 
 		try (Connection conn = dbConnection.getConnection();
-				PreparedStatement stat = conn.prepareStatement("DELETE FROM computer WHERE cu_id = ?");) {
+				PreparedStatement stat = conn.prepareStatement(DELETE_EXISTING_COMPUTER);) {
 			stat.setLong(1, c.getId());
 			stat.executeUpdate();
 		} catch (ClassNotFoundException e) {
@@ -84,21 +72,13 @@ public enum ComputerDAO implements IComputerDAO {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.excilys.formation.java.computerdatabase.persistence.dao.IComputerDAO#
-	 * getListComputers()
-	 */
 	@Override
 	public List<Computer> getListComputers(int pageNumber, int eltNumber) {
 		int offset = pageNumber * eltNumber;
 		ResultSet rs = null;
-		ArrayList<Computer> listComputers = new ArrayList<Computer>();
+		List<Computer> listComputers = new ArrayList<>();
 		try (Connection conn = dbConnection.getConnection();
-				PreparedStatement stat = conn.prepareStatement(
-						"SELECT cu_id, cu_name, cu_introduced, cu_discontinued, ca_id, ca_name FROM computer LEFT JOIN company on cu_id = ca_id ORDER BY cu_id LIMIT ? OFFSET ?");) {
+				PreparedStatement stat = conn.prepareStatement(SELECT_LIST_COMPUTERS);) {
 			stat.setInt(1, eltNumber);
 			stat.setInt(2, offset);
 			rs = stat.executeQuery();
@@ -121,20 +101,12 @@ public enum ComputerDAO implements IComputerDAO {
 		return listComputers;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.excilys.formation.java.computerdatabase.persistence.dao.IComputerDAO#
-	 * showDetails(com.excilys.formation.java.computerdatabase.model.Computer)
-	 */
 	@Override
 	public Computer showDetails(Computer c) {
 		Computer newComputer = new Computer();
 		ResultSet rs = null;
 		try (Connection conn = dbConnection.getConnection();
-				PreparedStatement stat = conn.prepareStatement(
-						"SELECT cu_id, cu_name, cu_introduced, cu_discontinued, ca_id, ca_name FROM computer LEFT JOIN company ON cu_id = ca_id WHERE cu_id = ?");) {
+				PreparedStatement stat = conn.prepareStatement(SELECT_ONE_COMPUTER);) {
 			stat.setLong(1, c.getId());
 			rs = stat.executeQuery();
 			rs.next();
@@ -154,19 +126,10 @@ public enum ComputerDAO implements IComputerDAO {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.excilys.formation.java.computerdatabase.persistence.dao.IComputerDAO#
-	 * updateComputer(com.excilys.formation.java.computerdatabase.model.Computer)
-	 */
 	@Override
 	public void updateComputer(Computer c) {
-		PreparedStatement stat = null;
-		try (Connection conn = dbConnection.getConnection()) {
-			stat = conn.prepareStatement(
-					"UPDATE computer SET cu_name = ?, cu_introduced = ?, cu_discontinued = ?, cu_ca_id = ? WHERE cuid = ?");
+		try (Connection conn = dbConnection.getConnection();
+				PreparedStatement stat = conn.prepareStatement(UPDATE_EXISTING_COMPUTER);) {
 			setStatementsSQL(c, stat);
 			stat.setLong(5, c.getId());
 			stat.executeUpdate();
@@ -188,8 +151,7 @@ public enum ComputerDAO implements IComputerDAO {
 		int pageNumber = 0;
 		ResultSet rs = null;
 		try (Connection conn = dbConnection.getConnection();
-				PreparedStatement stat = conn.prepareStatement("SELECT count(*) FROM computer");)
-		{
+				PreparedStatement stat = conn.prepareStatement(COUNT_COMPUTERS);) {
 			rs = stat.executeQuery();
 			rs.next();
 			int tailleListComputers = rs.getInt(1);

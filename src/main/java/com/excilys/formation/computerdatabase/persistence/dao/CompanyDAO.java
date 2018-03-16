@@ -28,21 +28,19 @@ public enum CompanyDAO implements ICompanyDAO {
 	 */
 	private DBConnection dbConnection = DBConnection.INSTANCE;
 	private CompanyMapper companyMapper = CompanyMapper.INSTANCE;
+	
+	private String SELECT_LIST_COMPANIES = "SELECT * FROM company ORDER BY ca_id LIMIT ? OFFSET ?;";
+	private String COUNT_COMPANIES = "SELECT count(*) FROM company;";
+	private String SELECT_ONE_COMPANY = "SELECT * FROM company WHERE ca_id = ?;";
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.excilys.formation.java.computerdatabase.persistence.dao.ICompanyDAO#
-	 * listCompanies()
-	 */
 	@Override
 	public List<Company> getListCompanies(int pageNumber, int eltNumber) {
 		int offset = pageNumber * eltNumber;
-		ArrayList<Company> listCompanies = new ArrayList<Company>();
+		List<Company> listCompanies = new ArrayList<>();
 		ResultSet rs = null;
 		try (Connection conn = dbConnection.getConnection();
 				PreparedStatement stat = conn
-						.prepareStatement("SELECT * FROM company ORDER BY ca_id LIMIT ? OFFSET ?");) {
+						.prepareStatement(SELECT_LIST_COMPANIES);) {
 			stat.setInt(1, eltNumber);
 			stat.setInt(2, offset);
 			rs = stat.executeQuery();
@@ -70,7 +68,7 @@ public enum CompanyDAO implements ICompanyDAO {
 		int pageNumber = 0;
 		ResultSet rs = null;
 		try (Connection conn = dbConnection.getConnection();
-				PreparedStatement stat = conn.prepareStatement("SELECT count(*) FROM company");) {
+				PreparedStatement stat = conn.prepareStatement(COUNT_COMPANIES);) {
 			rs = stat.executeQuery();
 			rs.next();
 			int tailleListCompanies = rs.getInt(1);
@@ -93,8 +91,7 @@ public enum CompanyDAO implements ICompanyDAO {
 	public Company showDetails(Company c) {
 		ResultSet rs = null;
 		try (Connection conn = dbConnection.getConnection();
-				PreparedStatement stat = conn
-						.prepareStatement("SELECT * FROM company WHERE ca_id = ?");) {
+				PreparedStatement stat = conn.prepareStatement(SELECT_ONE_COMPANY);) {
 			rs = stat.executeQuery();
 			stat.setLong(1, c.getId());
 			while (rs.next()) {
