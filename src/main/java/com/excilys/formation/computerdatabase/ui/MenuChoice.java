@@ -1,0 +1,13 @@
+package com.excilys.formation.computerdatabase.ui;
+
+public enum MenuChoice {
+	
+	SELECT_LIST_COMPUTERS,
+	SELECT_LIST_COMPANIES,
+	SELECT_ONE_COMPUTER,
+	INSERT_NEW_COMPUTER,
+	DELETE_EXISTING_COMPUTER,
+	UPDATE_EXISTING_COMPUTER;
+	
+
+}
