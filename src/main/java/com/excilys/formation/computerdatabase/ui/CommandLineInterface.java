@@ -50,29 +50,29 @@ public class CommandLineInterface {
 	 * @throws DateMismatchException
 	 * @throws NullNameException
 	 */
-	public void mainLoop(String s) throws NullNameException, DateMismatchException, MissingCompanyException {
-		switch (s) {
-		case "1":
+	public void mainLoop(int s) throws NullNameException, DateMismatchException, MissingCompanyException {
+		switch (MenuChoice.values()[s]) {
+		case SELECT_LIST_COMPUTERS:
 			getListComputers();
 
 			break;
-		case "2":
+		case SELECT_LIST_COMPANIES:
 			getListCompanies();
 
 			break;
-		case "3":
+		case SELECT_ONE_COMPUTER:
 			showdetails();
 
 			break;
-		case "4":
+		case INSERT_NEW_COMPUTER:
 			createComputer();
 
 			break;
-		case "5":
+		case UPDATE_EXISTING_COMPUTER:
 			updateComputer();
 
 			break;
-		case "6":
+		case DELETE_EXISTING_COMPUTER:
 			delComputer();
 
 			break;
@@ -172,8 +172,19 @@ public class CommandLineInterface {
 		}
 	}
 
+	private int getLineInInt() {
+		int s = 0;
+		try {
+			s = Integer.parseInt(br.readLine());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return s;
+	}
+	
 	private String getLineInString() {
-		String s = new String();
+		String s = null;
 		try {
 			s = br.readLine();
 		} catch (IOException e) {
@@ -218,7 +229,7 @@ public class CommandLineInterface {
 		CommandLineInterface cli = new CommandLineInterface();
 		while (true) {
 			System.out.println(cli.menuCLI());
-			String s = cli.getLineInString();
+			int s = cli.getLineInInt();
 			cli.mainLoop(s);
 		}
 	}

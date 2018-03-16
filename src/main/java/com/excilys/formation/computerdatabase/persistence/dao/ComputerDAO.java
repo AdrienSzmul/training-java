@@ -28,7 +28,7 @@ public enum ComputerDAO implements IComputerDAO {
 	private ComputerMapper computerMapper = ComputerMapper.INSTANCE;
 
 	private String SELECT_LIST_COMPUTERS = "SELECT cu_id, cu_name, cu_introduced, cu_discontinued, cu_ca_id FROM computer ORDER BY ca_id LIMIT ? OFFSET ?;";
-	private String COUNT_COMPUTERS = "SELECT count(*) FROM computer;";
+	private String COUNT_COMPUTERS = "SELECT count(cu_id) FROM computer;";
 	private String SELECT_ONE_COMPUTER = "SELECT cu_id, cu_name, cu_introduced, cu_discontinued, cu_ca_id FROM computer WHERE ca_id = ?;";
 	private String INSERT_NEW_COMPUTER = "INSERT INTO Computer (cu_name, cu_introduced, cu_discontinued, cu_ca_id) VALUES (?, ?, ?, ?)";
 	private String DELETE_EXISTING_COMPUTER = "DELETE FROM computer WHERE cu_id = ?";
