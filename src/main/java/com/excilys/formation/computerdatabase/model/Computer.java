@@ -32,6 +32,14 @@ public class Computer {
 		this.discontinued = discontinued;
 		this.company = company;
 	}
+	
+	public static class Builder {
+		private Long id;
+		private String name;
+		private LocalDate introduced;
+		private LocalDate discontinued;
+		private Company company;
+	}
 
 	/**
 	 * @return the id
