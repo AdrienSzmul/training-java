@@ -20,30 +20,30 @@ public class Company {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Company(Builder builder) {
+	public Company(CompanyBuilder CompanyBuilder) {
 		super();
-		this.id = builder.id;
-		this.name = builder.name;
+		this.id = CompanyBuilder.id;
+		this.name = CompanyBuilder.name;
 	}
 	
-	public static class Builder {
+	public static class CompanyBuilder {
 		private Long id;
 		private String name;
 		
-		public Builder() {
+		public CompanyBuilder() {
 			
 		}
 		
-		public Builder(Long id, String name) {
+		public CompanyBuilder(Long id, String name) {
 			this.id = id;
 			this.name = name;
 		}
 		
-		public Builder withId(Long id) {
+		public CompanyBuilder withId(Long id) {
 			this.id =  id;
 			return this;
 		}
-		public Builder withName(String name) {
+		public CompanyBuilder withName(String name) {
 			this.name =  name;
 			return this;
 		}

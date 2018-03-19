@@ -9,6 +9,8 @@ import java.util.List;
 
 import com.excilys.formation.computerdatabase.model.Company;
 import com.excilys.formation.computerdatabase.model.Computer;
+import com.excilys.formation.computerdatabase.model.Computer.ComputerBuilder;
+import com.excilys.formation.computerdatabase.model.Company.CompanyBuilder;
 import com.excilys.formation.computerdatabase.service.CompanyService;
 import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.DateMismatchException;
@@ -89,7 +91,9 @@ public class CommandLineInterface {
 			Long id = Long.parseLong(s);
 			int nombreResComputers = computerService.getPageCountComputers(taillePage);
 			if (id < nombreResComputers + 1) {
-				computerService.deleteComputer(id);
+				ComputerBuilder builderDetailsComputer = new Computer.ComputerBuilder().withId(id);
+				Computer computerToService = builderDetailsComputer.build();
+				computerService.deleteComputer(computerToService);
 			} else {
 				System.out.println("L'id que vous avez donné ne correspond à rien\n");
 			}
@@ -103,7 +107,10 @@ public class CommandLineInterface {
 			Long id = Long.parseLong(s);
 			int nombreResComputers = computerService.getPageCountComputers(taillePage);
 			if (id < nombreResComputers + 1) {
-				getInfosForUpdateAndCallService(id);
+				ComputerBuilder builderDetailsComputer = getComputerInfosFromUser();
+				builderDetailsComputer.withId(id);
+				Computer computerToService = builderDetailsComputer.build();
+				computerService.updateComputer(computerToService);
 			} else {
 				System.out.println("L'id que vous avez donné ne correspond à rien\n");
 			}
@@ -111,6 +118,12 @@ public class CommandLineInterface {
 	}
 
 	private void createComputer() throws NullNameException, DateMismatchException, MissingCompanyException {
+		ComputerBuilder builderCreateComputer = getComputerInfosFromUser();
+		Computer computer = builderCreateComputer.build();
+		computerService.createComputer(computer);
+	}
+
+	private ComputerBuilder getComputerInfosFromUser() {
 		System.out.println("Donnez le nouveau nom du PC\n");
 		String name = getLineInString();
 		System.out.println("Donnez la date d'introduction (format yyyy-mm/-d)\n");
@@ -122,7 +135,11 @@ public class CommandLineInterface {
 		System.out.println("Donnez l'id de l'entreprise liée\n");
 		String company_identifier = getLineInString();
 		Long company_id = Long.parseLong(company_identifier);
-		computerService.createComputer(name, introduced, discontinued, company_id);
+		CompanyBuilder builderCreateCompany = new Company.CompanyBuilder().withId(company_id);
+		Company company = builderCreateCompany.build();
+		ComputerBuilder builderCreateComputer = new Computer.ComputerBuilder().withName(name).withIntroduced(introduced)
+				.withDiscontinued(discontinued).withCompany(company);
+		return builderCreateComputer;
 	}
 
 	private void showdetails() {
@@ -132,8 +149,10 @@ public class CommandLineInterface {
 			Long id = Long.parseLong(s);
 			int nombreResComputers = computerService.getPageCountComputers(taillePage);
 			if (id < nombreResComputers + 1) {
-				Computer computer = computerService.showDetails(id);
-				System.out.println(computer.toString());
+				ComputerBuilder builderDetailsComputer = new Computer.ComputerBuilder().withId(id);
+				Computer computerToService = builderDetailsComputer.build();
+				Computer computerFromService = computerService.showDetails(computerToService);
+				System.out.println(computerFromService.toString());
 			} else {
 				System.out.println("L'id que vous avez donné ne correspond à rien\n");
 			}
@@ -182,7 +201,7 @@ public class CommandLineInterface {
 		}
 		return s;
 	}
-	
+
 	private String getLineInString() {
 		String s = null;
 		try {
@@ -192,28 +211,6 @@ public class CommandLineInterface {
 			e.printStackTrace();
 		}
 		return s;
-	}
-
-	/**
-	 * @param id
-	 * @throws NullNameException
-	 * @throws DateMismatchException
-	 * @throws MissingCompanyException
-	 */
-	private void getInfosForUpdateAndCallService(Long id)
-			throws NullNameException, DateMismatchException, MissingCompanyException {
-		System.out.println("Donnez le nouveau nom du PC\n");
-		String name = getLineInString();
-		System.out.println("Donnez la date d'introduction (format yyyy-mm/-d)\n");
-		String date_introduced = getLineInString();
-		LocalDate introduced = LocalDate.parse(date_introduced);
-		System.out.println("Donnez la date d'introduction (format yyyy-mm/-d)\n");
-		String date_discontinued = getLineInString();
-		LocalDate discontinued = LocalDate.parse(date_discontinued);
-		System.out.println("Donnez l'id de l'entreprise liée\n");
-		String company_identifier = getLineInString();
-		Long company_id = Long.parseLong(company_identifier);
-		computerService.updateComputer(id, name, introduced, discontinued, company_id);
 	}
 
 	/**

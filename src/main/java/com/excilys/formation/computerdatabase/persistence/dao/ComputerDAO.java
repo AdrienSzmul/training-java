@@ -110,7 +110,7 @@ public enum ComputerDAO implements IComputerDAO {
 			stat.setLong(1, c.getId());
 			rs = stat.executeQuery();
 			rs.next();
-			newComputer = computerMapper.fillFieldsForComputer(rs, c);
+			newComputer = computerMapper.createComputer(rs);
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
