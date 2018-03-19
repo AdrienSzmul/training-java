@@ -29,7 +29,7 @@ public enum DBConnection {
 	private static final String PROPERTY_NOM_UTILISATEUR = "utilisateur";
 	private static final String PROPERTY_PASSWORD = "password";
 
-	public Connection getConnection() throws ClassNotFoundException, SQLException, IOException {
+	public Connection getConnection() throws SQLException, IOException {
 		/* Chargement du driver JDBC pour MySQL */
 		Properties properties = new Properties();
 		InputStream fichierProperties = new FileInputStream(PROPERTIES_FILE);

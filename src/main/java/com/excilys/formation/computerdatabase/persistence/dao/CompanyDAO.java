@@ -15,6 +15,9 @@ import com.excilys.formation.computerdatabase.mapper.CompanyMapper;
 import com.excilys.formation.computerdatabase.model.Company;
 import com.excilys.formation.computerdatabase.persistence.DBConnection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author excilys
  *
@@ -26,6 +29,9 @@ public enum CompanyDAO implements ICompanyDAO {
 	/**
 	 * 
 	 */
+	
+	final Logger logger = LoggerFactory.getLogger(CompanyDAO.class);
+	
 	private DBConnection dbConnection = DBConnection.INSTANCE;
 	private CompanyMapper companyMapper = CompanyMapper.INSTANCE;
 	
@@ -35,6 +41,7 @@ public enum CompanyDAO implements ICompanyDAO {
 
 	@Override
 	public List<Company> getListCompanies(int pageNumber, int eltNumber) {
+		logger.info("get List Companies");
 		int offset = pageNumber * eltNumber;
 		List<Company> listCompanies = new ArrayList<>();
 		ResultSet rs = null;
@@ -49,15 +56,10 @@ public enum CompanyDAO implements ICompanyDAO {
 				listCompanies.add(companyMapper.createCompany(rs));
 			}
 
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(SELECT_LIST_COMPANIES, e.getMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(SELECT_LIST_COMPANIES, e.getMessage());
 		}
 		closeConnection(rs);
 		return listCompanies;
@@ -65,6 +67,7 @@ public enum CompanyDAO implements ICompanyDAO {
 
 	@Override
 	public int getPageCountCompanies(int eltNumber) {
+		logger.info("count Companies");
 		int pageNumber = 0;
 		ResultSet rs = null;
 		try (Connection conn = dbConnection.getConnection();
@@ -73,15 +76,10 @@ public enum CompanyDAO implements ICompanyDAO {
 			rs.next();
 			int tailleListCompanies = rs.getInt(1);
 			pageNumber = tailleListCompanies / eltNumber;
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(COUNT_COMPANIES, e.getMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(COUNT_COMPANIES, e.getMessage());
 		}
 		closeConnection(rs);
 		return pageNumber;
@@ -89,6 +87,7 @@ public enum CompanyDAO implements ICompanyDAO {
 
 	@Override
 	public Company showDetails(Company c) {
+		logger.info("show Details Company");
 		ResultSet rs = null;
 		try (Connection conn = dbConnection.getConnection();
 				PreparedStatement stat = conn.prepareStatement(SELECT_ONE_COMPANY);) {
@@ -98,26 +97,21 @@ public enum CompanyDAO implements ICompanyDAO {
 				companyMapper.createCompany(rs);
 			}
 
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(SELECT_ONE_COMPANY, e.getMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(SELECT_ONE_COMPANY, e.getMessage());
 		}
 		closeConnection(rs);
 		return c;
 	}
 
 	private void closeConnection(ResultSet rs) {
+		logger.info("Closing ocnenction");
 		try {
 			rs.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(e.getMessage());
 		}
 	}
 

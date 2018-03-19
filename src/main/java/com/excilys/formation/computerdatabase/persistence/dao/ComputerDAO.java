@@ -16,6 +16,9 @@ import com.excilys.formation.computerdatabase.mapper.ComputerMapper;
 import com.excilys.formation.computerdatabase.model.Computer;
 import com.excilys.formation.computerdatabase.persistence.DBConnection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author excilys
  *
@@ -23,6 +26,8 @@ import com.excilys.formation.computerdatabase.persistence.DBConnection;
 public enum ComputerDAO implements IComputerDAO {
 
 	INSTANCE;
+
+	final Logger logger = LoggerFactory.getLogger(ComputerDAO.class);
 
 	private DBConnection dbConnection = DBConnection.INSTANCE;
 	private ComputerMapper computerMapper = ComputerMapper.INSTANCE;
@@ -36,44 +41,36 @@ public enum ComputerDAO implements IComputerDAO {
 
 	@Override
 	public void createComputer(Computer c) {
+		logger.info("create Computer");
 		try (Connection conn = dbConnection.getConnection();
 				PreparedStatement stat = conn.prepareStatement(INSERT_NEW_COMPUTER);) {
 			setStatementsSQL(c, stat);
 			stat.executeUpdate();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(INSERT_NEW_COMPUTER, e.getMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(INSERT_NEW_COMPUTER, e.getMessage());
 		}
 	}
 
 	@Override
 	public void deleteComputer(Computer c) {
-
+		logger.info("delete Computer");
 		try (Connection conn = dbConnection.getConnection();
 				PreparedStatement stat = conn.prepareStatement(DELETE_EXISTING_COMPUTER);) {
 			stat.setLong(1, c.getId());
 			stat.executeUpdate();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(DELETE_EXISTING_COMPUTER, e.getMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(DELETE_EXISTING_COMPUTER, e.getMessage());
 		}
 
 	}
 
 	@Override
 	public List<Computer> getListComputers(int pageNumber, int eltNumber) {
+		logger.info("get List Computers");
 		int offset = pageNumber * eltNumber;
 		ResultSet rs = null;
 		List<Computer> listComputers = new ArrayList<>();
@@ -87,15 +84,10 @@ public enum ComputerDAO implements IComputerDAO {
 				listComputers.add(computerMapper.createComputer(rs));
 			}
 
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(SELECT_LIST_COMPUTERS, e.getMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(SELECT_LIST_COMPUTERS, e.getMessage());
 		}
 		closeConnection(rs);
 		return listComputers;
@@ -103,6 +95,7 @@ public enum ComputerDAO implements IComputerDAO {
 
 	@Override
 	public Computer showDetails(Computer c) {
+		logger.info("show Details Computer");
 		Computer newComputer = new Computer();
 		ResultSet rs = null;
 		try (Connection conn = dbConnection.getConnection();
@@ -111,15 +104,10 @@ public enum ComputerDAO implements IComputerDAO {
 			rs = stat.executeQuery();
 			rs.next();
 			newComputer = computerMapper.createComputer(rs);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(SELECT_ONE_COMPUTER, e.getMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(SELECT_ONE_COMPUTER, e.getMessage());
 		}
 		closeConnection(rs);
 		return newComputer;
@@ -128,26 +116,23 @@ public enum ComputerDAO implements IComputerDAO {
 
 	@Override
 	public void updateComputer(Computer c) {
+		logger.info("update Computer");
 		try (Connection conn = dbConnection.getConnection();
 				PreparedStatement stat = conn.prepareStatement(UPDATE_EXISTING_COMPUTER);) {
 			setStatementsSQL(c, stat);
 			stat.setLong(5, c.getId());
 			stat.executeUpdate();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(UPDATE_EXISTING_COMPUTER, e.getMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(UPDATE_EXISTING_COMPUTER, e.getMessage());
 		}
 
 	}
 
 	@Override
 	public int getPageCountComputers(int eltNumber) {
+		logger.info("count Computers");
 		int pageNumber = 0;
 		ResultSet rs = null;
 		try (Connection conn = dbConnection.getConnection();
@@ -156,26 +141,21 @@ public enum ComputerDAO implements IComputerDAO {
 			rs.next();
 			int tailleListComputers = rs.getInt(1);
 			pageNumber = tailleListComputers / eltNumber;
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(COUNT_COMPUTERS, e.getMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(COUNT_COMPUTERS, e.getMessage());
 		}
 		closeConnection(rs);
 		return pageNumber;
 	}
 
 	private void closeConnection(ResultSet rs) {
+		logger.info("Closing ocnenction");
 		try {
 			rs.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug(e.getMessage());
 		}
 	}
 
@@ -183,6 +163,7 @@ public enum ComputerDAO implements IComputerDAO {
 	// si on rentre des valeurs nulles (même si on fait la vérif avec un validator
 	// avant)
 	private void setStatementsSQL(Computer c, PreparedStatement stat) throws SQLException {
+		logger.info("setting values in sql requests as", stat.getParameterMetaData());
 		stat.setString(1, c.getName());
 		if (c.getIntroduced() != null) {
 			stat.setDate(2, Date.valueOf(c.getIntroduced()));
