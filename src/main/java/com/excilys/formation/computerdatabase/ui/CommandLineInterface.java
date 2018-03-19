@@ -42,7 +42,7 @@ public class CommandLineInterface {
 				.append("******************************\n\n").append("1) Lister les ordinateurs\n")
 				.append("2) Lister les entreprises\n").append("3) Obtenir le détail d'un ordinateur\n")
 				.append("4) Ajouter un ordinateur\n").append("5) Mettre à jour un ordinateur\n")
-				.append("6) Supprimer un ordinateur").append("7) Quitter Computer DataBase").toString();
+				.append("6) Supprimer un ordinateur\n").append("7) Quitter Computer DataBase\n").toString();
 		return res;
 	}
 
@@ -53,40 +53,46 @@ public class CommandLineInterface {
 	 * @throws DateMismatchException
 	 * @throws NullNameException
 	 */
-	public void mainLoop(int s) throws NullNameException, DateMismatchException, MissingCompanyException {
-		switch (MenuChoice.values()[s]) {
-		case SELECT_LIST_COMPUTERS:
-			getListComputers();
+	public void mainLoop() throws NullNameException, DateMismatchException, MissingCompanyException {
+		System.out.println(menuCLI());
+		String valeurEntree = getLineInString();
+		if (!valeurEntree.isEmpty()) {
+			int s = Integer.parseInt(valeurEntree) - 1;
+			switch (MenuChoice.values()[s]) {
+			case SELECT_LIST_COMPUTERS:
+				getListComputers();
 
-			break;
-		case SELECT_LIST_COMPANIES:
-			getListCompanies();
+				break;
+			case SELECT_LIST_COMPANIES:
+				getListCompanies();
 
-			break;
-		case SELECT_ONE_COMPUTER:
-			showdetails();
+				break;
+			case SELECT_ONE_COMPUTER:
+				showdetails();
 
-			break;
-		case INSERT_NEW_COMPUTER:
-			createComputer();
+				break;
+			case INSERT_NEW_COMPUTER:
+				createComputer();
 
-			break;
-		case UPDATE_EXISTING_COMPUTER:
-			updateComputer();
+				break;
+			case UPDATE_EXISTING_COMPUTER:
+				updateComputer();
 
-			break;
-		case DELETE_EXISTING_COMPUTER:
-			delComputer();
+				break;
+			case DELETE_EXISTING_COMPUTER:
+				delComputer();
 
-			break;
-		case QUIT:
-			gettingOutOfCDB = false;
-			System.out.println("ComputerDataBase est en train de fermer...");
-
-		default:
-			throw new ArrayIndexOutOfBoundsException("Votre chiffre ne correspond à rien :D \n");
+				break;
+			case QUIT:
+				System.out.println("ComputerDataBase est en train de fermer...");
+				gettingOutOfCDB = false;
+				break;
+			default:
+				throw new ArrayIndexOutOfBoundsException("Votre chiffre ne correspond à rien :D \n");
+			}
+		} else {
+			System.out.println("Veuillez entrer un chiffre");
 		}
-		gettingOutOfCDB = true;
 	}
 
 	private void delComputer() {
@@ -196,17 +202,6 @@ public class CommandLineInterface {
 		}
 	}
 
-	private int getLineInInt() {
-		int s = 0;
-		try {
-			s = Integer.parseInt(br.readLine());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return s;
-	}
-
 	private String getLineInString() {
 		String s = null;
 		try {
@@ -230,10 +225,9 @@ public class CommandLineInterface {
 		// TODO Auto-generated method stub
 		CommandLineInterface cli = new CommandLineInterface();
 		while (cli.gettingOutOfCDB) {
-			System.out.println(cli.menuCLI());
-			int s = cli.getLineInInt() - 1;
-			cli.mainLoop(s);
+			cli.mainLoop();
 		}
+		cli.br.close();
 	}
 
 }
