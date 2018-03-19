@@ -10,12 +10,16 @@ import java.util.List;
 import com.excilys.formation.computerdatabase.model.Company;
 import com.excilys.formation.computerdatabase.model.Computer;
 import com.excilys.formation.computerdatabase.model.Computer.ComputerBuilder;
+import com.excilys.formation.computerdatabase.paginator.Page;
+import com.excilys.formation.computerdatabase.paginator.PageCompany;
 import com.excilys.formation.computerdatabase.model.Company.CompanyBuilder;
 import com.excilys.formation.computerdatabase.service.CompanyService;
 import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.DateMismatchException;
 import com.excilys.formation.computerdatabase.service.MissingCompanyException;
 import com.excilys.formation.computerdatabase.service.NullNameException;
+
+import ch.qos.logback.core.net.SyslogOutputStream;
 
 /**
  * @author excilys
@@ -171,13 +175,33 @@ public class CommandLineInterface {
 
 	}
 
-	private void getListCompanies() {
-		int nombreResCompanies = companyService.getPageCountCompanies(taillePage);
-		for (int j = 0; j < nombreResCompanies + 1; j++) {
-			List<Company> listCompanies = companyService.getListCompanies(j, taillePage);
-			listCompanies.forEach(company -> System.out.println(company.toString()));
-			getLine();
+	private <T extends Page<?>> void readPage(T page) {
+		boolean exit = false;
+		String choice;
+		while (!exit) {
+			System.out.println("s pour suivant, p pour précédent, f pour premier, d pour dernier");
+			choice = getLineInString();
+			switch (choice) {
+			case "s":
+				page.nextPage().forEach(System.out::print);
+				break;
+			case "p":
+				page.previousPage();
+				break;
+			case "f":
+				page.firstPage();
+				break;
+			case "d":
+				page.lastPage();
+				break;
+			default
+			}
 		}
+
+	}
+
+	private void getListCompanies() {
+		PageCompany companyPage = companyService.getListCompanies(0, taillePage);
 	}
 
 	private void getListComputers() {

@@ -40,15 +40,14 @@ public enum CompanyDAO implements ICompanyDAO {
 	private String SELECT_ONE_COMPANY = "SELECT ca_id, ca_name FROM company WHERE ca_id = ?;";
 
 	@Override
-	public List<Company> getListCompanies(int pageNumber, int eltNumber) {
+	public List<Company> getListCompanies(int offset, int taille) {
 		logger.info("get List Companies");
-		int offset = pageNumber * eltNumber;
 		List<Company> listCompanies = new ArrayList<>();
 		ResultSet rs = null;
 		try (Connection conn = dbConnection.getConnection();
 				PreparedStatement stat = conn
 						.prepareStatement(SELECT_LIST_COMPANIES);) {
-			stat.setInt(1, eltNumber);
+			stat.setInt(1, taille);
 			stat.setInt(2, offset);
 			rs = stat.executeQuery();
 
@@ -66,7 +65,7 @@ public enum CompanyDAO implements ICompanyDAO {
 	}
 
 	@Override
-	public int getPageCountCompanies(int eltNumber) {
+	public int getPageCountCompanies(int taille) {
 		logger.info("count Companies");
 		int pageNumber = 0;
 		ResultSet rs = null;
@@ -75,7 +74,7 @@ public enum CompanyDAO implements ICompanyDAO {
 			rs = stat.executeQuery();
 			rs.next();
 			int tailleListCompanies = rs.getInt(1);
-			pageNumber = tailleListCompanies / eltNumber;
+			pageNumber = tailleListCompanies / taille;
 		} catch (SQLException e) {
 			logger.debug(COUNT_COMPANIES, e.getMessage());
 		} catch (IOException e) {
