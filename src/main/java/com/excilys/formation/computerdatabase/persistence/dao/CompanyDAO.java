@@ -29,9 +29,9 @@ public enum CompanyDAO implements ICompanyDAO {
 	private DBConnection dbConnection = DBConnection.INSTANCE;
 	private CompanyMapper companyMapper = CompanyMapper.INSTANCE;
 	
-	private String SELECT_LIST_COMPANIES = "SELECT * FROM company ORDER BY ca_id LIMIT ? OFFSET ?;";
-	private String COUNT_COMPANIES = "SELECT count(*) FROM company;";
-	private String SELECT_ONE_COMPANY = "SELECT * FROM company WHERE ca_id = ?;";
+	private String SELECT_LIST_COMPANIES = "SELECT ca_id, ca_name FROM company ORDER BY ca_id LIMIT ? OFFSET ?;";
+	private String COUNT_COMPANIES = "SELECT count(ca_id) FROM company;";
+	private String SELECT_ONE_COMPANY = "SELECT ca_id, ca_name FROM company WHERE ca_id = ?;";
 
 	@Override
 	public List<Company> getListCompanies(int pageNumber, int eltNumber) {

@@ -29,6 +29,7 @@ public class CommandLineInterface {
 	private ComputerService computerService = ComputerService.INSTANCE;
 	private CompanyService companyService = CompanyService.INSTANCE;
 	private int taillePage;
+	private boolean gettingOutOfCDB = true;
 
 	public CommandLineInterface() {
 		br = new BufferedReader(new InputStreamReader(System.in));
@@ -41,7 +42,7 @@ public class CommandLineInterface {
 				.append("******************************\n\n").append("1) Lister les ordinateurs\n")
 				.append("2) Lister les entreprises\n").append("3) Obtenir le détail d'un ordinateur\n")
 				.append("4) Ajouter un ordinateur\n").append("5) Mettre à jour un ordinateur\n")
-				.append("6) Supprimer un ordinateur").toString();
+				.append("6) Supprimer un ordinateur").append("7) Quitter Computer DataBase").toString();
 		return res;
 	}
 
@@ -78,10 +79,14 @@ public class CommandLineInterface {
 			delComputer();
 
 			break;
+		case QUIT:
+			gettingOutOfCDB = false;
+			System.out.println("ComputerDataBase est en train de fermer...");
 
 		default:
 			throw new ArrayIndexOutOfBoundsException("Votre chiffre ne correspond à rien :D \n");
 		}
+		gettingOutOfCDB = true;
 	}
 
 	private void delComputer() {
@@ -224,9 +229,9 @@ public class CommandLineInterface {
 			throws IOException, NullNameException, DateMismatchException, MissingCompanyException {
 		// TODO Auto-generated method stub
 		CommandLineInterface cli = new CommandLineInterface();
-		while (true) {
+		while (cli.gettingOutOfCDB) {
 			System.out.println(cli.menuCLI());
-			int s = cli.getLineInInt();
+			int s = cli.getLineInInt() - 1;
 			cli.mainLoop(s);
 		}
 	}
