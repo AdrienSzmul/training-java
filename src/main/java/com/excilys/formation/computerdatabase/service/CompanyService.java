@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.excilys.formation.computerdatabase.service;
 
@@ -10,20 +10,17 @@ import com.excilys.formation.computerdatabase.persistence.dao.CompanyDAO;
 
 /**
  * @author excilys
- *
  */
 public enum CompanyService {
+    INSTANCE;
+    private final CompanyDAO companyDAO = CompanyDAO.INSTANCE;
 
-	INSTANCE;
+    public List<Company> getListCompanies(final int pageNumber,
+            final int taille) {
+        return companyDAO.getListCompanies(pageNumber, taille);
+    }
 
-	private CompanyDAO companyDAO = CompanyDAO.INSTANCE;
-
-	public List<Company> getListCompanies(int pageNumber, int taille) {
-		return companyDAO.getListCompanies(pageNumber, taille);
-	}
-
-	public int getPageCountCompanies(int taille) {
-		return companyDAO.getPageCountCompanies(taille);
-	}
-
+    public int getPageCountCompanies(final int taille) {
+        return companyDAO.getPageCountCompanies(taille);
+    }
 }

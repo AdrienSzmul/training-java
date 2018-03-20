@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.excilys.formation.computerdatabase.persistence.dao;
 
@@ -9,14 +9,11 @@ import com.excilys.formation.computerdatabase.model.Company;
 
 /**
  * @author excilys
- *
  */
 public interface ICompanyDAO {
+    abstract List<Company> getListCompanies(int pageNumber, int eltNumber);
 
-	public abstract List<Company> getListCompanies(int pageNumber, int eltNumber);
-	
-	public abstract Company showDetails(Company c);
+    abstract Company showDetails(Company c);
 
-	public abstract int getPageCountCompanies(int eltNumber);
-
+    abstract int getPageCountCompanies(int eltNumber);
 }

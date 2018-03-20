@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.excilys.formation.computerdatabase.persistence.dao;
 
@@ -16,10 +16,9 @@ import com.excilys.formation.computerdatabase.persistence.dao.CompanyDAO;
 
 /**
  * @author excilys
- *
  */
 public class CompanyDAOTest {
-	
+
 	private CompanyDAO newDAO = CompanyDAO.INSTANCE;
 
 	@Test

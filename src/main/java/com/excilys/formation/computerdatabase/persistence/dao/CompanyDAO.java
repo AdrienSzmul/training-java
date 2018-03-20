@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.excilys.formation.computerdatabase.persistence.dao;
 
@@ -11,107 +11,104 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.excilys.formation.computerdatabase.mapper.CompanyMapper;
 import com.excilys.formation.computerdatabase.model.Company;
 import com.excilys.formation.computerdatabase.persistence.DBConnection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * @author excilys
- *
  */
 public enum CompanyDAO implements ICompanyDAO {
+    INSTANCE;
+    /**
+     *
+     */
+    private final Logger logger = LoggerFactory.getLogger(CompanyDAO.class);
+    private final DBConnection dbConnection = DBConnection.INSTANCE;
+    private final CompanyMapper companyMapper = CompanyMapper.INSTANCE;
+    private final String selectListCompanies = "SELECT ca_id, ca_name FROM company ORDER BY ca_id LIMIT ? OFFSET ?;";
+    private final String countCompanies = "SELECT count(ca_id) FROM company;";
+    private final String selectOneCompany = "SELECT ca_id, ca_name FROM company WHERE ca_id = ?;";
 
-	INSTANCE;
+    @Override
+    public List<Company> getListCompanies(final int pageNumber,
+            final int taille) {
+        logger.info("get List Companies");
+        final List<Company> listCompanies = new ArrayList<>();
+        ResultSet rs = null;
+        try (Connection conn = dbConnection.getConnection();
+                PreparedStatement stat = conn
+                        .prepareStatement(selectListCompanies);) {
+            stat.setInt(1, taille);
+            stat.setInt(2, pageNumber * taille);
+            rs = stat.executeQuery();
+            while (rs.next()) {
+                listCompanies.add(companyMapper.createCompany(rs));
+            }
+        } catch (final SQLException e) {
+            logger.debug(selectListCompanies, e.getMessage());
+        } catch (final IOException e) {
+            logger.debug(selectListCompanies, e.getMessage());
+        }
+        closeConnection(rs);
+        return listCompanies;
+    }
 
-	/**
-	 * 
-	 */
-	
-	final Logger logger = LoggerFactory.getLogger(CompanyDAO.class);
-	
-	private DBConnection dbConnection = DBConnection.INSTANCE;
-	private CompanyMapper companyMapper = CompanyMapper.INSTANCE;
-	
-	private String SELECT_LIST_COMPANIES = "SELECT ca_id, ca_name FROM company ORDER BY ca_id LIMIT ? OFFSET ?;";
-	private String COUNT_COMPANIES = "SELECT count(ca_id) FROM company;";
-	private String SELECT_ONE_COMPANY = "SELECT ca_id, ca_name FROM company WHERE ca_id = ?;";
+    @Override
+    public int getPageCountCompanies(final int taille) {
+        logger.info("count Companies");
+        int pageNumber = 0;
+        ResultSet rs = null;
+        try (Connection conn = dbConnection.getConnection();
+                PreparedStatement stat = conn
+                        .prepareStatement(countCompanies);) {
+            rs = stat.executeQuery();
+            rs.next();
+            final int tailleListCompanies = rs.getInt(1);
+            pageNumber = tailleListCompanies / taille;
+        } catch (final SQLException e) {
+            logger.debug(countCompanies, e.getMessage());
+        } catch (final IOException e) {
+            logger.debug(countCompanies, e.getMessage());
+        }
+        closeConnection(rs);
+        return pageNumber;
+    }
 
-	@Override
-	public List<Company> getListCompanies(int pageNumber, int taille) {
-		logger.info("get List Companies");
-		List<Company> listCompanies = new ArrayList<>();
-		ResultSet rs = null;
-		try (Connection conn = dbConnection.getConnection();
-				PreparedStatement stat = conn
-						.prepareStatement(SELECT_LIST_COMPANIES);) {
-			stat.setInt(1, taille);
-			stat.setInt(2, pageNumber*taille);
-			rs = stat.executeQuery();
+    @Override
+    public Company showDetails(final Company c) {
+        logger.info("show Details Company");
+        ResultSet rs = null;
+        try (Connection conn = dbConnection.getConnection();
+                PreparedStatement stat = conn
+                        .prepareStatement(selectOneCompany);) {
+            rs = stat.executeQuery();
+            stat.setLong(1, c.getId());
+            while (rs.next()) {
+                companyMapper.createCompany(rs);
+            }
+        } catch (final SQLException e) {
+            logger.debug(selectOneCompany, e.getMessage());
+        } catch (final IOException e) {
+            logger.debug(selectOneCompany, e.getMessage());
+        }
+        closeConnection(rs);
+        return c;
+    }
 
-			while (rs.next()) {
-				listCompanies.add(companyMapper.createCompany(rs));
-			}
+    public final Logger getLogger() {
+        return logger;
+    }
 
-		} catch (SQLException e) {
-			logger.debug(SELECT_LIST_COMPANIES, e.getMessage());
-		} catch (IOException e) {
-			logger.debug(SELECT_LIST_COMPANIES, e.getMessage());
-		}
-		closeConnection(rs);
-		return listCompanies;
-	}
-
-	@Override
-	public int getPageCountCompanies(int taille) {
-		logger.info("count Companies");
-		int pageNumber = 0;
-		ResultSet rs = null;
-		try (Connection conn = dbConnection.getConnection();
-				PreparedStatement stat = conn.prepareStatement(COUNT_COMPANIES);) {
-			rs = stat.executeQuery();
-			rs.next();
-			int tailleListCompanies = rs.getInt(1);
-			pageNumber = tailleListCompanies / taille;
-		} catch (SQLException e) {
-			logger.debug(COUNT_COMPANIES, e.getMessage());
-		} catch (IOException e) {
-			logger.debug(COUNT_COMPANIES, e.getMessage());
-		}
-		closeConnection(rs);
-		return pageNumber;
-	}
-
-	@Override
-	public Company showDetails(Company c) {
-		logger.info("show Details Company");
-		ResultSet rs = null;
-		try (Connection conn = dbConnection.getConnection();
-				PreparedStatement stat = conn.prepareStatement(SELECT_ONE_COMPANY);) {
-			rs = stat.executeQuery();
-			stat.setLong(1, c.getId());
-			while (rs.next()) {
-				companyMapper.createCompany(rs);
-			}
-
-		} catch (SQLException e) {
-			logger.debug(SELECT_ONE_COMPANY, e.getMessage());
-		} catch (IOException e) {
-			logger.debug(SELECT_ONE_COMPANY, e.getMessage());
-		}
-		closeConnection(rs);
-		return c;
-	}
-
-	private void closeConnection(ResultSet rs) {
-		logger.info("Closing connection");
-		try {
-			rs.close();
-		} catch (SQLException e) {
-			logger.debug(e.getMessage());
-		}
-	}
-
+    private void closeConnection(final ResultSet rs) {
+        logger.info("Closing connection");
+        try {
+            rs.close();
+        } catch (final SQLException e) {
+            logger.debug(e.getMessage());
+        }
+    }
 }
