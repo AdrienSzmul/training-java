@@ -17,7 +17,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		<mojo.version>1.2.1</mojo.version>
-
+		<servlet.version>3.0.1</servlet.version>
 		<!-- checkstyle -->
 		<checkstyle.version>3.0.0</checkstyle.version>
 
@@ -120,8 +120,8 @@
 
 		<dependency>
 			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>3.0-alpha-1</version>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${servlet.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
