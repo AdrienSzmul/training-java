@@ -20,7 +20,12 @@ public class PageCompany extends Page<Company> {
 
 	@Override
 	protected int maxNumberOfPages() {
-		return companyService.getPageCountCompanies(this.TAILLE_MAX);
+		return companyService.getPageCountCompanies(this.tailleMax.getValue());
+	}
+	
+	@Override
+	protected void refresh(int pageNumber) {
+		this.page = companyService.getListCompanies(pageNumber, this.tailleMax.getValue());
 	}
 
 }

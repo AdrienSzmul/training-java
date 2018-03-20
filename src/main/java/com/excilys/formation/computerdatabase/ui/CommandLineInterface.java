@@ -5,21 +5,19 @@ package com.excilys.formation.computerdatabase.ui;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.util.List;
 
 import com.excilys.formation.computerdatabase.model.Company;
 import com.excilys.formation.computerdatabase.model.Computer;
 import com.excilys.formation.computerdatabase.model.Computer.ComputerBuilder;
 import com.excilys.formation.computerdatabase.paginator.Page;
 import com.excilys.formation.computerdatabase.paginator.PageCompany;
+import com.excilys.formation.computerdatabase.paginator.PageComputer;
+import com.excilys.formation.computerdatabase.paginator.PageLength;
 import com.excilys.formation.computerdatabase.model.Company.CompanyBuilder;
-import com.excilys.formation.computerdatabase.service.CompanyService;
 import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.DateMismatchException;
 import com.excilys.formation.computerdatabase.service.MissingCompanyException;
 import com.excilys.formation.computerdatabase.service.NullNameException;
-
-import ch.qos.logback.core.net.SyslogOutputStream;
 
 /**
  * @author excilys
@@ -31,13 +29,11 @@ public class CommandLineInterface {
 	private String res;
 	private BufferedReader br;
 	private ComputerService computerService = ComputerService.INSTANCE;
-	private CompanyService companyService = CompanyService.INSTANCE;
-	private int taillePage;
+	private static final int tailleMax = PageLength.TWENTY.getValue();
 	private boolean gettingOutOfCDB = true;
 
 	public CommandLineInterface() {
 		br = new BufferedReader(new InputStreamReader(System.in));
-		taillePage = 20;
 	}
 
 	public String menuCLI() {
@@ -104,7 +100,7 @@ public class CommandLineInterface {
 		String s = getLineInString();
 		if (s != null) {
 			Long id = Long.parseLong(s);
-			int nombreResComputers = computerService.getPageCountComputers(taillePage);
+			int nombreResComputers = computerService.getPageCountComputers(tailleMax);
 			if (id < nombreResComputers + 1) {
 				ComputerBuilder builderDetailsComputer = new Computer.ComputerBuilder().withId(id);
 				Computer computerToService = builderDetailsComputer.build();
@@ -120,7 +116,7 @@ public class CommandLineInterface {
 		String s = getLineInString();
 		if (s != null) {
 			Long id = Long.parseLong(s);
-			int nombreResComputers = computerService.getPageCountComputers(taillePage);
+			int nombreResComputers = computerService.getPageCountComputers(tailleMax);
 			if (id < nombreResComputers + 1) {
 				ComputerBuilder builderDetailsComputer = getComputerInfosFromUser();
 				builderDetailsComputer.withId(id);
@@ -162,7 +158,7 @@ public class CommandLineInterface {
 		String s = getLineInString();
 		if (s != null) {
 			Long id = Long.parseLong(s);
-			int nombreResComputers = computerService.getPageCountComputers(taillePage);
+			int nombreResComputers = computerService.getPageCountComputers(tailleMax);
 			if (id < nombreResComputers + 1) {
 				ComputerBuilder builderDetailsComputer = new Computer.ComputerBuilder().withId(id);
 				Computer computerToService = builderDetailsComputer.build();
@@ -176,54 +172,39 @@ public class CommandLineInterface {
 	}
 
 	private <T extends Page<?>> void readPage(T page) {
-		boolean exit = false;
-		String choice;
-		while (!exit) {
-			System.out.println("s pour suivant, p pour précédent, f pour premier, d pour dernier");
-			choice = getLineInString();
+		String choice = "f";
+		while (!choice.equals("q")) {
+
 			switch (choice) {
 			case "s":
-				page.nextPage().forEach(System.out::print);
+				page.nextPage().forEach(System.out::println);
 				break;
 			case "p":
-				page.previousPage();
+				page.previousPage().forEach(System.out::println);
 				break;
 			case "f":
-				page.firstPage();
+				page.firstPage().forEach(System.out::println);
 				break;
 			case "d":
-				page.lastPage();
+				page.lastPage().forEach(System.out::println);
 				break;
-			default
+			case "q":
+				System.out.println("Closing...");
+			default:
 			}
+			System.out.println("s pour suivant, p pour précédent, f pour premier, d pour dernier, q pour quitter");
+			choice = getLineInString();
 		}
 
 	}
 
 	private void getListCompanies() {
-		PageCompany companyPage = companyService.getListCompanies(0, taillePage);
+		readPage(new PageCompany());
 	}
 
 	private void getListComputers() {
-		int nombreResComputers = computerService.getPageCountComputers(taillePage);
-		for (int j = 0; j < nombreResComputers + 1; j++) {
-			List<Computer> listComputers = computerService.getListComputers(j, taillePage);
-			listComputers.forEach(computer -> System.out.println(computer.toString()));
-			getLine();
-		}
+		readPage(new PageComputer());
 
-	}
-
-	/**
-	 * 
-	 */
-	private void getLine() {
-		try {
-			br.readLine();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	private String getLineInString() {

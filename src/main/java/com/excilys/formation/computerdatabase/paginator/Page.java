@@ -7,9 +7,10 @@ public abstract class Page<T> {
 	private static final Integer FIRST_PAGE = 0;
 	private Integer pageNumber;
 
-	protected Integer TAILLE_MAX = 20;
+	protected PageLength tailleMax;
 	protected List<T> page = null;
 	protected abstract int maxNumberOfPages();
+	protected abstract void refresh(int pageNumber);
 	
 	
 	public Page () {
@@ -26,6 +27,7 @@ public abstract class Page<T> {
 	
 	public List<T> previousPage() {
 		this.checkPreviousPageNumber();
+		this.refresh(this.pageNumber);
 		return this.page;
 	}
 	
@@ -37,6 +39,7 @@ public abstract class Page<T> {
 
 	public List<T> nextPage() {
 		this.checkNextPageNumber(this.maxNumberOfPages());
+		this.refresh(this.pageNumber);
 		return this.page;
 	}
 	
@@ -47,10 +50,12 @@ public abstract class Page<T> {
 	}
 
 	public List<T> firstPage() {
+		this.refresh(FIRST_PAGE);
 		return this.page;
 	}
 	
 	public List<T> lastPage() {
+		this.refresh(this.maxNumberOfPages());
 		return this.page;
 	}
 	
