@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.excilys.formation.computerdatabase.service.ComputerService;
+
 /**
  * Servlet implementation class Test
  */
@@ -33,7 +35,10 @@ public class Test extends HttpServlet {
         // TODO Auto-generated method stub
         response.getWriter().append("Served at: ")
                 .append(request.getContextPath());
+        computerService.getListComputers(0, 0);
     }
+
+    private ComputerService computerService = ComputerService.INSTANCE;
 
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse

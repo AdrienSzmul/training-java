@@ -20,7 +20,7 @@ public enum DBConnection {
      *
      */
     private Connection conn;
-    private static final String PROPERTIES_FILE = "WebContent/WEB-INF/dao.properties";
+    private static final String PROPERTIES_FILE = "webapp/WEB-INF/dao.properties";
     private static final String PROPERTY_URL = "url";
     private static final String PROPERTY_NOM_UTILISATEUR = "utilisateur";
     private static final String PROPERTY_PASSWORD = "password";

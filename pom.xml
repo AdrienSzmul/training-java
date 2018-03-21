@@ -7,7 +7,7 @@
 	<artifactId>computer-database</artifactId>
 	<version>4.2.1</version>
 
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>computer-database</name>
 	<url>https://github.com/AdrienSzmul/computer-database</url>
@@ -30,7 +30,8 @@
 		<log4j.version>1.2.17</log4j.version>
 		<slf4j.version>1.7.19</slf4j.version>
 		<logback.version>1.1.6</logback.version>
-
+		<!-- deploy -->
+		<tomcat.version>2.2</tomcat.version>
 		<!-- runtime -->
 		<mysql.version>5.1.38</mysql.version>
 		<myqsl-jdbc.version>8.0.8-dmr</myqsl-jdbc.version>
@@ -62,6 +63,17 @@
 				</executions>
 				<configuration>
 					<mainClass>com.excilys.formation.computerdatabase.ui.CommandLineInterface</mainClass>
+				</configuration>
+			</plugin>
+			<!-- Enables deploying on Tomcat  -->
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>${tomcat.version}</version>
+				<configuration>
+					<url>http://localhost:8080/manager/text</url>
+					<server>TomcatServer</server>
+					<path>/cdb</path>
 				</configuration>
 			</plugin>
 		</plugins>
