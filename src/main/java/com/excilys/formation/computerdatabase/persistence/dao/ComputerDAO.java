@@ -69,23 +69,22 @@ public enum ComputerDAO implements IComputerDAO {
             final int eltNumber) {
         logger.info("get List Computers");
         final int offset = pageNumber * eltNumber;
-        ResultSet rs = null;
         final List<Computer> listComputers = new ArrayList<>();
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
                         .prepareStatement(selectListComputers);) {
             stat.setInt(1, eltNumber);
             stat.setInt(2, offset);
-            rs = stat.executeQuery();
-            while (rs.next()) {
-                listComputers.add(computerMapper.createComputer(rs));
+            try (ResultSet rs = stat.executeQuery();) {
+                while (rs.next()) {
+                    listComputers.add(computerMapper.createComputer(rs));
+                }
             }
         } catch (final SQLException e) {
             logger.debug(selectListComputers, e.getMessage());
         } catch (final IOException e) {
             logger.debug(selectListComputers, e.getMessage());
         }
-        closeConnection(rs);
         return listComputers;
     }
 
@@ -93,20 +92,19 @@ public enum ComputerDAO implements IComputerDAO {
     public Computer showDetails(final Computer c) {
         logger.info("show Details Computer");
         Computer newComputer = new Computer();
-        ResultSet rs = null;
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
                         .prepareStatement(selectOneComputer);) {
             stat.setLong(1, c.getId());
-            rs = stat.executeQuery();
-            rs.next();
-            newComputer = computerMapper.createComputer(rs);
+            try (ResultSet rs = stat.executeQuery();) {
+                rs.next();
+                newComputer = computerMapper.createComputer(rs);
+            }
         } catch (final SQLException e) {
             logger.debug(selectOneComputer, e.getMessage());
         } catch (final IOException e) {
             logger.debug(selectOneComputer, e.getMessage());
         }
-        closeConnection(rs);
         return newComputer;
     }
 
@@ -130,34 +128,24 @@ public enum ComputerDAO implements IComputerDAO {
     public int getPageCountComputers(final int eltNumber) {
         logger.info("count Computers");
         int pageNumber = 0;
-        ResultSet rs = null;
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
                         .prepareStatement(countComputers);) {
-            rs = stat.executeQuery();
-            rs.next();
-            final int tailleListComputers = rs.getInt(1);
-            pageNumber = tailleListComputers / eltNumber;
+            try (ResultSet rs = stat.executeQuery();) {
+                rs.next();
+                final int tailleListComputers = rs.getInt(1);
+                pageNumber = tailleListComputers / eltNumber;
+            }
         } catch (final SQLException e) {
             logger.debug(countComputers, e.getMessage());
         } catch (final IOException e) {
             logger.debug(countComputers, e.getMessage());
         }
-        closeConnection(rs);
         return pageNumber;
     }
 
     public final Logger getLogger() {
         return logger;
-    }
-
-    private void closeConnection(final ResultSet rs) {
-        logger.info("Closing ocnenction");
-        try {
-            rs.close();
-        } catch (final SQLException e) {
-            logger.debug(e.getMessage());
-        }
     }
 
     // Ici on oblige la vérification nulle pour éviter d'avoir un crash peu

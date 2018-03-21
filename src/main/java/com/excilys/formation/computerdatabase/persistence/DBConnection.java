@@ -20,8 +20,9 @@ public enum DBConnection {
      *
      */
     private Connection conn;
-    private static final String PROPERTIES_FILE = "webapp/WEB-INF/dao.properties";
+    private static final String PROPERTIES_FILE = "resources/properties/dao.properties";
     private static final String PROPERTY_URL = "url";
+    private static final String PROPERTY_DRIVER = "driver";
     private static final String PROPERTY_NOM_UTILISATEUR = "utilisateur";
     private static final String PROPERTY_PASSWORD = "password";
 
@@ -35,6 +36,12 @@ public enum DBConnection {
         final String utilisateur = properties
                 .getProperty(PROPERTY_NOM_UTILISATEUR);
         final String password = properties.getProperty(PROPERTY_PASSWORD);
+        try {
+            Class.forName(PROPERTY_DRIVER);
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         conn = DriverManager.getConnection(url, utilisateur, password);
         return conn;
     }
