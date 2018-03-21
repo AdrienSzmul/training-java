@@ -148,11 +148,11 @@ public class CommandLineInterface {
         System.out.println("Donnez le nouveau nom du PC\n");
         final String name = getLineInString();
         System.out
-                .println("Donnez la date d'introduction (format yyyy-mm/-d)\n");
+                .println("Donnez la date d'introduction (format yyyy-mm-dd)\n");
         final String dateIntroduced = getLineInString();
         final LocalDate introduced = LocalDate.parse(dateIntroduced);
         System.out
-                .println("Donnez la date d'introduction (format yyyy-mm/-d)\n");
+                .println("Donnez la date d'introduction (format yyyy-mm-dd)\n");
         final String dateDiscontinued = getLineInString();
         final LocalDate discontinued = LocalDate.parse(dateDiscontinued);
         System.out.println("Donnez l'id de l'entreprise liée\n");

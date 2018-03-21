@@ -1,4 +1,4 @@
-package com.excilys.formation.computerdatabase.dto;
+package com.excilys.formation.computerdatabase.model.dto;
 
 public class ComputerDTO {
     private Long id;
