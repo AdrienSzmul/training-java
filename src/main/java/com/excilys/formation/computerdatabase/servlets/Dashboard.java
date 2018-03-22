@@ -37,7 +37,7 @@ public class Dashboard extends HttpServlet {
         int taillePage = 20;
         try {
             taillePage = Integer.parseInt(request.getParameter("eltNumber"));
-            logger.info("taillePAge : {}", taillePage);
+            logger.info("taillePage : {}", taillePage);
         } catch (NumberFormatException e) {
             logger.info("{}", e.getMessage());
         }
