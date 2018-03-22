@@ -22,4 +22,6 @@ public interface IComputerDAO {
     abstract List<Computer> getListComputers(int pageNumber, int eltNumber);
 
     int getPageCountComputers(int eltNumber);
+
+    int getCountComputers();
 }

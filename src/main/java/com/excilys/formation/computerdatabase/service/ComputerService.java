@@ -22,13 +22,16 @@ public enum ComputerService {
         computerDAO.createComputer(c);
     }
 
-    public List<Computer> getListComputers(final int pageNumber,
-            final int eltNumber) {
+    public List<Computer> getListComputers(int pageNumber, int eltNumber) {
         return computerDAO.getListComputers(pageNumber, eltNumber);
     }
 
     public int getPageCountComputers(final int eltNumber) {
         return computerDAO.getPageCountComputers(eltNumber);
+    }
+
+    public int getCountComputers() {
+        return computerDAO.getCountComputers();
     }
 
     public Computer showDetails(final Computer c) {
