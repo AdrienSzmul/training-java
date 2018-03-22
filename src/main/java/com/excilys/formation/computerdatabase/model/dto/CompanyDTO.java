@@ -1,18 +1,18 @@
 package com.excilys.formation.computerdatabase.model.dto;
 
 public class CompanyDTO {
-    private Long id;
+    private int id;
     private String name;
 
     public CompanyDTO() {
         // TODO Auto-generated constructor stub
     }
 
-    public final Long getId() {
+    public final int getId() {
         return id;
     }
 
-    public final void setId(Long idCompanyDTO) {
+    public final void setId(int idCompanyDTO) {
         this.id = idCompanyDTO;
     }
 

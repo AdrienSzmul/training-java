@@ -11,7 +11,7 @@ public enum ComputerMapperDTO {
     INSTANCE;
     public final ComputerDTO createcomputerDTOfromcomputer(Computer computer) {
         ComputerDTO computerDTO = new ComputerDTO();
-        computerDTO.setId(computer.getId());
+        computerDTO.setId(computer.getId().intValue());
         computerDTO.setName(computer.getName());
         if (computer.getDiscontinued() != null) {
             computerDTO.setIntroduced(computer.getIntroduced().toString());
@@ -28,7 +28,7 @@ public enum ComputerMapperDTO {
     public final Computer createcomputerfromcomputerDTO(
             ComputerDTO computerDTO) {
         Computer computer = new Computer();
-        computer.setId(computerDTO.getId());
+        computer.setId(Long.valueOf(computerDTO.getId()));
         computer.setName(computerDTO.getName());
         if (computerDTO.getDiscontinued() != null) {
             computer.setIntroduced(

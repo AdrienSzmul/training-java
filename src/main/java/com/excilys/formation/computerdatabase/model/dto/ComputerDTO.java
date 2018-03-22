@@ -1,7 +1,7 @@
 package com.excilys.formation.computerdatabase.model.dto;
 
 public class ComputerDTO {
-    private Long id;
+    private int id;
     private String name;
     private String introduced;
     private String discontinued;
@@ -11,11 +11,11 @@ public class ComputerDTO {
         // TODO Auto-generated constructor stub
     }
 
-    public final Long getId() {
+    public final int getId() {
         return id;
     }
 
-    public final void setId(Long id) {
+    public final void setId(int id) {
         this.id = id;
     }
 

@@ -7,14 +7,14 @@ public enum CompanyMapperDTO {
     INSTANCE;
     public CompanyDTO createCompanyDTOfromCompany(Company company) {
         CompanyDTO companyDTO = new CompanyDTO();
-        companyDTO.setId(company.getId());
+        companyDTO.setId(company.getId().intValue());
         companyDTO.setName(company.getName());
         return companyDTO;
     }
 
     public Company createCompanyfromCompanyDTO(CompanyDTO companyDTO) {
         Company company = new Company();
-        company.setId(companyDTO.getId());
+        company.setId(Long.valueOf(companyDTO.getId()));
         company.setName(companyDTO.getName());
         return company;
     }
