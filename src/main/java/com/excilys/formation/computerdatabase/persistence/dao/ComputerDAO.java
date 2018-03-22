@@ -42,10 +42,9 @@ public enum ComputerDAO implements IComputerDAO {
                         .prepareStatement(insertNewComputer);) {
             setStatementsSQL(c, stat);
             stat.executeUpdate();
-        } catch (final SQLException e) {
-            logger.debug(insertNewComputer, e.getMessage());
-        } catch (final IOException e) {
-            logger.debug(insertNewComputer, e.getMessage());
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+            logger.debug("{} : {}", insertNewComputer, e.getMessage());
         }
     }
 
@@ -57,16 +56,14 @@ public enum ComputerDAO implements IComputerDAO {
                         .prepareStatement(deleteExistingComputer);) {
             stat.setLong(1, c.getId());
             stat.executeUpdate();
-        } catch (final SQLException e) {
-            logger.debug(deleteExistingComputer, e.getMessage());
-        } catch (final IOException e) {
-            logger.debug(deleteExistingComputer, e.getMessage());
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+            logger.debug("{} : {}", deleteExistingComputer, e.getMessage());
         }
     }
 
     @Override
     public List<Computer> getListComputers(int pageNumber, int eltNumber) {
-        logger.info("eltNumber:", eltNumber);
         final int offset = pageNumber * eltNumber;
         List<Computer> listComputers = new ArrayList<>();
         try (Connection conn = dbConnection.getConnection();
@@ -76,7 +73,6 @@ public enum ComputerDAO implements IComputerDAO {
             stat.setInt(2, offset);
             try (ResultSet rs = stat.executeQuery();) {
                 while (rs.next()) {
-                    System.out.println(rs.toString());
                     listComputers.add(computerMapper.createComputer(rs));
                 }
             }
@@ -99,10 +95,9 @@ public enum ComputerDAO implements IComputerDAO {
                 rs.next();
                 newComputer = computerMapper.createComputer(rs);
             }
-        } catch (final SQLException e) {
-            logger.debug(selectOneComputer, e.getMessage());
-        } catch (final IOException e) {
-            logger.debug(selectOneComputer, e.getMessage());
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+            logger.debug("{} : {}", selectOneComputer, e.getMessage());
         }
         return newComputer;
     }
@@ -116,10 +111,9 @@ public enum ComputerDAO implements IComputerDAO {
             setStatementsSQL(c, stat);
             stat.setLong(5, c.getId());
             stat.executeUpdate();
-        } catch (final SQLException e) {
-            logger.debug(updateExistingComputer, e.getMessage());
-        } catch (final IOException e) {
-            logger.debug(updateExistingComputer, e.getMessage());
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+            logger.debug("{} : {}", updateExistingComputer, e.getMessage());
         }
     }
 
@@ -135,10 +129,9 @@ public enum ComputerDAO implements IComputerDAO {
                 final int tailleListComputers = rs.getInt(1);
                 pageNumber = tailleListComputers / eltNumber;
             }
-        } catch (final SQLException e) {
-            logger.debug(countComputers, e.getMessage());
-        } catch (final IOException e) {
-            logger.debug(countComputers, e.getMessage());
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+            logger.debug("{} : {}", countComputers, e.getMessage());
         }
         return pageNumber;
     }
@@ -154,10 +147,9 @@ public enum ComputerDAO implements IComputerDAO {
                 rs.next();
                 tailleListComputers = rs.getInt(1);
             }
-        } catch (final SQLException e) {
-            logger.debug(countComputers, e.getMessage());
-        } catch (final IOException e) {
-            logger.debug(countComputers, e.getMessage());
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+            logger.debug("{} : {}", countComputers, e.getMessage());
         }
         return tailleListComputers;
     }

@@ -48,10 +48,9 @@ public enum CompanyDAO implements ICompanyDAO {
             while (rs.next()) {
                 listCompanies.add(companyMapper.createCompany(rs));
             }
-        } catch (final SQLException e) {
-            logger.debug(selectListCompanies, e.getMessage());
-        } catch (final IOException e) {
-            logger.debug(selectListCompanies, e.getMessage());
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+            logger.debug("{} : {}", selectListCompanies, e.getMessage());
         }
         closeConnection(rs);
         return listCompanies;
@@ -69,10 +68,9 @@ public enum CompanyDAO implements ICompanyDAO {
             rs.next();
             final int tailleListCompanies = rs.getInt(1);
             pageNumber = tailleListCompanies / taille;
-        } catch (final SQLException e) {
-            logger.debug(countCompanies, e.getMessage());
-        } catch (final IOException e) {
-            logger.debug(countCompanies, e.getMessage());
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+            logger.debug("{} : {}", countCompanies, e.getMessage());
         }
         closeConnection(rs);
         return pageNumber;
@@ -90,10 +88,9 @@ public enum CompanyDAO implements ICompanyDAO {
             while (rs.next()) {
                 companyMapper.createCompany(rs);
             }
-        } catch (final SQLException e) {
-            logger.debug(selectOneCompany, e.getMessage());
-        } catch (final IOException e) {
-            logger.debug(selectOneCompany, e.getMessage());
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+            logger.debug("{} : {}", selectOneCompany, e.getMessage());
         }
         closeConnection(rs);
         return c;
@@ -108,7 +105,7 @@ public enum CompanyDAO implements ICompanyDAO {
         try {
             rs.close();
         } catch (final SQLException e) {
-            logger.debug(e.getMessage());
+            logger.debug("{}", e.getMessage());
         }
     }
 }

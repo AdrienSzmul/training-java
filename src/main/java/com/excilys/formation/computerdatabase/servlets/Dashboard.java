@@ -34,18 +34,16 @@ public class Dashboard extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
-        System.out.println(request.getParameter("pageNumber"));
         int taillePage = 20;
-        // try {
-        // taillePage = Integer.parseInt(request.getParameter("eltNumber"));
-        // logger.info("taillePAge :", taillePage);
-        // } catch (NumberFormatException e) {
-        // logger.info(e.getMessage());
-        // }
+        try {
+            taillePage = Integer.parseInt(request.getParameter("eltNumber"));
+            logger.info("taillePAge : {}", taillePage);
+        } catch (NumberFormatException e) {
+            logger.info("{}", e.getMessage());
+        }
         System.out.println(taillePage);
         List<Computer> listComputers = ComputerService.INSTANCE
                 .getListComputers(0, 20);
-        System.out.println(listComputers.size());
         List<ComputerDTO> listComputersDTO = new ArrayList<>();
         for (Computer computer : listComputers) {
             listComputersDTO.add(ComputerMapperDTO.INSTANCE
