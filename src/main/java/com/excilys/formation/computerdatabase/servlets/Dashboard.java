@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.excilys.formation.computerdatabase.mapper.ComputerMapperDTO;
 import com.excilys.formation.computerdatabase.model.Computer;
 import com.excilys.formation.computerdatabase.model.dto.ComputerDTO;
+import com.excilys.formation.computerdatabase.paginator.PageLength;
 import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.servlets.constants.Views;
 
@@ -68,6 +69,7 @@ public class Dashboard extends HttpServlet {
         int nombreRes = ComputerService.INSTANCE.getCountComputers();
         request.setAttribute("countComputers", nombreRes);
         request.setAttribute("listComputers", listComputersDTO);
+        request.setAttribute("eltNumberList", PageLength.toIntList());
         this.getServletContext().getRequestDispatcher(Views.DASHBOARD)
                 .forward(request, response);
     }

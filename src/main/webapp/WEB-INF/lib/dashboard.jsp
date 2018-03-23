@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tag" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -91,11 +92,7 @@
 	</section>
 
 	<footer class="navbar-fixed-bottom">
-	<div class="btn-group btn-group-sm pull-right" role="group">
-		<a href="Dashboard?eltNumber=10"><button type="button" class="btn btn-default">10</button></a>
-		<a href="Dashboard?eltNumber=50"><button type="button" class="btn btn-default">50</button></a>
-		<a href="Dashboard?eltNumber=100"><button type="button" class="btn btn-default">100</button></a>
-	</div>
+	<tag:eltNumber/>
 	<div class="container text-center">
 		<ul class="pagination">
 			<li><a href="#" aria-label="Previous"> <span
