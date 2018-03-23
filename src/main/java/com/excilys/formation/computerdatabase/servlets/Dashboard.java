@@ -35,9 +35,8 @@ public class Dashboard extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
-        int eltNumber = 0;
+        int eltNumber = 20;
         int pageNumber = 0;
-        int taillePage = 20;
         try {
             eltNumber = Integer.parseInt(request.getParameter("eltNumber"));
             pageNumber = Integer.parseInt(request.getParameter("pageNumber"));
@@ -46,27 +45,15 @@ public class Dashboard extends HttpServlet {
         } catch (NumberFormatException e) {
             logger.info("{}", e.getMessage());
         }
-        switch (eltNumber) {
-            case 10:
-                taillePage = 10;
-                break;
-            case 50:
-                taillePage = 50;
-                break;
-            case 100:
-                taillePage = 100;
-                break;
-            default:
-                break;
-        }
         List<Computer> listComputers = ComputerService.INSTANCE
-                .getListComputers(pageNumber, taillePage);
+                .getListComputers(pageNumber, eltNumber);
         List<ComputerDTO> listComputersDTO = new ArrayList<>();
         for (Computer computer : listComputers) {
             listComputersDTO.add(ComputerMapperDTO.INSTANCE
                     .createcomputerDTOfromcomputer(computer));
         }
         int nombreRes = ComputerService.INSTANCE.getCountComputers();
+        request.setAttribute("pageNumber", pageNumber);
         request.setAttribute("countComputers", nombreRes);
         request.setAttribute("listComputers", listComputersDTO);
         request.setAttribute("eltNumberList", PageLength.toIntList());
