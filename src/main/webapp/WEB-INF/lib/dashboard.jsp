@@ -24,7 +24,7 @@
 	<section id="main">
 	<div class="container">
 		<h1 id="homeTitle">
-			<c:out value="${countComputers}"></c:out>
+			<c:out value="${countComputers}" />
 			Computers found
 		</h1>
 		<div id="actions" class="form-horizontal">
@@ -91,6 +91,11 @@
 	</section>
 
 	<footer class="navbar-fixed-bottom">
+	<div class="btn-group btn-group-sm pull-right" role="group">
+		<a href="Dashboard?eltNumber=10"><button type="button" class="btn btn-default">10</button></a>
+		<a href="Dashboard?eltNumber=50"><button type="button" class="btn btn-default">50</button></a>
+		<a href="Dashboard?eltNumber=100"><button type="button" class="btn btn-default">100</button></a>
+	</div>
 	<div class="container text-center">
 		<ul class="pagination">
 			<li><a href="#" aria-label="Previous"> <span
@@ -106,15 +111,11 @@
 		</ul>
 	</div>
 
-	<div class="btn-group btn-group-sm pull-right" role="group">
-		<button type="button" class="btn btn-default">10</button>
-		<button type="button" class="btn btn-default">50</button>
-		<button type="button" class="btn btn-default">100</button>
-	</div>
+
 	</footer>
 	<script src="static/js/jquery.min.js"></script>
 	<script src="static/js/bootstrap.min.js"></script>
-	<script src="staticjs/dashboard.js"></script>
+	<script src="static/js/dashboard.js"></script>
 
 </body>
 </html>
