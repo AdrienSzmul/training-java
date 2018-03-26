@@ -24,9 +24,10 @@ import com.excilys.formation.computerdatabase.servlets.constants.Views;
  * Servlet implementation class Dashboard
  */
 @WebServlet("/Dashboard")
-public class Dashboard extends HttpServlet {
+public class DashboardServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private final Logger logger = LoggerFactory.getLogger(Dashboard.class);
+    private final Logger logger = LoggerFactory
+            .getLogger(DashboardServlet.class);
 
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
@@ -35,6 +36,12 @@ public class Dashboard extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
+        request = setRequest(request);
+        this.getServletContext().getRequestDispatcher(Views.DASHBOARD)
+                .forward(request, response);
+    }
+
+    private HttpServletRequest setRequest(HttpServletRequest request) {
         int eltNumber = 20;
         int pageNumber = 0;
         try {
@@ -63,8 +70,7 @@ public class Dashboard extends HttpServlet {
         request.setAttribute("maxNumberPages", pageMax);
         request.setAttribute("listComputers", listComputersDTO);
         request.setAttribute("eltNumberList", PageLength.toIntList());
-        this.getServletContext().getRequestDispatcher(Views.DASHBOARD)
-                .forward(request, response);
+        return request;
     }
 
     /**
