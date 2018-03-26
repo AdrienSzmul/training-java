@@ -39,11 +39,15 @@ public class Dashboard extends HttpServlet {
         int pageNumber = 0;
         try {
             eltNumber = Integer.parseInt(request.getParameter("eltNumber"));
-            pageNumber = Integer.parseInt(request.getParameter("pageNumber"));
-            logger.info("taillePage : {}", eltNumber);
-            logger.info("Numéro de page : {}", pageNumber);
+            logger.info("Numéro de page : {}", eltNumber);
         } catch (NumberFormatException e) {
-            logger.info("{}", e.getMessage());
+            logger.error(e.getMessage());
+        }
+        try {
+            pageNumber = Integer.parseInt(request.getParameter("pageNumber"));
+            logger.info("taillePage : {}", pageNumber);
+        } catch (NumberFormatException e) {
+            logger.error(e.getMessage());
         }
         List<Computer> listComputers = ComputerService.INSTANCE
                 .getListComputers(pageNumber, eltNumber);
@@ -53,8 +57,10 @@ public class Dashboard extends HttpServlet {
                     .createcomputerDTOfromcomputer(computer));
         }
         int nombreRes = ComputerService.INSTANCE.getCountComputers();
-        request.setAttribute("pageNumber", pageNumber);
+        int pageMax = ComputerService.INSTANCE.getPageCountComputers(eltNumber);
+        request.setAttribute("pageIndex", pageNumber);
         request.setAttribute("countComputers", nombreRes);
+        request.setAttribute("maxNumberPages", pageMax);
         request.setAttribute("listComputers", listComputersDTO);
         request.setAttribute("eltNumberList", PageLength.toIntList());
         this.getServletContext().getRequestDispatcher(Views.DASHBOARD)
