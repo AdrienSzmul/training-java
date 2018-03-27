@@ -17,7 +17,7 @@
 <body>
 	<header class="navbar navbar-inverse navbar-fixed-top">
 	<div class="container">
-		<a class="navbar-brand" href="dashboard.html"> Application -
+		<a class="navbar-brand" href="/WEB-INF/lib/dashboard.jsp"> Application -
 			Computer Database </a>
 	</div>
 	</header>
@@ -39,7 +39,7 @@
 				</form>
 			</div>
 			<div class="pull-right">
-				<a class="btn btn-success" id="addComputer" href="addComputer.html">Add
+				<a class="btn btn-success" id="addComputer" href="AddComputer">Add
 					Computer</a> <a class="btn btn-default" id="editComputer" href="#"
 					onclick="$.fn.toggleEditMode();">Edit</a>
 			</div>
