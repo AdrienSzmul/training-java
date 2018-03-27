@@ -11,17 +11,18 @@ import com.excilys.formation.computerdatabase.model.Computer;
  * @author excilys
  */
 public interface IComputerDAO {
-    abstract void createComputer(Computer c);
+    abstract void createComputer(Computer c) throws DAOException;
 
-    abstract void updateComputer(Computer c);
+    abstract void updateComputer(Computer c) throws DAOException;
 
-    abstract void deleteComputer(Computer c);
+    abstract void deleteComputer(Computer c) throws DAOException;
 
-    abstract Computer showDetails(Computer c);
+    abstract Computer showDetails(Computer c) throws DAOException;
 
-    abstract List<Computer> getListComputers(int pageNumber, int eltNumber);
+    abstract List<Computer> getListComputers(int pageNumber, int eltNumber)
+            throws DAOException;
 
-    int getPageCountComputers(int eltNumber);
+    int getPageCountComputers(int eltNumber) throws DAOException;
 
-    int getCountComputers();
+    int getCountComputers() throws DAOException;
 }

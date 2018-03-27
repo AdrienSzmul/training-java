@@ -20,6 +20,8 @@ import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.DateMismatchException;
 import com.excilys.formation.computerdatabase.service.MissingCompanyException;
 import com.excilys.formation.computerdatabase.service.NullNameException;
+import com.excilys.formation.computerdatabase.service.ServiceException;
+import com.excilys.formation.computerdatabase.service.ValidationException;
 
 /**
  * @author excilys
@@ -101,14 +103,23 @@ public class CommandLineInterface {
         final String s = getLineInString();
         if (s != null) {
             final Long id = Long.parseLong(s);
-            final int nombreResComputers = computerService
-                    .getPageCountComputers(TAILLE_MAX);
+            int nombreResComputers = 0;
+            try {
+                nombreResComputers = computerService
+                        .getPageCountComputers(TAILLE_MAX);
+            } catch (ServiceException e) {
+                System.out.println(e.getMessage());
+            }
             if (id < nombreResComputers + 1) {
                 final ComputerBuilder builderDetailsComputer = new Computer.ComputerBuilder()
                         .withId(id);
                 final Computer computerToService = builderDetailsComputer
                         .build();
-                computerService.deleteComputer(computerToService);
+                try {
+                    computerService.deleteComputer(computerToService);
+                } catch (ServiceException e) {
+                    System.out.println(e.getMessage());
+                }
             } else {
                 System.out.println(
                         "L'id que vous avez donné ne correspond à rien\n");
@@ -116,20 +127,28 @@ public class CommandLineInterface {
         }
     }
 
-    private void updateComputer() throws NullNameException,
-            DateMismatchException, MissingCompanyException {
+    private void updateComputer() {
         System.out.println("Donnez l'id du PC \n");
         final String s = getLineInString();
         if (s != null) {
             final Long id = Long.parseLong(s);
-            final int nombreResComputers = computerService
-                    .getPageCountComputers(TAILLE_MAX);
+            int nombreResComputers = 0;
+            try {
+                nombreResComputers = computerService
+                        .getPageCountComputers(TAILLE_MAX);
+            } catch (ServiceException e) {
+                System.out.println(e.getMessage());
+            }
             if (id < nombreResComputers + 1) {
                 final ComputerBuilder builderDetailsComputer = getComputerInfosFromUser();
                 builderDetailsComputer.withId(id);
                 final Computer computerToService = builderDetailsComputer
                         .build();
-                computerService.updateComputer(computerToService);
+                try {
+                    computerService.updateComputer(computerToService);
+                } catch (ValidationException | ServiceException e) {
+                    System.out.println(e.getMessage());
+                }
             } else {
                 System.out.println(
                         "L'id que vous avez donné ne correspond à rien\n");
@@ -137,11 +156,14 @@ public class CommandLineInterface {
         }
     }
 
-    private void createComputer() throws NullNameException,
-            DateMismatchException, MissingCompanyException {
+    private void createComputer() {
         final ComputerBuilder builderCreateComputer = getComputerInfosFromUser();
         final Computer computer = builderCreateComputer.build();
-        computerService.createComputer(computer);
+        try {
+            computerService.createComputer(computer);
+        } catch (ValidationException | ServiceException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private ComputerBuilder getComputerInfosFromUser() {
@@ -172,15 +194,25 @@ public class CommandLineInterface {
         final String s = getLineInString();
         if (s != null) {
             final Long id = Long.parseLong(s);
-            final int nombreResComputers = computerService
-                    .getPageCountComputers(TAILLE_MAX);
+            int nombreResComputers = 0;
+            try {
+                nombreResComputers = computerService
+                        .getPageCountComputers(TAILLE_MAX);
+            } catch (ServiceException e) {
+                System.out.println(e.getMessage());
+            }
             if (id < nombreResComputers + 1) {
                 final ComputerBuilder builderDetailsComputer = new Computer.ComputerBuilder()
                         .withId(id);
                 final Computer computerToService = builderDetailsComputer
                         .build();
-                final Computer computerFromService = computerService
-                        .showDetails(computerToService);
+                Computer computerFromService = null;
+                try {
+                    computerFromService = computerService
+                            .showDetails(computerToService);
+                } catch (ServiceException e) {
+                    System.out.println(e.getMessage());
+                }
                 System.out.println(computerFromService.toString());
             } else {
                 System.out.println(
@@ -194,16 +226,32 @@ public class CommandLineInterface {
         while (!choice.equals("q")) {
             switch (choice) {
                 case "s":
-                    page.nextPage().forEach(System.out::println);
+                    try {
+                        page.nextPage().forEach(System.out::println);
+                    } catch (ServiceException e) {
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 case "p":
-                    page.previousPage().forEach(System.out::println);
+                    try {
+                        page.previousPage().forEach(System.out::println);
+                    } catch (ServiceException e) {
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 case "f":
-                    page.firstPage().forEach(System.out::println);
+                    try {
+                        page.firstPage().forEach(System.out::println);
+                    } catch (ServiceException e) {
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 case "d":
-                    page.lastPage().forEach(System.out::println);
+                    try {
+                        page.lastPage().forEach(System.out::println);
+                    } catch (ServiceException e) {
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 case "q":
                     System.out.println("Closing...");

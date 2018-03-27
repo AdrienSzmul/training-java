@@ -6,7 +6,7 @@ package com.excilys.formation.computerdatabase.service;
 /**
  * @author excilys
  */
-public class DateMismatchException extends Exception {
+public class DateMismatchException extends ValidationException {
     /**
      * @param message
      */

@@ -35,77 +35,68 @@ public enum CompanyDAO implements ICompanyDAO {
 
     @Override
     public List<Company> getListCompanies(final int pageNumber,
-            final int taille) {
+            final int taille) throws DAOException {
         logger.info("get List Companies");
         final List<Company> listCompanies = new ArrayList<>();
-        ResultSet rs = null;
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
                         .prepareStatement(selectListCompanies);) {
             stat.setInt(1, taille);
             stat.setInt(2, pageNumber * taille);
-            rs = stat.executeQuery();
-            while (rs.next()) {
-                listCompanies.add(companyMapper.createCompany(rs));
+            try (ResultSet rs = stat.executeQuery();) {
+                while (rs.next()) {
+                    listCompanies.add(companyMapper.createCompany(rs));
+                }
             }
         } catch (SQLException | IOException e) {
             e.printStackTrace();
             logger.debug("{} : {}", selectListCompanies, e.getMessage());
+            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
         }
-        closeConnection(rs);
         return listCompanies;
     }
 
     @Override
-    public int getPageCountCompanies(final int taille) {
+    public int getPageCountCompanies(final int taille) throws DAOException {
         logger.info("count Companies");
         int pageNumber = 0;
-        ResultSet rs = null;
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
                         .prepareStatement(countCompanies);) {
-            rs = stat.executeQuery();
-            rs.next();
-            final int tailleListCompanies = rs.getInt(1);
-            pageNumber = tailleListCompanies / taille;
+            try (ResultSet rs = stat.executeQuery();) {
+                rs.next();
+                final int tailleListCompanies = rs.getInt(1);
+                pageNumber = tailleListCompanies / taille;
+            }
         } catch (SQLException | IOException e) {
             e.printStackTrace();
             logger.debug("{} : {}", countCompanies, e.getMessage());
+            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
         }
-        closeConnection(rs);
         return pageNumber;
     }
 
     @Override
-    public Company showDetails(final Company c) {
+    public Company showDetails(final Company c) throws DAOException {
         logger.info("show Details Company");
-        ResultSet rs = null;
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
                         .prepareStatement(selectOneCompany);) {
-            rs = stat.executeQuery();
-            stat.setLong(1, c.getId());
-            while (rs.next()) {
-                companyMapper.createCompany(rs);
+            try (ResultSet rs = stat.executeQuery();) {
+                stat.setLong(1, c.getId());
+                while (rs.next()) {
+                    companyMapper.createCompany(rs);
+                }
             }
         } catch (SQLException | IOException e) {
             e.printStackTrace();
             logger.debug("{} : {}", selectOneCompany, e.getMessage());
+            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
         }
-        closeConnection(rs);
         return c;
     }
 
     public final Logger getLogger() {
         return logger;
-    }
-
-    private void closeConnection(final ResultSet rs) {
-        logger.info("Closing connection");
-        try {
-            rs.close();
-        } catch (final SQLException e) {
-            logger.debug("{}", e.getMessage());
-        }
     }
 }

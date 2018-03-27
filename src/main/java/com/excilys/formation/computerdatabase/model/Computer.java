@@ -18,10 +18,6 @@ public class Computer {
     private LocalDate discontinued;
     private Company company;
 
-    public Computer() {
-        // TODO Auto-generated constructor stub
-    }
-
     public Computer(final ComputerBuilder builder) {
         this.id = builder.id;
         this.name = builder.name;

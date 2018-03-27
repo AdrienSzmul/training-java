@@ -13,11 +13,7 @@ public class Company {
     private Long id;
     private String name;
 
-    public Company() {
-        // TODO Auto-generated constructor stub
-    }
-
-    public Company(final CompanyBuilder companyBuilder) {
+    private Company(final CompanyBuilder companyBuilder) {
         super();
         this.id = companyBuilder.id;
         this.name = companyBuilder.name;

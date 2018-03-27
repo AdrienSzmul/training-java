@@ -18,6 +18,7 @@ import com.excilys.formation.computerdatabase.model.Computer;
 import com.excilys.formation.computerdatabase.model.dto.ComputerDTO;
 import com.excilys.formation.computerdatabase.paginator.PageLength;
 import com.excilys.formation.computerdatabase.service.ComputerService;
+import com.excilys.formation.computerdatabase.service.ServiceException;
 import com.excilys.formation.computerdatabase.servlets.constants.Views;
 
 /**
@@ -56,15 +57,30 @@ public class DashboardServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             logger.error(e.getMessage());
         }
-        List<Computer> listComputers = ComputerService.INSTANCE
-                .getListComputers(pageNumber, eltNumber);
+        List<Computer> listComputers = null;
+        try {
+            listComputers = ComputerService.INSTANCE
+                    .getListComputers(pageNumber, eltNumber);
+        } catch (ServiceException e) {
+            logger.error(e.getMessage());
+        }
         List<ComputerDTO> listComputersDTO = new ArrayList<>();
         for (Computer computer : listComputers) {
             listComputersDTO.add(ComputerMapperDTO.INSTANCE
                     .createcomputerDTOfromcomputer(computer));
         }
-        int nombreRes = ComputerService.INSTANCE.getCountComputers();
-        int pageMax = ComputerService.INSTANCE.getPageCountComputers(eltNumber);
+        int nombreRes = 0;
+        try {
+            nombreRes = ComputerService.INSTANCE.getCountComputers();
+        } catch (ServiceException e) {
+            logger.error(e.getMessage());
+        }
+        int pageMax = 0;
+        try {
+            pageMax = ComputerService.INSTANCE.getPageCountComputers(eltNumber);
+        } catch (ServiceException e) {
+            logger.error(e.getMessage());
+        }
         request.setAttribute("pageIndex", pageNumber);
         request.setAttribute("countComputers", nombreRes);
         request.setAttribute("maxNumberPages", pageMax);

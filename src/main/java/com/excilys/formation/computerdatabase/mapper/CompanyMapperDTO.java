@@ -1,6 +1,7 @@
 package com.excilys.formation.computerdatabase.mapper;
 
 import com.excilys.formation.computerdatabase.model.Company;
+import com.excilys.formation.computerdatabase.model.Company.CompanyBuilder;
 import com.excilys.formation.computerdatabase.model.dto.CompanyDTO;
 
 public enum CompanyMapperDTO {
@@ -13,9 +14,9 @@ public enum CompanyMapperDTO {
     }
 
     public Company createCompanyfromCompanyDTO(CompanyDTO companyDTO) {
-        Company company = new Company();
-        company.setId(Long.valueOf(companyDTO.getId()));
-        company.setName(companyDTO.getName());
-        return company;
+        final CompanyBuilder b = new Company.CompanyBuilder();
+        b.withId(Long.valueOf(companyDTO.getId()));
+        b.withName(companyDTO.getName());
+        return b.build();
     }
 }

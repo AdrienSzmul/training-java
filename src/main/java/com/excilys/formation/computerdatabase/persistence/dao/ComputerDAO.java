@@ -35,7 +35,7 @@ public enum ComputerDAO implements IComputerDAO {
     private final String updateExistingComputer = "UPDATE computer SET cu_name = ?, cu_introduced = ?, cu_discontinued = ?, cu_ca_id = ? WHERE cuid = ?";
 
     @Override
-    public void createComputer(final Computer c) {
+    public void createComputer(final Computer c) throws DAOException {
         logger.info("create Computer");
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
@@ -45,11 +45,12 @@ public enum ComputerDAO implements IComputerDAO {
         } catch (SQLException | IOException e) {
             e.printStackTrace();
             logger.debug("{} : {}", insertNewComputer, e.getMessage());
+            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
         }
     }
 
     @Override
-    public void deleteComputer(final Computer c) {
+    public void deleteComputer(final Computer c) throws DAOException {
         logger.info("delete Computer");
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
@@ -59,11 +60,13 @@ public enum ComputerDAO implements IComputerDAO {
         } catch (SQLException | IOException e) {
             e.printStackTrace();
             logger.debug("{} : {}", deleteExistingComputer, e.getMessage());
+            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
         }
     }
 
     @Override
-    public List<Computer> getListComputers(int pageNumber, int eltNumber) {
+    public List<Computer> getListComputers(int pageNumber, int eltNumber)
+            throws DAOException {
         final int offset = pageNumber * eltNumber;
         List<Computer> listComputers = new ArrayList<>();
         try (Connection conn = dbConnection.getConnection();
@@ -79,14 +82,15 @@ public enum ComputerDAO implements IComputerDAO {
         } catch (SQLException | IOException e) {
             e.printStackTrace();
             logger.debug("{} : {}", selectListComputers, e.getMessage());
+            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
         }
         return listComputers;
     }
 
     @Override
-    public Computer showDetails(final Computer c) {
+    public Computer showDetails(final Computer c) throws DAOException {
         logger.info("show Details Computer");
-        Computer newComputer = new Computer();
+        Computer newComputer = null;
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
                         .prepareStatement(selectOneComputer);) {
@@ -98,12 +102,13 @@ public enum ComputerDAO implements IComputerDAO {
         } catch (SQLException | IOException e) {
             e.printStackTrace();
             logger.debug("{} : {}", selectOneComputer, e.getMessage());
+            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
         }
         return newComputer;
     }
 
     @Override
-    public void updateComputer(final Computer c) {
+    public void updateComputer(final Computer c) throws DAOException {
         logger.info("update Computer");
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
@@ -114,11 +119,12 @@ public enum ComputerDAO implements IComputerDAO {
         } catch (SQLException | IOException e) {
             e.printStackTrace();
             logger.debug("{} : {}", updateExistingComputer, e.getMessage());
+            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
         }
     }
 
     @Override
-    public int getPageCountComputers(final int eltNumber) {
+    public int getPageCountComputers(final int eltNumber) throws DAOException {
         logger.info("count Computers");
         int pageNumber = 0;
         try (Connection conn = dbConnection.getConnection();
@@ -132,12 +138,13 @@ public enum ComputerDAO implements IComputerDAO {
         } catch (SQLException | IOException e) {
             e.printStackTrace();
             logger.debug("{} : {}", countComputers, e.getMessage());
+            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
         }
         return pageNumber;
     }
 
     @Override
-    public int getCountComputers() {
+    public int getCountComputers() throws DAOException {
         logger.info("count Computers");
         int tailleListComputers = 0;
         try (Connection conn = dbConnection.getConnection();
@@ -150,6 +157,7 @@ public enum ComputerDAO implements IComputerDAO {
         } catch (SQLException | IOException e) {
             e.printStackTrace();
             logger.debug("{} : {}", countComputers, e.getMessage());
+            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
         }
         return tailleListComputers;
     }

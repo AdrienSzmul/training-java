@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import com.excilys.formation.computerdatabase.model.Company;
 import com.excilys.formation.computerdatabase.model.Company.CompanyBuilder;
 import com.excilys.formation.computerdatabase.model.Computer;
+import com.excilys.formation.computerdatabase.model.Computer.ComputerBuilder;
 import com.excilys.formation.computerdatabase.model.dto.ComputerDTO;
 
 public enum ComputerMapperDTO {
@@ -27,22 +28,22 @@ public enum ComputerMapperDTO {
 
     public final Computer createcomputerfromcomputerDTO(
             ComputerDTO computerDTO) {
-        Computer computer = new Computer();
-        computer.setId(Long.valueOf(computerDTO.getId()));
-        computer.setName(computerDTO.getName());
+        final ComputerBuilder bComputer = new Computer.ComputerBuilder();
+        bComputer.withId(Long.valueOf(computerDTO.getId()));
+        bComputer.withName(computerDTO.getName());
         if (computerDTO.getDiscontinued() != null) {
-            computer.setIntroduced(
+            bComputer.withIntroduced(
                     LocalDate.parse(computerDTO.getIntroduced()));
         }
         if (computerDTO.getDiscontinued() != null) {
-            computer.setDiscontinued(
+            bComputer.withDiscontinued(
                     LocalDate.parse(computerDTO.getDiscontinued()));
         }
         if (computerDTO.getCompanyName() != null) {
-            final CompanyBuilder b = new Company.CompanyBuilder();
-            b.withName(computerDTO.getCompanyName());
-            computer.setCompany(b.build());
+            final CompanyBuilder bCompany = new Company.CompanyBuilder();
+            bCompany.withName(computerDTO.getCompanyName());
+            bComputer.withCompany(bCompany.build());
         }
-        return computer;
+        return bComputer.build();
     }
 }

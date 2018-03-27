@@ -6,7 +6,7 @@ package com.excilys.formation.computerdatabase.service;
 /**
  * @author excilys
  */
-public class NullNameException extends Exception {
+public class NullNameException extends ValidationException {
     /**
      * @param message
      */

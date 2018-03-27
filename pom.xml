@@ -25,7 +25,7 @@
 		<!-- test -->
 		<junit.version>4.12</junit.version>
 		<mockito.version>1.9.5</mockito.version>
-
+		<hsqldb.version>2.4.0</hsqldb.version>
 		<!-- compile -->
 		<!-- logs -->
 		<log4j.version>1.2.17</log4j.version>
@@ -105,6 +105,12 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
 			<version>${mockito.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>${hsqldb.version}</version>
 			<scope>test</scope>
 		</dependency>
 

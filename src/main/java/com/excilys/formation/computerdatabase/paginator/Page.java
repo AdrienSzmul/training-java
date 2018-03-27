@@ -2,15 +2,18 @@ package com.excilys.formation.computerdatabase.paginator;
 
 import java.util.List;
 
+import com.excilys.formation.computerdatabase.service.ServiceException;
+
 public abstract class Page<T> {
     private static final Integer FIRST_PAGE = 0;
     private Integer pageNumber;
     protected PageLength tailleMax;
     protected List<T> page = null;
 
-    protected abstract int maxNumberOfPages();
+    protected abstract int maxNumberOfPages() throws ServiceException;
 
-    protected abstract void refresh(int pageNumberChosen);
+    protected abstract void refresh(int pageNumberChosen)
+            throws ServiceException;
 
     public Page() {
         this.pageNumber = FIRST_PAGE;
@@ -24,7 +27,7 @@ public abstract class Page<T> {
         return pageNumber;
     }
 
-    public final List<T> previousPage() {
+    public final List<T> previousPage() throws ServiceException {
         this.checkPreviousPageNumber();
         this.refresh(this.pageNumber);
         return this.page;
@@ -36,7 +39,7 @@ public abstract class Page<T> {
         }
     }
 
-    public final List<T> nextPage() {
+    public final List<T> nextPage() throws ServiceException {
         this.checkNextPageNumber(this.maxNumberOfPages());
         this.refresh(this.pageNumber);
         return this.page;
@@ -48,12 +51,12 @@ public abstract class Page<T> {
         }
     }
 
-    public final List<T> firstPage() {
+    public final List<T> firstPage() throws ServiceException {
         this.refresh(FIRST_PAGE);
         return this.page;
     }
 
-    public final List<T> lastPage() {
+    public final List<T> lastPage() throws ServiceException {
         this.refresh(this.maxNumberOfPages());
         return this.page;
     }
