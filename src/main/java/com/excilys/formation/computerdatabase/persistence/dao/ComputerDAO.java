@@ -9,6 +9,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,21 +33,29 @@ public enum ComputerDAO implements IComputerDAO {
     private final String selectOneComputer = "SELECT cu_id, cu_name, cu_introduced, cu_discontinued, cu_ca_id, ca_id, ca_name FROM computer LEFT JOIN company ON cu_ca_id = ca_id WHERE cu_id = ?;";
     private final String insertNewComputer = "INSERT INTO Computer (cu_name, cu_introduced, cu_discontinued, cu_ca_id) VALUES (?, ?, ?, ?)";
     private final String deleteExistingComputer = "DELETE FROM computer WHERE cu_id = ?";
-    private final String updateExistingComputer = "UPDATE computer SET cu_name = ?, cu_introduced = ?, cu_discontinued = ?, cu_ca_id = ? WHERE cuid = ?";
+    private final String updateExistingComputer = "UPDATE computer SET cu_name = ?, cu_introduced = ?, cu_discontinued = ?, cu_ca_id = ? WHERE cu_id = ?";
 
     @Override
-    public void createComputer(final Computer c) throws DAOException {
+    public Long createComputer(final Computer c) throws DAOException {
         logger.info("create Computer");
+        Long createdId = null;
         try (Connection conn = dbConnection.getConnection();
-                PreparedStatement stat = conn
-                        .prepareStatement(insertNewComputer);) {
+                PreparedStatement stat = conn.prepareStatement(
+                        insertNewComputer, Statement.RETURN_GENERATED_KEYS);) {
             setStatementsSQL(c, stat);
             stat.executeUpdate();
+            try (ResultSet rs = stat.getGeneratedKeys();) {
+                if (rs.next()) {
+                    createdId = rs.getLong(1);
+                }
+            }
+            logger.debug("{}", createdId);
         } catch (SQLException | IOException e) {
             e.printStackTrace();
             logger.debug("{} : {}", insertNewComputer, e.getMessage());
             throw new DAOException("Un problème d'accès à la BDD a eu lieu");
         }
+        return createdId;
     }
 
     @Override
@@ -96,8 +105,9 @@ public enum ComputerDAO implements IComputerDAO {
                         .prepareStatement(selectOneComputer);) {
             stat.setLong(1, c.getId());
             try (ResultSet rs = stat.executeQuery();) {
-                rs.next();
-                newComputer = computerMapper.createComputer(rs);
+                if (rs.next()) {
+                    newComputer = computerMapper.createComputer(rs);
+                }
             }
         } catch (SQLException | IOException e) {
             e.printStackTrace();
@@ -173,7 +183,7 @@ public enum ComputerDAO implements IComputerDAO {
     // avant)
     private void setStatementsSQL(final Computer c,
             final PreparedStatement stat) throws SQLException {
-        logger.info("setting values in sql requests as",
+        logger.info("setting values in sql requests as {}",
                 stat.getParameterMetaData());
         stat.setString(1, c.getName());
         if (c.getIntroduced() != null) {

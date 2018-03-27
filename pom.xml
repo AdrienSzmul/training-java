@@ -26,6 +26,7 @@
 		<junit.version>4.12</junit.version>
 		<mockito.version>1.9.5</mockito.version>
 		<hsqldb.version>2.4.0</hsqldb.version>
+		<sqltool.version>2.3.3</sqltool.version>
 		<!-- compile -->
 		<!-- logs -->
 		<log4j.version>1.2.17</log4j.version>
@@ -112,6 +113,11 @@
 			<artifactId>hsqldb</artifactId>
 			<version>${hsqldb.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>sqltool</artifactId>
+			<version>${sqltool.version}</version>
 		</dependency>
 
 		<!-- logging -->

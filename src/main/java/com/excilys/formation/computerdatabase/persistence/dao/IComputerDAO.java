@@ -11,7 +11,7 @@ import com.excilys.formation.computerdatabase.model.Computer;
  * @author excilys
  */
 public interface IComputerDAO {
-    abstract void createComputer(Computer c) throws DAOException;
+    abstract Long createComputer(Computer c) throws DAOException;
 
     abstract void updateComputer(Computer c) throws DAOException;
 
