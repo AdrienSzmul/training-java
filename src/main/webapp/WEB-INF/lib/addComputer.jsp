@@ -37,14 +37,14 @@
 						</div>
 						<div class="form-group">
 							<label for="introduced">Introduced date</label> <input
-								data-validation="date" data-validation-format="dd/mm/yyyy"
+								data-validation="date" 
 								data-validation-error-msg="Date format is dd/mm/yyyy"
 								type="date" class="form-control" id="introduced"
 								name="introduced" placeholder="Introduced date">
 						</div>
 						<div class="form-group">
 							<label for="discontinued">Discontinued date</label> <input
-								data-validation="date" data-validation-format="dd/mm/yyyy"
+								data-validation="date" 
 								data-validation-error-msg="Date format is dd/mm/yyyy"
 								type="date" class="form-control" id="discontinued"
 								name="discontinued" placeholder="Discontinued date">
