@@ -29,12 +29,14 @@ public enum ComputerMapperDTO {
             ComputerDTO computerDTO) {
         final ComputerBuilder bComputer = new Computer.ComputerBuilder();
         bComputer.withId(Long.valueOf(computerDTO.getId()));
-        bComputer.withName(computerDTO.getName());
-        if (computerDTO.getIntroduced() != null) {
+        if (!computerDTO.getName().isEmpty()) {
+            bComputer.withName(computerDTO.getName());
+        }
+        if (!computerDTO.getIntroduced().isEmpty()) {
             bComputer.withIntroduced(
                     LocalDate.parse(computerDTO.getIntroduced()));
         }
-        if (computerDTO.getDiscontinued() != null) {
+        if (!computerDTO.getDiscontinued().isEmpty()) {
             bComputer.withDiscontinued(
                     LocalDate.parse(computerDTO.getDiscontinued()));
         }

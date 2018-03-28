@@ -24,9 +24,9 @@ public enum ValidatorComputer {
                         "La date discontinued ne peut être avant ou égal à la date introduced");
             }
         }
-        if (c.getCompany().getId() != null) {
+        if (c.getCompany() != null) {
             try {
-                if (companyService
+                if (c.getCompany().getId() != null || companyService
                         .getCompanyById(c.getCompany().getId()) == null) {
                     throw new MissingCompanyException(
                             "L'id de company que vous avez donné n'existe pas !");

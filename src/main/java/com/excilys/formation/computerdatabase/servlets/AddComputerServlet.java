@@ -69,17 +69,26 @@ public class AddComputerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
+        setPostRequest(request);
+        setRequest(request);
+        this.getServletContext().getRequestDispatcher(Views.ADD_COMPUTER)
+                .forward(request, response);
+    }
+
+    private void setPostRequest(HttpServletRequest request) {
         String computerName = request.getParameter("computerName");
         String introduced = request.getParameter("introduced");
         String discontinued = request.getParameter("discontinued");
         String companyIdStr = request.getParameter("companyId");
         logger.info("Nom rentré: {}", computerName);
-        logger.info("Date de misen place:{}", introduced);
+        logger.info("Date de mise en place:{}", introduced);
         logger.info("Date d'arrêt de commercialisation:{}", discontinued);
         logger.info("Id de la compagnie:{}", companyIdStr);
-        int companyId = Integer.valueOf(companyIdStr);
         CompanyDTO companyDTO = new CompanyDTO();
-        companyDTO.setId(companyId);
+        if (!companyIdStr.isEmpty()) {
+            int companyId = Integer.valueOf(companyIdStr);
+            companyDTO.setId(companyId);
+        }
         ComputerDTO computerDTO = new ComputerDTO();
         computerDTO.setCompany(companyDTO);
         computerDTO.setIntroduced(introduced);
@@ -89,11 +98,12 @@ public class AddComputerServlet extends HttpServlet {
                 .createcomputerfromcomputerDTO(computerDTO);
         try {
             ComputerService.INSTANCE.createComputer(computer);
-        } catch (ValidationException | ServiceException e) {
-            logger.error("Erreur lors de l'écriture en BDD", e);
+        } catch (ValidationException e) {
+            String error = "" + e.getMessage();
+            logger.error("{}", e);
+            request.setAttribute("error", error);
+        } catch (ServiceException e) {
+            logger.error("{}", e);
         }
-        setRequest(request);
-        this.getServletContext().getRequestDispatcher(Views.ADD_COMPUTER)
-                .forward(request, response);
     }
 }

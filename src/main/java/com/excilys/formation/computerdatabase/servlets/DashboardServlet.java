@@ -31,6 +31,8 @@ public class DashboardServlet extends HttpServlet {
             .getLogger(DashboardServlet.class);
 
     /**
+     * @throws IOException
+     * @throws ServletException
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
      *      response)
      */

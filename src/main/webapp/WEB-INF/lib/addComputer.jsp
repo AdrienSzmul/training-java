@@ -29,16 +29,23 @@
 					<fieldset>
 						<div class="form-group">
 							<label for="computerName">Computer name</label> <input
+								data-validation="length alphanumeric"
+								data-validation-allowing="-_" data-validation-length="4-20"
+								data-validation-error-msg="Only alpahanu and between 4 to 20 char"
 								type="text" class="form-control" id="computerName"
 								name="computerName" placeholder="Computer name">
 						</div>
 						<div class="form-group">
 							<label for="introduced">Introduced date</label> <input
+								data-validation="date" data-validation-format="dd/mm/yyyy"
+								data-validation-error-msg="Date format is dd/mm/yyyy"
 								type="date" class="form-control" id="introduced"
 								name="introduced" placeholder="Introduced date">
 						</div>
 						<div class="form-group">
 							<label for="discontinued">Discontinued date</label> <input
+								data-validation="date" data-validation-format="mm/dd/yyyy"
+								data-validation-error-msg="Date format is mm/dd/yyyy"
 								type="date" class="form-control" id="discontinued"
 								name="discontinued" placeholder="Discontinued date">
 						</div>
@@ -67,5 +74,10 @@
 		src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script
 		src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
+	<script>
+		$.validate({
+			lang : 'fr'
+		});
+	</script>
 </body>
 </html>
