@@ -37,6 +37,7 @@
 		<!-- runtime -->
 		<mysql.version>5.1.38</mysql.version>
 		<myqsl-jdbc.version>8.0.8-dmr</myqsl-jdbc.version>
+		<hikari.version>2.6.1</hikari.version>
 	</properties>
 
 	<build>
@@ -141,6 +142,12 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>${myqsl-jdbc.version}</version>
+		</dependency>
+		
+		<dependency>
+    		<groupId>com.zaxxer</groupId>
+    		<artifactId>HikariCP</artifactId>
+    		<version>${hikari.version}</version>
 		</dependency>
 
 		<dependency>

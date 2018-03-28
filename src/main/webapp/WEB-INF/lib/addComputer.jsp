@@ -44,8 +44,8 @@
 						</div>
 						<div class="form-group">
 							<label for="discontinued">Discontinued date</label> <input
-								data-validation="date" data-validation-format="mm/dd/yyyy"
-								data-validation-error-msg="Date format is mm/dd/yyyy"
+								data-validation="date" data-validation-format="dd/mm/yyyy"
+								data-validation-error-msg="Date format is dd/mm/yyyy"
 								type="date" class="form-control" id="discontinued"
 								name="discontinued" placeholder="Discontinued date">
 						</div>

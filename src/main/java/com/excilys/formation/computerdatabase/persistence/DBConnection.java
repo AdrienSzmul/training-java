@@ -5,9 +5,10 @@ package com.excilys.formation.computerdatabase.persistence;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+
+import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * @author excilys
@@ -18,6 +19,7 @@ public enum DBConnection {
      *
      */
     private Connection conn;
+    private HikariDataSource hikariDS;
     private static final String PROPERTIES_FILE = "properties/dao.properties";
     private static final String PROPERTY_URL = "url";
     private static final String PROPERTY_DRIVER = "driver";
@@ -34,13 +36,17 @@ public enum DBConnection {
                 .getProperty(PROPERTY_NOM_UTILISATEUR);
         final String password = properties.getProperty(PROPERTY_PASSWORD);
         final String driver = properties.getProperty(PROPERTY_DRIVER);
+        hikariDS = new HikariDataSource();
+        hikariDS.setJdbcUrl(url);
+        hikariDS.setUsername(utilisateur);
+        hikariDS.setPassword(password);
         try {
             Class.forName(driver);
         } catch (ClassNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        conn = DriverManager.getConnection(url, utilisateur, password);
+        conn = hikariDS.getConnection();
         return conn;
     }
 }
