@@ -36,4 +36,8 @@ public enum CompanyService {
         }
         return nbrPageCompany;
     }
+
+    public Company getCompanyById(Long id) throws DAOException {
+        return companyDAO.getCompanyById(id);
+    }
 }

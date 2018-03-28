@@ -77,14 +77,15 @@ public enum CompanyDAO implements ICompanyDAO {
     }
 
     @Override
+    // deprecative
     public Company showDetails(final Company c) throws DAOException {
         logger.info("show Details Company");
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
                         .prepareStatement(selectOneCompany);) {
+            stat.setLong(1, c.getId());
             try (ResultSet rs = stat.executeQuery();) {
-                stat.setLong(1, c.getId());
-                while (rs.next()) {
+                if (rs.next()) {
                     companyMapper.createCompany(rs);
                 }
             }
@@ -94,6 +95,27 @@ public enum CompanyDAO implements ICompanyDAO {
             throw new DAOException("Un problème d'accès à la BDD a eu lieu");
         }
         return c;
+    }
+
+    @Override
+    public Company getCompanyById(Long id) throws DAOException {
+        logger.info("get one Company");
+        Company company = null;
+        try (Connection conn = dbConnection.getConnection();
+                PreparedStatement stat = conn
+                        .prepareStatement(selectOneCompany);) {
+            stat.setLong(1, id);
+            try (ResultSet rs = stat.executeQuery();) {
+                if (rs.next()) {
+                    company = companyMapper.createCompany(rs);
+                }
+            }
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+            logger.debug("{} : {}", selectOneCompany, e.getMessage());
+            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
+        }
+        return company;
     }
 
     public final Logger getLogger() {
