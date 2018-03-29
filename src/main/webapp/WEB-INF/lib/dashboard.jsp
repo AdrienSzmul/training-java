@@ -79,7 +79,7 @@
 					<tr>
 						<td class="editMode"><input type="checkbox" name="cb"
 							class="cb" value="0"></td>
-						<td><a href="EditComputer" onclick=""><c:out
+						<td><a href="<tag:links target="EditComputer" computerId="${computer.id}"/>" onclick=""><c:out
 									value="${computer.name}" /></a></td>
 						<td><c:out value="${computer.introduced}" /></td>
 						<td><c:out value="${computer.discontinued}" /></td>
@@ -92,10 +92,10 @@
 	</section>
 
 	<footer class="navbar-fixed-bottom">
+	
 	<tag:eltNumber/>
 	<tag:pageNumber/>
-
-
+	
 	</footer>
 	<script src="static/js/jquery.min.js"></script>
 	<script src="static/js/bootstrap.min.js"></script>

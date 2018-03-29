@@ -26,11 +26,15 @@ public enum DBConnection {
     private static final String PROPERTY_NOM_UTILISATEUR = "utilisateur";
     private static final String PROPERTY_PASSWORD = "password";
 
-    public Connection getConnection() throws SQLException, IOException {
-        /* Chargement du driver JDBC pour MySQL */
+    DBConnection() {
         final Properties properties = new Properties();
-        properties.load(getClass().getClassLoader()
-                .getResourceAsStream(PROPERTIES_FILE));
+        try {
+            properties.load(getClass().getClassLoader()
+                    .getResourceAsStream(PROPERTIES_FILE));
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
         final String url = properties.getProperty(PROPERTY_URL);
         final String utilisateur = properties
                 .getProperty(PROPERTY_NOM_UTILISATEUR);
@@ -46,6 +50,10 @@ public enum DBConnection {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    public Connection getConnection() throws SQLException, IOException {
+        /* Chargement du driver JDBC pour MySQL */
         conn = hikariDS.getConnection();
         return conn;
     }

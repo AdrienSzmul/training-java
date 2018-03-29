@@ -41,10 +41,10 @@ public enum ComputerDAO implements IComputerDAO {
         Long createdId = null;
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn.prepareStatement(
-                        insertNewComputer, Statement.RETURN_GENERATED_KEYS);) {
+                        insertNewComputer, Statement.RETURN_GENERATED_KEYS)) {
             setStatementsSQL(c, stat);
             stat.executeUpdate();
-            try (ResultSet rs = stat.getGeneratedKeys();) {
+            try (ResultSet rs = stat.getGeneratedKeys()) {
                 if (rs.next()) {
                     createdId = rs.getLong(1);
                 }
@@ -63,7 +63,7 @@ public enum ComputerDAO implements IComputerDAO {
         logger.info("delete Computer");
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
-                        .prepareStatement(deleteExistingComputer);) {
+                        .prepareStatement(deleteExistingComputer)) {
             stat.setLong(1, c.getId());
             stat.executeUpdate();
         } catch (SQLException | IOException e) {
@@ -80,7 +80,7 @@ public enum ComputerDAO implements IComputerDAO {
         List<Computer> listComputers = new ArrayList<>();
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
-                        .prepareStatement(selectListComputers);) {
+                        .prepareStatement(selectListComputers)) {
             stat.setInt(1, eltNumber);
             stat.setInt(2, offset);
             try (ResultSet rs = stat.executeQuery();) {
@@ -102,9 +102,9 @@ public enum ComputerDAO implements IComputerDAO {
         Computer newComputer = null;
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
-                        .prepareStatement(selectOneComputer);) {
+                        .prepareStatement(selectOneComputer)) {
             stat.setLong(1, c.getId());
-            try (ResultSet rs = stat.executeQuery();) {
+            try (ResultSet rs = stat.executeQuery()) {
                 if (rs.next()) {
                     newComputer = computerMapper.createComputer(rs);
                 }
@@ -122,7 +122,7 @@ public enum ComputerDAO implements IComputerDAO {
         logger.info("update Computer");
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
-                        .prepareStatement(updateExistingComputer);) {
+                        .prepareStatement(updateExistingComputer)) {
             setStatementsSQL(c, stat);
             stat.setLong(5, c.getId());
             stat.executeUpdate();
@@ -139,8 +139,8 @@ public enum ComputerDAO implements IComputerDAO {
         int pageNumber = 0;
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
-                        .prepareStatement(countComputers);) {
-            try (ResultSet rs = stat.executeQuery();) {
+                        .prepareStatement(countComputers)) {
+            try (ResultSet rs = stat.executeQuery()) {
                 rs.next();
                 final int tailleListComputers = rs.getInt(1);
                 pageNumber = tailleListComputers / eltNumber;
@@ -159,8 +159,8 @@ public enum ComputerDAO implements IComputerDAO {
         int tailleListComputers = 0;
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
-                        .prepareStatement(countComputers);) {
-            try (ResultSet rs = stat.executeQuery();) {
+                        .prepareStatement(countComputers)) {
+            try (ResultSet rs = stat.executeQuery()) {
                 rs.next();
                 tailleListComputers = rs.getInt(1);
             }

@@ -40,10 +40,10 @@ public enum CompanyDAO implements ICompanyDAO {
         final List<Company> listCompanies = new ArrayList<>();
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
-                        .prepareStatement(selectListCompanies);) {
+                        .prepareStatement(selectListCompanies)) {
             stat.setInt(1, taille);
             stat.setInt(2, pageNumber * taille);
-            try (ResultSet rs = stat.executeQuery();) {
+            try (ResultSet rs = stat.executeQuery()) {
                 while (rs.next()) {
                     listCompanies.add(companyMapper.createCompany(rs));
                 }
@@ -61,13 +61,11 @@ public enum CompanyDAO implements ICompanyDAO {
         logger.info("count Companies");
         int pageNumber = 0;
         try (Connection conn = dbConnection.getConnection();
-                PreparedStatement stat = conn
-                        .prepareStatement(countCompanies);) {
-            try (ResultSet rs = stat.executeQuery();) {
-                rs.next();
-                final int tailleListCompanies = rs.getInt(1);
-                pageNumber = tailleListCompanies / taille;
-            }
+                PreparedStatement stat = conn.prepareStatement(countCompanies);
+                ResultSet rs = stat.executeQuery()) {
+            rs.next();
+            final int tailleListCompanies = rs.getInt(1);
+            pageNumber = tailleListCompanies / taille;
         } catch (SQLException | IOException e) {
             e.printStackTrace();
             logger.debug("{} : {}", countCompanies, e.getMessage());
@@ -82,9 +80,9 @@ public enum CompanyDAO implements ICompanyDAO {
         logger.info("show Details Company");
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
-                        .prepareStatement(selectOneCompany);) {
+                        .prepareStatement(selectOneCompany)) {
             stat.setLong(1, c.getId());
-            try (ResultSet rs = stat.executeQuery();) {
+            try (ResultSet rs = stat.executeQuery()) {
                 if (rs.next()) {
                     companyMapper.createCompany(rs);
                 }
@@ -103,9 +101,9 @@ public enum CompanyDAO implements ICompanyDAO {
         Company company = null;
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
-                        .prepareStatement(selectOneCompany);) {
+                        .prepareStatement(selectOneCompany)) {
             stat.setLong(1, id);
-            try (ResultSet rs = stat.executeQuery();) {
+            try (ResultSet rs = stat.executeQuery()) {
                 if (rs.next()) {
                     company = companyMapper.createCompany(rs);
                 }

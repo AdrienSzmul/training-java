@@ -84,6 +84,7 @@ public class DashboardServlet extends HttpServlet {
             logger.error(e.getMessage());
         }
         request.setAttribute("pageIndex", pageNumber);
+        request.setAttribute("eltNumber", eltNumber);
         request.setAttribute("countComputers", nombreRes);
         request.setAttribute("maxNumberPages", pageMax);
         request.setAttribute("listComputers", listComputersDTO);

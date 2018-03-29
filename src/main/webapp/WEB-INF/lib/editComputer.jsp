@@ -24,7 +24,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-xs-8 col-xs-offset-2 box">
-				<h1>Add Computer</h1>
+				<h1>Edit Computer</h1>
 				<form action="EditComputer" method="POST">
 					<fieldset>
 						<div class="form-group">
