@@ -63,7 +63,12 @@ public enum ComputerService {
 
     public void updateComputer(final Computer c)
             throws ValidationException, ServiceException {
-        val.validateComputer(c);
+        if (c.getId() != null) {
+            val.validateComputer(c);
+        } else {
+            throw new ServiceException(
+                    "L'id du computer que vous voulez modifié est null");
+        }
         try {
             computerDAO.updateComputer(c);
         } catch (DAOException e) {

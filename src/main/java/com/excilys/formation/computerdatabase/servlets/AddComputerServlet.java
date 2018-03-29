@@ -84,18 +84,19 @@ public class AddComputerServlet extends HttpServlet {
         logger.info("Date de mise en place:{}", introduced);
         logger.info("Date d'arrêt de commercialisation:{}", discontinued);
         logger.info("Id de la compagnie:{}", companyIdStr);
-        CompanyDTO companyDTO = new CompanyDTO();
+        ComputerDTO computerDTO = new ComputerDTO();
         if (!companyIdStr.isEmpty()) {
+            CompanyDTO companyDTO = new CompanyDTO();
             int companyId = Integer.valueOf(companyIdStr);
             companyDTO.setId(companyId);
+            computerDTO.setCompany(companyDTO);
         }
-        ComputerDTO computerDTO = new ComputerDTO();
-        computerDTO.setCompany(companyDTO);
         computerDTO.setIntroduced(introduced);
         computerDTO.setDiscontinued(discontinued);
         computerDTO.setName(computerName);
         Computer computer = ComputerMapperDTO.INSTANCE
                 .createcomputerfromcomputerDTO(computerDTO);
+        System.out.println(computer.getCompany());
         try {
             ComputerService.INSTANCE.createComputer(computer);
         } catch (ValidationException e) {

@@ -14,10 +14,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.excilys.formation.computerdatabase.mapper.CompanyMapperDTO;
+import com.excilys.formation.computerdatabase.mapper.ComputerMapperDTO;
 import com.excilys.formation.computerdatabase.model.Company;
+import com.excilys.formation.computerdatabase.model.Computer;
 import com.excilys.formation.computerdatabase.model.dto.CompanyDTO;
+import com.excilys.formation.computerdatabase.model.dto.ComputerDTO;
 import com.excilys.formation.computerdatabase.persistence.dao.CompanyDAO;
 import com.excilys.formation.computerdatabase.persistence.dao.DAOException;
+import com.excilys.formation.computerdatabase.service.ComputerService;
+import com.excilys.formation.computerdatabase.service.ServiceException;
+import com.excilys.formation.computerdatabase.service.ValidationException;
 import com.excilys.formation.computerdatabase.servlets.constants.Views;
 
 /**
@@ -63,7 +69,44 @@ public class EditComputerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
-        // TODO Auto-generated method stub
-        doGet(request, response);
+        setPostRequest(request);
+        setRequest(request);
+    }
+
+    private void setPostRequest(HttpServletRequest request) {
+        String computerIdStr = request.getParameter("computerId");
+        String computerName = request.getParameter("computerName");
+        String introduced = request.getParameter("introduced");
+        String discontinued = request.getParameter("discontinued");
+        String companyIdStr = request.getParameter("companyId");
+        logger.info("Nom rentré: {}", computerName);
+        logger.info("Date de mise en place:{}", introduced);
+        logger.info("Date d'arrêt de commercialisation:{}", discontinued);
+        logger.info("Id de la compagnie:{}", companyIdStr);
+        ComputerDTO computerDTO = new ComputerDTO();
+        if (!computerIdStr.isEmpty()) {
+            int computerId = Integer.valueOf(computerIdStr);
+            computerDTO.setId(computerId);
+        }
+        if (!companyIdStr.isEmpty()) {
+            CompanyDTO companyDTO = new CompanyDTO();
+            int companyId = Integer.valueOf(companyIdStr);
+            companyDTO.setId(companyId);
+            computerDTO.setCompany(companyDTO);
+        }
+        computerDTO.setIntroduced(introduced);
+        computerDTO.setDiscontinued(discontinued);
+        computerDTO.setName(computerName);
+        Computer computer = ComputerMapperDTO.INSTANCE
+                .createcomputerfromcomputerDTO(computerDTO);
+        try {
+            ComputerService.INSTANCE.updateComputer(computer);
+        } catch (ValidationException e) {
+            String error = "" + e.getMessage();
+            logger.error("{}", e);
+            request.setAttribute("error", error);
+        } catch (ServiceException e) {
+            logger.error("{}", e);
+        }
     }
 }

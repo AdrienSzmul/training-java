@@ -28,6 +28,7 @@
 				<form action="EditComputer" method="POST">
 					<fieldset>
 						<div class="form-group">
+						<input type="hidden" value="${computer.id}" name=computerId id="id" />
 							<label for="computerName">Computer name</label> <input
 								data-validation="length alphanumeric"
 								data-validation-allowing="-_" data-validation-length="4-20"
@@ -37,14 +38,14 @@
 						</div>
 						<div class="form-group">
 							<label for="introduced">Introduced date</label> <input
-								data-validation="date" 
+								data-validation="date" data-validation-optional="true"
 								data-validation-error-msg="Date format is dd/mm/yyyy"
 								type="date" class="form-control" id="introduced"
 								name="introduced" placeholder="Introduced date">
 						</div>
 						<div class="form-group">
 							<label for="discontinued">Discontinued date</label> <input
-								data-validation="date" 
+								data-validation="date" data-validation-optional="true"
 								data-validation-error-msg="Date format is dd/mm/yyyy"
 								type="date" class="form-control" id="discontinued"
 								name="discontinued" placeholder="Discontinued date">
@@ -62,7 +63,7 @@
 						</div>
 					</fieldset>
 					<div class="actions pull-right">
-						<input type="submit" value="Add" class="btn btn-primary">
+						<input type="submit" value="Edit" class="btn btn-primary">
 						or <a href="Dashboard" class="btn btn-default">Cancel</a>
 					</div>
 				</form>
