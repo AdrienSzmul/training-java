@@ -48,6 +48,7 @@ public class DashboardServlet extends HttpServlet {
     private HttpServletRequest setRequest(HttpServletRequest request) {
         int eltNumber = 20;
         int pageNumber = 0;
+        String search = request.getParameter("search");
         try {
             eltNumber = Integer.parseInt(request.getParameter("eltNumber"));
             logger.info("Numéro de page : {}", eltNumber);
