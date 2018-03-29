@@ -46,8 +46,8 @@
 		</div>
 	</div>
 
-	<form id="deleteForm" action="#" method="POST">
-		<input type="hidden" name="selection" value="">
+	<form id="deleteForm" action="Dashboard" method="POST">
+		<input type="hidden" name="selection">
 	</form>
 
 	<div class="container" style="margin-top: 10px;">
@@ -78,7 +78,7 @@
 				<c:forEach items="${listComputers}" var="computer">
 					<tr>
 						<td class="editMode"><input type="checkbox" name="cb"
-							class="cb" value="0"></td>
+							class="cb" value="${computer.id}"></td>
 						<td><a href="<tag:links target="EditComputer" computerId="${computer.id}"/>" onclick=""><c:out
 									value="${computer.name}" /></a></td>
 						<td><c:out value="${computer.introduced}" /></td>

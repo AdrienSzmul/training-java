@@ -74,6 +74,28 @@ public enum ComputerDAO implements IComputerDAO {
     }
 
     @Override
+    public void deleteMultipleComputers(List<Long> listComputerIds)
+            throws DAOException {
+        logger.info("delete multiple computers");
+        try (Connection conn = dbConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            for (Long id : listComputerIds) {
+                try (PreparedStatement stat = conn
+                        .prepareStatement(deleteExistingComputer)) {
+                    stat.setLong(1, id);
+                    stat.executeUpdate();
+                } catch (SQLException e) {
+                    conn.rollback();
+                    throw new DAOException("Multi-delete went wrong");
+                }
+            }
+            conn.commit();
+        } catch (SQLException | IOException e) {
+            logger.debug("{} : {}", deleteExistingComputer, e.getMessage());
+        }
+    }
+
+    @Override
     public List<Computer> getListComputers(int pageNumber, int eltNumber)
             throws DAOException {
         final int offset = pageNumber * eltNumber;

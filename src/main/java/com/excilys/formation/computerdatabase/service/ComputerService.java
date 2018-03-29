@@ -83,4 +83,13 @@ public enum ComputerService {
             throw new ServiceException(e.getMessage());
         }
     }
+
+    public void deleteMultipleComputers(final List<Long> listDelComputers)
+            throws ServiceException {
+        try {
+            computerDAO.deleteMultipleComputers(listDelComputers);
+        } catch (DAOException e) {
+            throw new ServiceException(e.getMessage());
+        }
+    }
 }

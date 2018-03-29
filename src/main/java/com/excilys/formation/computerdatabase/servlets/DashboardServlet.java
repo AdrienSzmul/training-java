@@ -2,6 +2,7 @@ package com.excilys.formation.computerdatabase.servlets;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -99,7 +100,22 @@ public class DashboardServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
-        // TODO Auto-generated method stub
-        doGet(request, response);
+        String delComputerIdsStr = request.getParameter("selection");
+        List<Long> listDelComputerIds = new ArrayList<>();
+        Arrays.stream(delComputerIdsStr.split(",")) // allows to make actions on
+                                                    // each elt between ','
+                .filter(s -> s.matches("[0-9]+")) // doesn't take anything else
+                                                  // but numbers
+                .map(Long::valueOf) // maps the string to long
+                .forEach(listDelComputerIds::add); // add the result to the list
+        try {
+            ComputerService.INSTANCE
+                    .deleteMultipleComputers(listDelComputerIds);
+        } catch (ServiceException e) {
+            logger.error(e.getMessage());
+        }
+        request = setRequest(request);
+        this.getServletContext().getRequestDispatcher(Views.DASHBOARD)
+                .forward(request, response);
     }
 }

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,11 +85,11 @@ public class EditComputerServlet extends HttpServlet {
         logger.info("Date d'arrêt de commercialisation:{}", discontinued);
         logger.info("Id de la compagnie:{}", companyIdStr);
         ComputerDTO computerDTO = new ComputerDTO();
-        if (!computerIdStr.isEmpty()) {
+        if (!StringUtils.isBlank(computerIdStr)) {
             int computerId = Integer.valueOf(computerIdStr);
             computerDTO.setId(computerId);
         }
-        if (!companyIdStr.isEmpty()) {
+        if (!StringUtils.isBlank(companyIdStr)) {
             CompanyDTO companyDTO = new CompanyDTO();
             int companyId = Integer.valueOf(companyIdStr);
             companyDTO.setId(companyId);

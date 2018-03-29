@@ -25,4 +25,7 @@ public interface IComputerDAO {
     int getPageCountComputers(int eltNumber) throws DAOException;
 
     int getCountComputers() throws DAOException;
+
+    void deleteMultipleComputers(List<Long> listComputerIds)
+            throws DAOException;
 }
