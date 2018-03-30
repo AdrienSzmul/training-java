@@ -81,6 +81,7 @@ public class DashboardServlet extends HttpServlet {
         }
         int nombreRes = listComputersDTO.size();
         int pageMax = nombreRes / eltNumber;
+        request.setAttribute("search", search);
         request.setAttribute("pageIndex", pageNumber);
         request.setAttribute("eltNumber", eltNumber);
         request.setAttribute("countComputers", nombreRes);

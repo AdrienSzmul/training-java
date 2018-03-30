@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tag" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tag"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -17,8 +17,8 @@
 <body>
 	<header class="navbar navbar-inverse navbar-fixed-top">
 	<div class="container">
-		<a class="navbar-brand" href="/WEB-INF/lib/dashboard.jsp"> Application -
-			Computer Database </a>
+		<a class="navbar-brand" href="<tag:links target="dashboard"/>">
+			Application - Computer Database </a>
 	</div>
 	</header>
 
@@ -30,7 +30,9 @@
 		</h1>
 		<div id="actions" class="form-horizontal">
 			<div class="pull-left">
-				<form id="searchForm" action="Dashboard" method="GET" class="form-inline">
+				<form id="searchForm"
+					action="<tag:links target="dashboard" search="${search}" pageIndex="${pageIndex}" eltNumber="${eltNumber}"/>"
+					method="GET" class="form-inline">
 
 					<input type="search" id="searchbox" name="search"
 						class="form-control" placeholder="Search name" /> <input
@@ -79,8 +81,9 @@
 					<tr>
 						<td class="editMode"><input type="checkbox" name="cb"
 							class="cb" value="${computer.id}"></td>
-						<td><a href="<tag:links target="EditComputer" computerId="${computer.id}"/>" onclick=""><c:out
-									value="${computer.name}" /></a></td>
+						<td><a
+							href="<tag:links target="edit" computerId="${computer.id}"/>"
+							onclick=""><c:out value="${computer.name}" /></a></td>
 						<td><c:out value="${computer.introduced}" /></td>
 						<td><c:out value="${computer.discontinued}" /></td>
 						<td><c:out value="${computer.company.name}" /></td>
@@ -91,11 +94,10 @@
 	</div>
 	</section>
 
-	<footer class="navbar-fixed-bottom">
-	
-	<tag:eltNumber/>
-	<tag:pageNumber/>
-	
+	<footer class="navbar-fixed-bottom"> 
+	<tag:eltNumber /> 
+	<tag:pageNumber />
+
 	</footer>
 	<script src="static/js/jquery.min.js"></script>
 	<script src="static/js/bootstrap.min.js"></script>
