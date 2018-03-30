@@ -66,12 +66,12 @@
 								class="fa fa-trash-o fa-lg"></i>
 						</a>
 					</span></th>
-					<th>Computer name</th>
-					<th>Introduced date</th>
+					<th><a href="<tag:links target="dashboard" orderby="name"/>" onclick="">Computer name</a></th>
+					<th><a href="<tag:links target="dashboard" orderby="introduced"/>" onclick="">Introduced date</a></th>
 					<!-- Table header for Discontinued Date -->
-					<th>Discontinued date</th>
+					<th><a href="<tag:links target="dashboard" orderby="discontinued"/>" onclick="">Discontinued date</a></th>
 					<!-- Table header for Company -->
-					<th>Company</th>
+					<th><a href="<tag:links target="dashboard" orderby="company"/>" onclick="">Company</a></th>
 
 				</tr>
 			</thead>

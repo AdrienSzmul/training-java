@@ -6,6 +6,7 @@
 <%@ attribute name="eltNumber" required="false"%>
 <%@ attribute name="computerId" required="false"%>
 <%@ attribute name="search" required="false"%>
+<%@ attribute name="orderby" required="false"%>
 
 <c:set var="pathDash" value="/cdb/Dashboard" />
 
@@ -18,6 +19,8 @@
 	value="${emptyText.concat('&eltNumber=').concat(eltNumber)}" />
 <c:set var="tmpSearch"
 	value="${emptyText.concat('&search=').concat(search)}" />
+<c:set var="tmpOrderBy"
+	value="${emptyText.concat('&orderby=').concat(orderby)}" />
 
 <c:choose>
 	<c:when test="${ not empty target }">
@@ -45,6 +48,7 @@
 				<c:set var="tmpPath" value="${ tmpPath.concat(tmpPageIndex) }" />
 				<c:set var="tmpPath" value="${ tmpPath.concat(tmpEltNumber) }" />
 				<c:set var="tmpPath" value="${ tmpPath.concat(tmpSearch) }" />
+				<c:set var="tmpPath" value="${ tmpPath.concat(tmpOrderBy) }" />
 			</c:when>
 			<c:when test="${target.equals('edit')}">
 				<c:set var="tmpPath" value="${tmpPath.concat('/cdb/EditComputer')}" />

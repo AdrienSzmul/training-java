@@ -19,6 +19,7 @@ import com.excilys.formation.computerdatabase.mapper.ComputerMapperDTO;
 import com.excilys.formation.computerdatabase.model.Computer;
 import com.excilys.formation.computerdatabase.model.dto.ComputerDTO;
 import com.excilys.formation.computerdatabase.paginator.PageLength;
+import com.excilys.formation.computerdatabase.persistence.dao.ColumnNames;
 import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.ServiceException;
 import com.excilys.formation.computerdatabase.servlets.constants.Views;
@@ -53,6 +54,10 @@ public class DashboardServlet extends HttpServlet {
 
     private HttpServletRequest setSearchRequest(HttpServletRequest request,
             String search) {
+        String orderby = request.getParameter("orderby");
+        if(ColumnNames.valueOf(, orderby)) {
+
+        }
         int eltNumber = 20;
         int pageNumber = 0;
         try {
