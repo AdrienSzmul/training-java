@@ -36,6 +36,16 @@ public enum ComputerService {
         }
     }
 
+    public List<Computer> getListComputersSearch(int pageNumber, int eltNumber,
+            String search) throws ServiceException {
+        try {
+            return computerDAO.getListComputersSearch(pageNumber, eltNumber,
+                    search);
+        } catch (DAOException e) {
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
     public int getPageCountComputers(final int eltNumber)
             throws ServiceException {
         try {

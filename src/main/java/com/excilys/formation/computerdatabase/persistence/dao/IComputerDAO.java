@@ -28,4 +28,7 @@ public interface IComputerDAO {
 
     void deleteMultipleComputers(List<Long> listComputerIds)
             throws DAOException;
+
+    List<Computer> getListComputersSearch(int pageNumber, int eltNumber,
+            String search) throws DAOException;
 }

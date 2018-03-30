@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,15 +41,58 @@ public class DashboardServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
-        request = setRequest(request);
+        String search = request.getParameter("search");
+        if (StringUtils.isBlank(search)) {
+            request = setRequest(request);
+        } else {
+            request = setSearchRequest(request, search);
+        }
         this.getServletContext().getRequestDispatcher(Views.DASHBOARD)
                 .forward(request, response);
+    }
+
+    private HttpServletRequest setSearchRequest(HttpServletRequest request,
+            String search) {
+        int eltNumber = 20;
+        int pageNumber = 0;
+        try {
+            eltNumber = Integer.parseInt(request.getParameter("eltNumber"));
+            logger.info("Numéro de page : {}", eltNumber);
+        } catch (NumberFormatException e) {
+            logger.error(e.getMessage());
+        }
+        try {
+            pageNumber = Integer.parseInt(request.getParameter("pageNumber"));
+            logger.info("taillePage : {}", pageNumber);
+        } catch (NumberFormatException e) {
+            logger.error(e.getMessage());
+        }
+        List<Computer> listComputers = null;
+        try {
+            listComputers = ComputerService.INSTANCE
+                    .getListComputersSearch(pageNumber, eltNumber, search);
+        } catch (ServiceException e) {
+            logger.error(e.getMessage());
+        }
+        List<ComputerDTO> listComputersDTO = new ArrayList<>();
+        for (Computer computer : listComputers) {
+            listComputersDTO.add(ComputerMapperDTO.INSTANCE
+                    .createcomputerDTOfromcomputer(computer));
+        }
+        int nombreRes = listComputersDTO.size();
+        int pageMax = nombreRes / eltNumber;
+        request.setAttribute("pageIndex", pageNumber);
+        request.setAttribute("eltNumber", eltNumber);
+        request.setAttribute("countComputers", nombreRes);
+        request.setAttribute("maxNumberPages", pageMax);
+        request.setAttribute("listComputers", listComputersDTO);
+        request.setAttribute("eltNumberList", PageLength.toIntList());
+        return request;
     }
 
     private HttpServletRequest setRequest(HttpServletRequest request) {
         int eltNumber = 20;
         int pageNumber = 0;
-        String search = request.getParameter("search");
         try {
             eltNumber = Integer.parseInt(request.getParameter("eltNumber"));
             logger.info("Numéro de page : {}", eltNumber);
