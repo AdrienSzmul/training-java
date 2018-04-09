@@ -19,8 +19,8 @@ public interface IComputerDAO {
 
     abstract Computer showDetails(Computer c) throws DAOException;
 
-    abstract List<Computer> getListComputers(int pageNumber, int eltNumber)
-            throws DAOException;
+    abstract List<Computer> getListComputers(int pageNumber, int eltNumber,
+            String orderby) throws DAOException;
 
     int getPageCountComputers(int eltNumber) throws DAOException;
 
@@ -30,5 +30,5 @@ public interface IComputerDAO {
             throws DAOException;
 
     List<Computer> getListComputersSearch(int pageNumber, int eltNumber,
-            String search) throws DAOException;
+            String search, String orderby) throws DAOException;
 }

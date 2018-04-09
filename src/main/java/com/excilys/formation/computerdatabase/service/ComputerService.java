@@ -27,20 +27,20 @@ public enum ComputerService {
         }
     }
 
-    public List<Computer> getListComputers(int pageNumber, int eltNumber)
-            throws ServiceException {
+    public List<Computer> getListComputers(int pageNumber, int eltNumber,
+            String orderby) throws ServiceException {
         try {
-            return computerDAO.getListComputers(pageNumber, eltNumber);
+            return computerDAO.getListComputers(pageNumber, eltNumber, orderby);
         } catch (DAOException e) {
             throw new ServiceException(e.getMessage());
         }
     }
 
     public List<Computer> getListComputersSearch(int pageNumber, int eltNumber,
-            String search) throws ServiceException {
+            String search, String orderby) throws ServiceException {
         try {
             return computerDAO.getListComputersSearch(pageNumber, eltNumber,
-                    search);
+                    search, orderby);
         } catch (DAOException e) {
             throw new ServiceException(e.getMessage());
         }

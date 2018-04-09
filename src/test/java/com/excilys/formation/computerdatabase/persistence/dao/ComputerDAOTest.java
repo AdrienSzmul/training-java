@@ -62,7 +62,8 @@ public class ComputerDAOTest {
 
     @Test
     public void testGetListComputers() throws DAOException {
-        List<Computer> listComputers = computerDAO.getListComputers(0, 3);
+        List<Computer> listComputers = computerDAO.getListComputers(0, 3,
+                "cu_id");
         assertNotNull(listComputers);
         assertEquals(listComputers.size(), 3);
     }

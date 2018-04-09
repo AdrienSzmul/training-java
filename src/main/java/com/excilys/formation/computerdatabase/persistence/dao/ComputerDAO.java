@@ -28,8 +28,8 @@ public enum ComputerDAO implements IComputerDAO {
     private final Logger logger = LoggerFactory.getLogger(ComputerDAO.class);
     private final DBConnection dbConnection = DBConnection.INSTANCE;
     private final ComputerMapper computerMapper = ComputerMapper.INSTANCE;
-    private final String SELECT_LIST_COMPUTERS = "SELECT cu_id, cu_name, cu_introduced, cu_discontinued, cu_ca_id, ca_id, ca_name FROM computer LEFT JOIN company ON cu_ca_id = ca_id ORDER BY cu_id LIMIT ? OFFSET ?;";
-    private final String SELECT_LIST_COMPUTERS_SEARCH = "SELECT cu_id, cu_name, cu_introduced, cu_discontinued, cu_ca_id, ca_id, ca_name FROM computer LEFT JOIN company ON cu_ca_id = ca_id WHERE cu_name LIKE ? OR ca_name LIKE ? ORDER BY cu_id LIMIT ? OFFSET ?;";
+    private final String SELECT_LIST_COMPUTERS = "SELECT cu_id, cu_name, cu_introduced, cu_discontinued, cu_ca_id, ca_id, ca_name FROM computer LEFT JOIN company ON cu_ca_id = ca_id ORDER BY %s %s LIMIT ? OFFSET ?;";
+    private final String SELECT_LIST_COMPUTERS_SEARCH = "SELECT cu_id, cu_name, cu_introduced, cu_discontinued, cu_ca_id, ca_id, ca_name FROM computer LEFT JOIN company ON cu_ca_id = ca_id WHERE cu_name LIKE ? OR ca_name LIKE ? ORDER BY %s %s LIMIT ? OFFSET ?;";
     private final String COUNT_COMPUTERS = "SELECT count(cu_id) FROM computer;";
     private final String SELECT_ONE_COMPUTER = "SELECT cu_id, cu_name, cu_introduced, cu_discontinued, cu_ca_id, ca_id, ca_name FROM computer LEFT JOIN company ON cu_ca_id = ca_id WHERE cu_id = ?;";
     private final String CREATE_COMPUTER = "INSERT INTO computer (cu_name, cu_introduced, cu_discontinued, cu_ca_id) VALUES (?, ?, ?, ?)";
@@ -98,13 +98,14 @@ public enum ComputerDAO implements IComputerDAO {
     }
 
     @Override
-    public List<Computer> getListComputers(int pageNumber, int eltNumber)
-            throws DAOException {
+    public List<Computer> getListComputers(int pageNumber, int eltNumber,
+            String orderby) throws DAOException {
         final int offset = pageNumber * eltNumber;
         List<Computer> listComputers = new ArrayList<>();
+        String newRequest = String.format(SELECT_LIST_COMPUTERS, orderby,
+                "ASC");
         try (Connection conn = dbConnection.getConnection();
-                PreparedStatement stat = conn
-                        .prepareStatement(SELECT_LIST_COMPUTERS)) {
+                PreparedStatement stat = conn.prepareStatement(newRequest)) {
             stat.setInt(1, eltNumber);
             stat.setInt(2, offset);
             try (ResultSet rs = stat.executeQuery();) {
@@ -122,12 +123,13 @@ public enum ComputerDAO implements IComputerDAO {
 
     @Override
     public List<Computer> getListComputersSearch(int pageNumber, int eltNumber,
-            String search) throws DAOException {
+            String search, String orderby) throws DAOException {
         final int offset = pageNumber * eltNumber;
         List<Computer> listComputers = new ArrayList<>();
+        String newRequest = String.format(SELECT_LIST_COMPUTERS_SEARCH, orderby,
+                "ASC");
         try (Connection conn = dbConnection.getConnection();
-                PreparedStatement stat = conn
-                        .prepareStatement(SELECT_LIST_COMPUTERS_SEARCH)) {
+                PreparedStatement stat = conn.prepareStatement(newRequest)) {
             String tmpSearch = "%" + search + "%";
             stat.setString(1, tmpSearch);
             stat.setString(2, tmpSearch);
@@ -140,7 +142,8 @@ public enum ComputerDAO implements IComputerDAO {
             }
         } catch (SQLException | IOException e) {
             e.printStackTrace();
-            logger.debug("{} : {}", SELECT_LIST_COMPUTERS, e.getMessage());
+            logger.debug("{} : {}", SELECT_LIST_COMPUTERS_SEARCH,
+                    e.getMessage());
             throw new DAOException("Un problème d'accès à la BDD a eu lieu");
         }
         return listComputers;
