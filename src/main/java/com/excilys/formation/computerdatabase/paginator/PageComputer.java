@@ -19,6 +19,6 @@ public class PageComputer extends Page<Computer> {
     @Override
     protected final void refresh(final int pageNumber) throws ServiceException {
         this.page = computerService.getListComputers(pageNumber,
-                this.tailleMax.getValue(), "cu_id", true);
+                this.tailleMax.getValue(), "cu_id", false);
     }
 }

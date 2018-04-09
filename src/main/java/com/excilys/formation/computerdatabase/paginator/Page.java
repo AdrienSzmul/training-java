@@ -7,7 +7,7 @@ import com.excilys.formation.computerdatabase.service.ServiceException;
 public abstract class Page<T> {
     private static final Integer FIRST_PAGE = 0;
     private Integer pageNumber;
-    protected PageLength tailleMax;
+    protected PageLength tailleMax = PageLength.TWENTY;
     protected List<T> page = null;
 
     protected abstract int maxNumberOfPages() throws ServiceException;
