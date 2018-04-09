@@ -31,4 +31,6 @@ public interface IComputerDAO {
 
     List<Computer> getListComputersSearch(int pageNumber, int eltNumber,
             String search, String orderby) throws DAOException;
+
+    int getCountComputersSearch(String search) throws DAOException;
 }

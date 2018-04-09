@@ -63,6 +63,14 @@ public enum ComputerService {
         }
     }
 
+    public int getCountComputersSearch(String search) throws ServiceException {
+        try {
+            return computerDAO.getCountComputersSearch(search);
+        } catch (DAOException e) {
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
     public Computer showDetails(final Computer c) throws ServiceException {
         try {
             return computerDAO.showDetails(c);

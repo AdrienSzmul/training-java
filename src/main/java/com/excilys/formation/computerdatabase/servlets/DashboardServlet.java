@@ -63,13 +63,10 @@ public class DashboardServlet extends HttpServlet {
         }
         int eltNumber = 20;
         int pageNumber = 0;
+        int nombreRes = 0;
         try {
             eltNumber = Integer.parseInt(request.getParameter("eltNumber"));
             logger.info("Numéro de page : {}", eltNumber);
-        } catch (NumberFormatException e) {
-            logger.error(e.getMessage());
-        }
-        try {
             pageNumber = Integer.parseInt(request.getParameter("pageNumber"));
             logger.info("taillePage : {}", pageNumber);
         } catch (NumberFormatException e) {
@@ -79,6 +76,8 @@ public class DashboardServlet extends HttpServlet {
         try {
             listComputers = ComputerService.INSTANCE.getListComputersSearch(
                     pageNumber, eltNumber, search, orderByEnum);
+            nombreRes = ComputerService.INSTANCE
+                    .getCountComputersSearch(search);
         } catch (ServiceException e) {
             logger.error(e.getMessage());
         }
@@ -87,7 +86,7 @@ public class DashboardServlet extends HttpServlet {
             listComputersDTO.add(ComputerMapperDTO.INSTANCE
                     .createcomputerDTOfromcomputer(computer));
         }
-        int nombreRes = listComputersDTO.size();
+        logger.info("nombreRes = {}", nombreRes);
         int pageMax = nombreRes / eltNumber;
         request.setAttribute("search", search);
         request.setAttribute("pageIndex", pageNumber);

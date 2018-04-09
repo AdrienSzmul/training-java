@@ -31,6 +31,7 @@ public enum ComputerDAO implements IComputerDAO {
     private final String SELECT_LIST_COMPUTERS = "SELECT cu_id, cu_name, cu_introduced, cu_discontinued, cu_ca_id, ca_id, ca_name FROM computer LEFT JOIN company ON cu_ca_id = ca_id ORDER BY %s %s LIMIT ? OFFSET ?;";
     private final String SELECT_LIST_COMPUTERS_SEARCH = "SELECT cu_id, cu_name, cu_introduced, cu_discontinued, cu_ca_id, ca_id, ca_name FROM computer LEFT JOIN company ON cu_ca_id = ca_id WHERE cu_name LIKE ? OR ca_name LIKE ? ORDER BY %s %s LIMIT ? OFFSET ?;";
     private final String COUNT_COMPUTERS = "SELECT count(cu_id) FROM computer;";
+    private final String COUNT_COMPUTERS_SEARCH = "SELECT count(cu_id) FROM computer LEFT JOIN company ON cu_ca_id = ca_id WHERE cu_name LIKE ? OR ca_name LIKE ?";
     private final String SELECT_ONE_COMPUTER = "SELECT cu_id, cu_name, cu_introduced, cu_discontinued, cu_ca_id, ca_id, ca_name FROM computer LEFT JOIN company ON cu_ca_id = ca_id WHERE cu_id = ?;";
     private final String CREATE_COMPUTER = "INSERT INTO computer (cu_name, cu_introduced, cu_discontinued, cu_ca_id) VALUES (?, ?, ?, ?)";
     private final String DELETE_COMPUTER = "DELETE FROM computer WHERE cu_id = ?";
@@ -223,6 +224,27 @@ public enum ComputerDAO implements IComputerDAO {
             throw new DAOException("Un problème d'accès à la BDD a eu lieu");
         }
         return tailleListComputers;
+    }
+
+    @Override
+    public int getCountComputersSearch(String search) throws DAOException {
+        int nbrComputersResult = 0;
+        try (Connection conn = dbConnection.getConnection();
+                PreparedStatement stat = conn
+                        .prepareStatement(COUNT_COMPUTERS_SEARCH)) {
+            String tmpSearch = "%" + search + "%";
+            stat.setString(1, tmpSearch);
+            stat.setString(2, tmpSearch);
+            try (ResultSet rs = stat.executeQuery();) {
+                rs.next();
+                nbrComputersResult = rs.getInt(1);
+            }
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+            logger.debug("{} : {}", COUNT_COMPUTERS_SEARCH, e.getMessage());
+            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
+        }
+        return nbrComputersResult;
     }
 
     public final Logger getLogger() {
