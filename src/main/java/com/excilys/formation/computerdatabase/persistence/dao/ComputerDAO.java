@@ -100,11 +100,15 @@ public enum ComputerDAO implements IComputerDAO {
 
     @Override
     public List<Computer> getListComputers(int pageNumber, int eltNumber,
-            String orderby) throws DAOException {
+            String orderby, boolean ascdesc) throws DAOException {
         final int offset = pageNumber * eltNumber;
         List<Computer> listComputers = new ArrayList<>();
-        String newRequest = String.format(SELECT_LIST_COMPUTERS, orderby,
-                "ASC");
+        String newRequest;
+        if (!ascdesc) {
+            newRequest = String.format(SELECT_LIST_COMPUTERS, orderby, "ASC");
+        } else {
+            newRequest = String.format(SELECT_LIST_COMPUTERS, orderby, "DESC");
+        }
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn.prepareStatement(newRequest)) {
             stat.setInt(1, eltNumber);
@@ -124,11 +128,18 @@ public enum ComputerDAO implements IComputerDAO {
 
     @Override
     public List<Computer> getListComputersSearch(int pageNumber, int eltNumber,
-            String search, String orderby) throws DAOException {
+            String search, String orderby, boolean ascdesc)
+            throws DAOException {
         final int offset = pageNumber * eltNumber;
         List<Computer> listComputers = new ArrayList<>();
-        String newRequest = String.format(SELECT_LIST_COMPUTERS_SEARCH, orderby,
-                "ASC");
+        String newRequest;
+        if (!ascdesc) {
+            newRequest = String.format(SELECT_LIST_COMPUTERS_SEARCH, orderby,
+                    "ASC");
+        } else {
+            newRequest = String.format(SELECT_LIST_COMPUTERS_SEARCH, orderby,
+                    "DESC");
+        }
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn.prepareStatement(newRequest)) {
             String tmpSearch = "%" + search + "%";

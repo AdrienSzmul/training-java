@@ -7,6 +7,8 @@
 <%@ attribute name="computerId" required="false"%>
 <%@ attribute name="search" required="false"%>
 <%@ attribute name="orderby" required="false"%>
+<%@ attribute name="tmpOrderBy" required="false"%>
+<%@ attribute name="ascdesc" required="false"%>
 
 <c:set var="pathDash" value="/cdb/Dashboard" />
 
@@ -19,8 +21,10 @@
 	value="${emptyText.concat('&eltNumber=').concat(eltNumber)}" />
 <c:set var="tmpSearch"
 	value="${emptyText.concat('&search=').concat(search)}" />
-<c:set var="tmpOrderBy"
+<c:set var="tmpPathOrderBy"
 	value="${emptyText.concat('&orderby=').concat(orderby)}" />
+<c:set var="tmpAscDesc"
+	value="${emptyText.concat('&ascdesc=').concat(ascdesc)}" />
 
 <c:choose>
 	<c:when test="${ not empty target }">
@@ -32,23 +36,38 @@
 					<c:set var="tmpPageIndex"
 						value="${ emptyText.concat('?pageNumber=').concat(pageIndex) }" />
 				</c:if>
-
 				<c:if
 					test="${ not empty eltNumber and ''.concat(eltNumber).matches('[0-9]+')}">
 					<c:set var="tmpEltNumber"
 						value="${ emptyText.concat('&eltNumber=').concat(eltNumber) }" />
 				</c:if>
-
 				<c:if
 					test="${ not empty search and ''.concat(search).matches('^[a-zA-Z0-9]*$') }">
 					<c:set var="tmpSearch"
 						value="${emptyText.concat('&search=').concat(search)}" />
 				</c:if>
+				<c:if
+					test="${ not empty orderby and ''.concat(orderby).matches('^[a-zA-Z0-9]*$') }">
+
+					<c:set var="tmpPathOrderBy"
+						value="${emptyText.concat('&orderby=').concat(orderby)}" />
+					<c:choose>
+						<c:when test="${orderby.equals(tmpOrderBy)}">
+							<c:set var="tmpAscDesc"
+								value="${emptyText.concat('&ascdesc=').concat(not ascdesc)}" />
+						</c:when>
+						<c:otherwise>
+							<c:set var="tmpAscDesc"
+								value="${emptyText.concat('&ascdesc=').concat(not ascdesc)}" />
+						</c:otherwise>
+					</c:choose>
+				</c:if>
 
 				<c:set var="tmpPath" value="${ tmpPath.concat(tmpPageIndex) }" />
 				<c:set var="tmpPath" value="${ tmpPath.concat(tmpEltNumber) }" />
 				<c:set var="tmpPath" value="${ tmpPath.concat(tmpSearch) }" />
-				<c:set var="tmpPath" value="${ tmpPath.concat(tmpOrderBy) }" />
+				<c:set var="tmpPath" value="${ tmpPath.concat(tmpPathOrderBy) }" />
+				<c:set var="tmpPath" value="${ tmpPath.concat(tmpAscDesc) }" />
 			</c:when>
 			<c:when test="${target.equals('edit')}">
 				<c:set var="tmpPath" value="${tmpPath.concat('/cdb/EditComputer')}" />

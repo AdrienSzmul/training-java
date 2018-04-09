@@ -56,6 +56,9 @@ public class DashboardServlet extends HttpServlet {
             String search) {
         String orderBy = request.getParameter("orderby");
         String orderByEnum = "cu_id";
+        boolean ascdesc;
+        String ascdescString = request.getParameter("ascdesc");
+        ascdesc = Boolean.valueOf(ascdescString);
         try {
             orderByEnum = ColumnNames.valueOf(orderBy.toUpperCase()).getValue();
         } catch (IllegalArgumentException | NullPointerException e) {
@@ -75,7 +78,7 @@ public class DashboardServlet extends HttpServlet {
         List<Computer> listComputers = null;
         try {
             listComputers = ComputerService.INSTANCE.getListComputersSearch(
-                    pageNumber, eltNumber, search, orderByEnum);
+                    pageNumber, eltNumber, search, orderByEnum, ascdesc);
             nombreRes = ComputerService.INSTANCE
                     .getCountComputersSearch(search);
         } catch (ServiceException e) {
@@ -96,12 +99,16 @@ public class DashboardServlet extends HttpServlet {
         request.setAttribute("listComputers", listComputersDTO);
         request.setAttribute("eltNumberList", PageLength.toIntList());
         request.setAttribute("orderby", orderBy);
+        request.setAttribute("ascdesc", ascdesc);
         return request;
     }
 
     private HttpServletRequest setRequest(HttpServletRequest request) {
         String orderBy = request.getParameter("orderby");
         String orderByEnum = "cu_id";
+        boolean ascdesc;
+        String ascdescString = request.getParameter("ascdesc");
+        ascdesc = Boolean.valueOf(ascdescString);
         try {
             orderByEnum = ColumnNames.valueOf(orderBy.toUpperCase()).getValue();
         } catch (IllegalArgumentException | NullPointerException e) {
@@ -123,8 +130,8 @@ public class DashboardServlet extends HttpServlet {
         }
         List<Computer> listComputers = null;
         try {
-            listComputers = ComputerService.INSTANCE
-                    .getListComputers(pageNumber, eltNumber, orderByEnum);
+            listComputers = ComputerService.INSTANCE.getListComputers(
+                    pageNumber, eltNumber, orderByEnum, ascdesc);
         } catch (ServiceException e) {
             logger.error(e.getMessage());
         }
@@ -152,6 +159,7 @@ public class DashboardServlet extends HttpServlet {
         request.setAttribute("listComputers", listComputersDTO);
         request.setAttribute("eltNumberList", PageLength.toIntList());
         request.setAttribute("orderby", orderBy);
+        request.setAttribute("ascdesc", ascdesc);
         return request;
     }
 

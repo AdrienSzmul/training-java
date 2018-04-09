@@ -66,12 +66,20 @@
 								class="fa fa-trash-o fa-lg"></i>
 						</a>
 					</span></th>
-					<th><a href="<tag:links target="dashboard" orderby="name"/>" onclick="" class="sort-by">Computer name</a></th>
-					<th><a href="<tag:links target="dashboard" orderby="introduced"/>" onclick="" class="sort-by">Introduced date</a></th>
+					<th><a
+						href="<tag:links target="dashboard" orderby="name" tmpOrderBy="${orderby}" ascdesc="${ascdesc}"/>"
+						onclick="" class="sort-by">Computer name</a></th>
+					<th><a
+						href="<tag:links target="dashboard" orderby="introduced" tmpOrderBy="${orderby}"  ascdesc="${ascdesc}"/>"
+						onclick="" class="sort-by">Introduced date</a></th>
 					<!-- Table header for Discontinued Date -->
-					<th><a href="<tag:links target="dashboard" orderby="discontinued"/>" onclick="" class="sort-by">Discontinued date</a></th>
+					<th><a
+						href="<tag:links target="dashboard" orderby="discontinued" tmpOrderBy="${orderby}"  ascdesc="${ascdesc}"/>"
+						onclick="" class="sort-by">Discontinued date</a></th>
 					<!-- Table header for Company -->
-					<th><a href="<tag:links target="dashboard" orderby="company"/>" onclick="" class="sort-by">Company</a></th>
+					<th><a
+						href="<tag:links target="dashboard" orderby="company" tmpOrderBy="${orderby}"  ascdesc="${ascdesc}"/>"
+						onclick="" class="sort-by">Company</a></th>
 
 				</tr>
 			</thead>
@@ -94,14 +102,12 @@
 	</div>
 	</section>
 
-	<footer class="navbar-fixed-bottom"> 
-	<tag:eltNumber /> 
-	<tag:pageNumber />
+	<footer class="navbar-fixed-bottom"> <tag:eltNumber /> <tag:pageNumber />
 
 	</footer>
 	<script src="static/js/jquery.min.js"></script>
 	<script src="static/js/bootstrap.min.js"></script>
 	<script src="static/js/dashboard.js"></script>
-	
+
 </body>
 </html>
