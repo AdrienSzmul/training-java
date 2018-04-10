@@ -81,6 +81,14 @@ public enum ComputerService {
         }
     }
 
+    public Computer getComputerById(final Long id) throws ServiceException {
+        try {
+            return computerDAO.getComputerById(id);
+        } catch (DAOException e) {
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
     public void updateComputer(final Computer c)
             throws ValidationException, ServiceException {
         if (c.getId() != null) {

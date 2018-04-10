@@ -19,4 +19,8 @@ public interface ICompanyDAO {
     abstract int getPageCountCompanies(int eltNumber) throws DAOException;
 
     Company getCompanyById(Long id) throws DAOException;
+
+    int getCountCompanies() throws DAOException;
+
+    void deleteCompany(Company company) throws DAOException;
 }

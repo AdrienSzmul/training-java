@@ -37,7 +37,29 @@ public enum CompanyService {
         return nbrPageCompany;
     }
 
-    public Company getCompanyById(Long id) throws DAOException {
-        return companyDAO.getCompanyById(id);
+    public int getCountCompanies() throws ServiceException {
+        int nombreRes = 0;
+        try {
+            nombreRes = companyDAO.getCountCompanies();
+        } catch (DAOException e) {
+            throw new ServiceException(e.getMessage());
+        }
+        return nombreRes;
+    }
+
+    public Company getCompanyById(Long id) throws ServiceException {
+        try {
+            return companyDAO.getCompanyById(id);
+        } catch (DAOException e) {
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    public void deleteCompany(Company company) throws ServiceException {
+        try {
+            companyDAO.deleteCompany(company);
+        } catch (DAOException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 }

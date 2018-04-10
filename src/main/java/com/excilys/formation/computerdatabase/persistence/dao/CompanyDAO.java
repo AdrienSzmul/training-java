@@ -29,9 +29,11 @@ public enum CompanyDAO implements ICompanyDAO {
     private final Logger logger = LoggerFactory.getLogger(CompanyDAO.class);
     private final DBConnection dbConnection = DBConnection.INSTANCE;
     private final CompanyMapper companyMapper = CompanyMapper.INSTANCE;
-    private final String selectListCompanies = "SELECT ca_id, ca_name FROM company ORDER BY ca_id LIMIT ? OFFSET ?;";
-    private final String countCompanies = "SELECT count(ca_id) FROM company;";
-    private final String selectOneCompany = "SELECT ca_id, ca_name FROM company WHERE ca_id = ?;";
+    private final ComputerDAO computerDAO = ComputerDAO.INSTANCE;
+    private final String SELECT_LIST_COMPANIES = "SELECT ca_id, ca_name FROM company ORDER BY ca_id LIMIT ? OFFSET ?;";
+    private final String COUNT_COMPANIES = "SELECT count(ca_id) FROM company;";
+    private final String SELECT_ONE_COMPANY = "SELECT ca_id, ca_name FROM company WHERE ca_id = ?;";
+    private final String DELETE_ONE_COMPANY = "DELETE FROM company WHERE ca_id = ?";
 
     @Override
     public List<Company> getListCompanies(final int pageNumber,
@@ -40,7 +42,7 @@ public enum CompanyDAO implements ICompanyDAO {
         final List<Company> listCompanies = new ArrayList<>();
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
-                        .prepareStatement(selectListCompanies)) {
+                        .prepareStatement(SELECT_LIST_COMPANIES)) {
             stat.setInt(1, taille);
             stat.setInt(2, pageNumber * taille);
             try (ResultSet rs = stat.executeQuery()) {
@@ -50,7 +52,7 @@ public enum CompanyDAO implements ICompanyDAO {
             }
         } catch (SQLException | IOException e) {
             e.printStackTrace();
-            logger.debug("{} : {}", selectListCompanies, e.getMessage());
+            logger.debug("{} : {}", SELECT_LIST_COMPANIES, e.getMessage());
             throw new DAOException("Un problème d'accès à la BDD a eu lieu");
         }
         return listCompanies;
@@ -58,20 +60,37 @@ public enum CompanyDAO implements ICompanyDAO {
 
     @Override
     public int getPageCountCompanies(final int taille) throws DAOException {
-        logger.info("count Companies");
+        logger.info("count Company Pages");
         int pageNumber = 0;
         try (Connection conn = dbConnection.getConnection();
-                PreparedStatement stat = conn.prepareStatement(countCompanies);
+                PreparedStatement stat = conn.prepareStatement(COUNT_COMPANIES);
                 ResultSet rs = stat.executeQuery()) {
             rs.next();
             final int tailleListCompanies = rs.getInt(1);
             pageNumber = tailleListCompanies / taille;
         } catch (SQLException | IOException e) {
             e.printStackTrace();
-            logger.debug("{} : {}", countCompanies, e.getMessage());
+            logger.debug("{} : {}", COUNT_COMPANIES, e.getMessage());
             throw new DAOException("Un problème d'accès à la BDD a eu lieu");
         }
         return pageNumber;
+    }
+
+    @Override
+    public int getCountCompanies() throws DAOException {
+        logger.info("count Companies");
+        int nombreRes = 0;
+        try (Connection conn = dbConnection.getConnection();
+                PreparedStatement stat = conn.prepareStatement(COUNT_COMPANIES);
+                ResultSet rs = stat.executeQuery()) {
+            rs.next();
+            nombreRes = rs.getInt(1);
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+            logger.debug("{} : {}", COUNT_COMPANIES, e.getMessage());
+            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
+        }
+        return nombreRes;
     }
 
     @Override
@@ -80,7 +99,7 @@ public enum CompanyDAO implements ICompanyDAO {
         logger.info("show Details Company");
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
-                        .prepareStatement(selectOneCompany)) {
+                        .prepareStatement(SELECT_ONE_COMPANY)) {
             stat.setLong(1, c.getId());
             try (ResultSet rs = stat.executeQuery()) {
                 if (rs.next()) {
@@ -89,7 +108,7 @@ public enum CompanyDAO implements ICompanyDAO {
             }
         } catch (SQLException | IOException e) {
             e.printStackTrace();
-            logger.debug("{} : {}", selectOneCompany, e.getMessage());
+            logger.debug("{} : {}", SELECT_ONE_COMPANY, e.getMessage());
             throw new DAOException("Un problème d'accès à la BDD a eu lieu");
         }
         return c;
@@ -101,7 +120,7 @@ public enum CompanyDAO implements ICompanyDAO {
         Company company = null;
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn
-                        .prepareStatement(selectOneCompany)) {
+                        .prepareStatement(SELECT_ONE_COMPANY)) {
             stat.setLong(1, id);
             try (ResultSet rs = stat.executeQuery()) {
                 if (rs.next()) {
@@ -110,7 +129,7 @@ public enum CompanyDAO implements ICompanyDAO {
             }
         } catch (SQLException | IOException e) {
             e.printStackTrace();
-            logger.debug("{} : {}", selectOneCompany, e.getMessage());
+            logger.debug("{} : {}", SELECT_ONE_COMPANY, e.getMessage());
             throw new DAOException("Un problème d'accès à la BDD a eu lieu");
         }
         return company;
@@ -118,5 +137,25 @@ public enum CompanyDAO implements ICompanyDAO {
 
     public final Logger getLogger() {
         return logger;
+    }
+
+    @Override
+    public void deleteCompany(Company company) throws DAOException {
+        logger.info("company deletion");
+        try (Connection conn = dbConnection.getConnection()) {
+            conn.setAutoCommit(false);
+            try (PreparedStatement stat = conn
+                    .prepareStatement(DELETE_ONE_COMPANY)) {
+                stat.setLong(1, company.getId());
+                computerDAO.deleteMultipleComputersFromCompany(company, conn);
+                stat.executeUpdate();
+            } catch (SQLException e) {
+                conn.rollback();
+                throw new DAOException("Company delete went wrong");
+            }
+            conn.commit();
+        } catch (SQLException | IOException e) {
+            logger.debug("{} : {}", DELETE_ONE_COMPANY, e.getMessage());
+        }
     }
 }

@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.excilys.formation.computerdatabase.mapper.ComputerMapper;
+import com.excilys.formation.computerdatabase.model.Company;
 import com.excilys.formation.computerdatabase.model.Computer;
 import com.excilys.formation.computerdatabase.persistence.DBConnection;
 
@@ -35,6 +36,7 @@ public enum ComputerDAO implements IComputerDAO {
     private final String SELECT_ONE_COMPUTER = "SELECT cu_id, cu_name, cu_introduced, cu_discontinued, cu_ca_id, ca_id, ca_name FROM computer LEFT JOIN company ON cu_ca_id = ca_id WHERE cu_id = ?;";
     private final String CREATE_COMPUTER = "INSERT INTO computer (cu_name, cu_introduced, cu_discontinued, cu_ca_id) VALUES (?, ?, ?, ?)";
     private final String DELETE_COMPUTER = "DELETE FROM computer WHERE cu_id = ?";
+    private final String DELETE_COMPUTERS_COMPANY = "DELETE FROM computer WHERE cu_ca_id = ?";
     private final String UPDATE_COMPUTER = "UPDATE computer SET cu_name = ?, cu_introduced = ?, cu_discontinued = ?, cu_ca_id = ? WHERE cu_id = ?";
 
     @Override
@@ -95,6 +97,20 @@ public enum ComputerDAO implements IComputerDAO {
             conn.commit();
         } catch (SQLException | IOException e) {
             logger.debug("{} : {}", DELETE_COMPUTER, e.getMessage());
+        }
+    }
+
+    protected void deleteMultipleComputersFromCompany(Company company,
+            Connection conn) throws DAOException, SQLException {
+        logger.info("delete computers with company id");
+        try (PreparedStatement stat = conn
+                .prepareStatement(DELETE_COMPUTERS_COMPANY)) {
+            stat.setLong(1, company.getId());
+            stat.executeUpdate();
+        } catch (SQLException e) {
+            conn.rollback();
+            throw new DAOException(
+                    "Multi-delete of computers with company id went wrong");
         }
     }
 
@@ -162,6 +178,7 @@ public enum ComputerDAO implements IComputerDAO {
     }
 
     @Override
+    // deprecative
     public Computer showDetails(final Computer c) throws DAOException {
         logger.info("show Details Computer");
         Computer newComputer = null;
@@ -183,6 +200,27 @@ public enum ComputerDAO implements IComputerDAO {
     }
 
     @Override
+    public Computer getComputerById(Long id) throws DAOException {
+        logger.info("get one Computer");
+        Computer computer = null;
+        try (Connection conn = dbConnection.getConnection();
+                PreparedStatement stat = conn
+                        .prepareStatement(SELECT_ONE_COMPUTER)) {
+            stat.setLong(1, id);
+            try (ResultSet rs = stat.executeQuery()) {
+                if (rs.next()) {
+                    computer = computerMapper.createComputer(rs);
+                }
+            }
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+            logger.debug("{} : {}", SELECT_ONE_COMPUTER, e.getMessage());
+            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
+        }
+        return computer;
+    }
+
+    @Override
     public void updateComputer(final Computer c) throws DAOException {
         logger.info("update Computer");
         try (Connection conn = dbConnection.getConnection();
@@ -200,7 +238,7 @@ public enum ComputerDAO implements IComputerDAO {
 
     @Override
     public int getPageCountComputers(final int eltNumber) throws DAOException {
-        logger.info("count Computers");
+        logger.info("count Computer Pages with size");
         int pageNumber = 0;
         try (Connection conn = dbConnection.getConnection();
                 PreparedStatement stat = conn

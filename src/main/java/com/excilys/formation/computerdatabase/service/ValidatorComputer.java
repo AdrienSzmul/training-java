@@ -4,7 +4,6 @@
 package com.excilys.formation.computerdatabase.service;
 
 import com.excilys.formation.computerdatabase.model.Computer;
-import com.excilys.formation.computerdatabase.persistence.dao.DAOException;
 
 /**
  * @author excilys
@@ -31,7 +30,7 @@ public enum ValidatorComputer {
                     throw new MissingCompanyException(
                             "L'id de company que vous avez donné n'existe pas !");
                 }
-            } catch (DAOException e) {
+            } catch (ServiceException e) {
                 throw new ValidationException(e.getMessage());
             }
         }

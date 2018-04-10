@@ -16,6 +16,7 @@ import com.excilys.formation.computerdatabase.paginator.Page;
 import com.excilys.formation.computerdatabase.paginator.PageCompany;
 import com.excilys.formation.computerdatabase.paginator.PageComputer;
 import com.excilys.formation.computerdatabase.paginator.PageLength;
+import com.excilys.formation.computerdatabase.service.CompanyService;
 import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.DateMismatchException;
 import com.excilys.formation.computerdatabase.service.MissingCompanyException;
@@ -30,6 +31,7 @@ public class CommandLineInterface {
     private String res;
     private final BufferedReader br;
     private final ComputerService computerService = ComputerService.INSTANCE;
+    private final CompanyService companyService = CompanyService.INSTANCE;
     private static final int TAILLE_MAX = PageLength.TWENTY.getValue();
     private boolean gettingOutOfCDB = true;
 
@@ -48,7 +50,8 @@ public class CommandLineInterface {
                 .append("4) Ajouter un ordinateur\n")
                 .append("5) Mettre à jour un ordinateur\n")
                 .append("6) Supprimer un ordinateur\n")
-                .append("7) Quitter Computer DataBase\n").toString();
+                .append("7) SUpprimer une compagnie\n")
+                .append("8) Quitter Computer DataBase\n").toString();
         return res;
     }
 
@@ -84,6 +87,9 @@ public class CommandLineInterface {
                 case DELETE_EXISTING_COMPUTER:
                     delComputer();
                     break;
+                case DELETE_EXISTING_COMPANY:
+                    delCompany();
+                    break;
                 case QUIT:
                     System.out.println(
                             "ComputerDataBase est en train de fermer...");
@@ -98,6 +104,31 @@ public class CommandLineInterface {
         }
     }
 
+    private void delCompany() {
+        System.out.println("Donnez l'id de la compagnie \n");
+        final String s = getLineInString();
+        if (s != null) {
+            final Long id = Long.parseLong(s);
+            int nombreResCompanies = 0;
+            try {
+                nombreResCompanies = companyService.getCountCompanies();
+            } catch (ServiceException e) {
+                System.out.println(e.getMessage());
+            }
+            if (id < nombreResCompanies + 1) {
+                try {
+                    Company company = companyService.getCompanyById(id);
+                    companyService.deleteCompany(company);
+                } catch (ServiceException e) {
+                    System.out.println(e.getMessage());
+                }
+            } else {
+                System.out.println(
+                        "L'id que vous avez donné ne correspond à rien\n");
+            }
+        }
+    }
+
     private void delComputer() {
         System.out.println("Donnez l'id du PC \n");
         final String s = getLineInString();
@@ -105,18 +136,14 @@ public class CommandLineInterface {
             final Long id = Long.parseLong(s);
             int nombreResComputers = 0;
             try {
-                nombreResComputers = computerService
-                        .getPageCountComputers(TAILLE_MAX);
+                nombreResComputers = computerService.getCountComputers();
             } catch (ServiceException e) {
                 System.out.println(e.getMessage());
             }
             if (id < nombreResComputers + 1) {
-                final ComputerBuilder builderDetailsComputer = new Computer.ComputerBuilder()
-                        .withId(id);
-                final Computer computerToService = builderDetailsComputer
-                        .build();
                 try {
-                    computerService.deleteComputer(computerToService);
+                    Computer computer = computerService.getComputerById(id);
+                    computerService.deleteComputer(computer);
                 } catch (ServiceException e) {
                     System.out.println(e.getMessage());
                 }
@@ -140,12 +167,9 @@ public class CommandLineInterface {
                 System.out.println(e.getMessage());
             }
             if (id < nombreResComputers + 1) {
-                final ComputerBuilder builderDetailsComputer = getComputerInfosFromUser();
-                builderDetailsComputer.withId(id);
-                final Computer computerToService = builderDetailsComputer
-                        .build();
                 try {
-                    computerService.updateComputer(computerToService);
+                    Computer computer = computerService.getComputerById(id);
+                    computerService.updateComputer(computer);
                 } catch (ValidationException | ServiceException e) {
                     System.out.println(e.getMessage());
                 }
@@ -202,18 +226,13 @@ public class CommandLineInterface {
                 System.out.println(e.getMessage());
             }
             if (id < nombreResComputers + 1) {
-                final ComputerBuilder builderDetailsComputer = new Computer.ComputerBuilder()
-                        .withId(id);
-                final Computer computerToService = builderDetailsComputer
-                        .build();
-                Computer computerFromService = null;
+                Computer computer = null;
                 try {
-                    computerFromService = computerService
-                            .showDetails(computerToService);
+                    computer = computerService.getComputerById(id);
                 } catch (ServiceException e) {
                     System.out.println(e.getMessage());
                 }
-                System.out.println(computerFromService.toString());
+                System.out.println(computer.toString());
             } else {
                 System.out.println(
                         "L'id que vous avez donné ne correspond à rien\n");

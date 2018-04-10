@@ -33,4 +33,6 @@ public interface IComputerDAO {
             String search, String orderby, boolean ascdesc) throws DAOException;
 
     int getCountComputersSearch(String search) throws DAOException;
+
+    Computer getComputerById(Long id) throws DAOException;
 }
