@@ -12,6 +12,5 @@ public class NullNameException extends ValidationException {
      */
     public NullNameException(final String message) {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 }

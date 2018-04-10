@@ -8,6 +8,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.excilys.formation.computerdatabase.model.Company;
 import com.excilys.formation.computerdatabase.model.Company.CompanyBuilder;
 import com.excilys.formation.computerdatabase.model.Computer;
@@ -34,6 +38,8 @@ public class CommandLineInterface {
     private final CompanyService companyService = CompanyService.INSTANCE;
     private static final int TAILLE_MAX = PageLength.TWENTY.getValue();
     private boolean gettingOutOfCDB = true;
+    private final Logger logger = LoggerFactory
+            .getLogger(CommandLineInterface.class);
 
     public CommandLineInterface() {
         br = new BufferedReader(new InputStreamReader(System.in));
@@ -66,7 +72,7 @@ public class CommandLineInterface {
             DateMismatchException, MissingCompanyException {
         System.out.println(menuCLI());
         final String valeurEntree = getLineInString();
-        if (!valeurEntree.isEmpty()) {
+        if (!StringUtils.isBlank(valeurEntree)) {
             final int s = Integer.parseInt(valeurEntree) - 1;
             switch (MenuChoice.values()[s]) {
                 case SELECT_LIST_COMPUTERS:
@@ -107,7 +113,7 @@ public class CommandLineInterface {
     private void delCompany() {
         System.out.println("Donnez l'id de la compagnie \n");
         final String s = getLineInString();
-        if (s != null) {
+        if (!StringUtils.isBlank(s)) {
             final Long id = Long.parseLong(s);
             int nombreResCompanies = 0;
             try {
@@ -232,7 +238,9 @@ public class CommandLineInterface {
                 } catch (ServiceException e) {
                     System.out.println(e.getMessage());
                 }
-                System.out.println(computer.toString());
+                if (!StringUtils.isBlank(computer.toString())) {
+                    System.out.println(computer.toString());
+                }
             } else {
                 System.out.println(
                         "L'id que vous avez donné ne correspond à rien\n");
@@ -242,7 +250,7 @@ public class CommandLineInterface {
 
     private <T extends Page<?>> void readPage(final T page) {
         String choice = "f";
-        while (!choice.equals("q")) {
+        while (!StringUtils.isBlank(choice) && !choice.equals("q")) {
             switch (choice) {
                 case "s":
                     try {
@@ -291,12 +299,11 @@ public class CommandLineInterface {
     }
 
     private String getLineInString() {
-        String s = null;
+        String s = "";
         try {
             s = br.readLine();
         } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug(e.getMessage());
         }
         return s;
     }

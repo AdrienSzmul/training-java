@@ -19,8 +19,17 @@ public interface IComputerDAO {
 
     abstract Computer showDetails(Computer c) throws DAOException;
 
-    abstract List<Computer> getListComputers(int pageNumber, int eltNumber,
+    abstract List<Computer> getListComputers(int pageNumber, int eltNumber)
+            throws DAOException;
+
+    List<Computer> getListComputersSearch(int pageNumber, int eltNumber,
+            String search) throws DAOException;
+
+    List<Computer> getListComputersSorted(int pageNumber, int eltNumber,
             String orderby, boolean ascdesc) throws DAOException;
+
+    List<Computer> getListComputersSearchSorted(int pageNumber, int eltNumber,
+            String search, String orderby, boolean ascdesc) throws DAOException;
 
     int getPageCountComputers(int eltNumber) throws DAOException;
 
@@ -29,10 +38,10 @@ public interface IComputerDAO {
     void deleteMultipleComputers(List<Long> listComputerIds)
             throws DAOException;
 
-    List<Computer> getListComputersSearch(int pageNumber, int eltNumber,
-            String search, String orderby, boolean ascdesc) throws DAOException;
-
     int getCountComputersSearch(String search) throws DAOException;
 
     Computer getComputerById(Long id) throws DAOException;
+
+    int getPageCountComputersSearch(int eltNumber, String search)
+            throws DAOException;
 }

@@ -88,7 +88,7 @@ public class AddComputerServlet extends HttpServlet {
         ComputerDTO computerDTO = new ComputerDTO();
         if (!StringUtils.isBlank(companyIdStr)) {
             CompanyDTO companyDTO = new CompanyDTO();
-            int companyId = Integer.valueOf(companyIdStr);
+            int companyId = Integer.parseInt(companyIdStr);
             companyDTO.setId(companyId);
             computerDTO.setCompany(companyDTO);
         }
@@ -97,7 +97,6 @@ public class AddComputerServlet extends HttpServlet {
         computerDTO.setName(computerName);
         Computer computer = ComputerMapperDTO.INSTANCE
                 .createcomputerfromcomputerDTO(computerDTO);
-        System.out.println(computer.getCompany());
         try {
             ComputerService.INSTANCE.createComputer(computer);
         } catch (ValidationException e) {

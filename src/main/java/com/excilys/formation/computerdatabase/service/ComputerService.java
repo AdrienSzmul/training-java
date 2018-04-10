@@ -27,22 +27,41 @@ public enum ComputerService {
         }
     }
 
-    public List<Computer> getListComputers(int pageNumber, int eltNumber,
+    public List<Computer> getListComputers(int pageNumber, int eltNumber)
+            throws ServiceException {
+        try {
+            return computerDAO.getListComputers(pageNumber, eltNumber);
+        } catch (DAOException e) {
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    public List<Computer> getListComputersSorted(int pageNumber, int eltNumber,
             String orderby, boolean ascdesc) throws ServiceException {
         try {
-            return computerDAO.getListComputers(pageNumber, eltNumber, orderby,
-                    ascdesc);
+            return computerDAO.getListComputersSorted(pageNumber, eltNumber,
+                    orderby, ascdesc);
         } catch (DAOException e) {
             throw new ServiceException(e.getMessage());
         }
     }
 
     public List<Computer> getListComputersSearch(int pageNumber, int eltNumber,
-            String search, String orderby, boolean ascdesc)
-            throws ServiceException {
+            String search) throws ServiceException {
         try {
             return computerDAO.getListComputersSearch(pageNumber, eltNumber,
-                    search, orderby, ascdesc);
+                    search);
+        } catch (DAOException e) {
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    public List<Computer> getListComputersSearchSorted(int pageNumber,
+            int eltNumber, String search, String orderby, boolean ascdesc)
+            throws ServiceException {
+        try {
+            return computerDAO.getListComputersSearchSorted(pageNumber,
+                    eltNumber, search, orderby, ascdesc);
         } catch (DAOException e) {
             throw new ServiceException(e.getMessage());
         }
@@ -52,6 +71,15 @@ public enum ComputerService {
             throws ServiceException {
         try {
             return computerDAO.getPageCountComputers(eltNumber);
+        } catch (DAOException e) {
+            throw new ServiceException(e.getMessage());
+        }
+    }
+
+    public int getPageCountComputersSearch(final int eltNumber, String search)
+            throws ServiceException {
+        try {
+            return computerDAO.getPageCountComputersSearch(eltNumber, search);
         } catch (DAOException e) {
             throw new ServiceException(e.getMessage());
         }

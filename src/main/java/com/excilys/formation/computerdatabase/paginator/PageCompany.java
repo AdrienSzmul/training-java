@@ -11,7 +11,7 @@ import com.excilys.formation.computerdatabase.service.ServiceException;
  * @author excilys
  */
 public class PageCompany extends Page<Company> {
-    private final CompanyService companyService = CompanyService.INSTANCE;
+    private static final CompanyService companyService = CompanyService.INSTANCE;
 
     public PageCompany() {
         super();
@@ -24,7 +24,7 @@ public class PageCompany extends Page<Company> {
 
     @Override
     protected final void refresh(final int pageNumber) throws ServiceException {
-        this.page = companyService.getListCompanies(pageNumber,
+        this.pageActive = companyService.getListCompanies(pageNumber,
                 this.tailleMax.getValue());
     }
 }

@@ -17,11 +17,10 @@ public enum ValidatorComputer {
             throw new NullNameException(
                     "Le nom de votre PC ne peut être nul !");
         }
-        if (c.getDiscontinued() != null && c.getIntroduced() != null) {
-            if (c.getDiscontinued().isBefore(c.getIntroduced())) {
-                throw new DateMismatchException(
-                        "La date discontinued ne peut être avant ou égal à la date introduced");
-            }
+        if (c.getDiscontinued() != null && c.getIntroduced() != null
+                && c.getDiscontinued().isBefore(c.getIntroduced())) {
+            throw new DateMismatchException(
+                    "La date discontinued ne peut être avant ou égal à la date introduced");
         }
         if (c.getCompany() != null) {
             try {

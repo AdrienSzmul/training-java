@@ -8,6 +8,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.zaxxer.hikari.HikariDataSource;
 
 /**
@@ -25,15 +28,15 @@ public enum DBConnection {
     private static final String PROPERTY_DRIVER = "driver";
     private static final String PROPERTY_NOM_UTILISATEUR = "utilisateur";
     private static final String PROPERTY_PASSWORD = "password";
+    private Logger logger = LoggerFactory.getLogger(DBConnection.class);
 
     DBConnection() {
         final Properties properties = new Properties();
         try {
             properties.load(getClass().getClassLoader()
                     .getResourceAsStream(PROPERTIES_FILE));
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+        } catch (IOException e) {
+            logger.error(e.getMessage());
         }
         final String url = properties.getProperty(PROPERTY_URL);
         final String utilisateur = properties
@@ -47,12 +50,11 @@ public enum DBConnection {
         try {
             Class.forName(driver);
         } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
-    public Connection getConnection() throws SQLException, IOException {
+    public Connection getConnection() throws SQLException {
         /* Chargement du driver JDBC pour MySQL */
         conn = hikariDS.getConnection();
         return conn;

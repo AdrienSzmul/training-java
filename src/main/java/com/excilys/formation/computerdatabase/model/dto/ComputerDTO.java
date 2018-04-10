@@ -8,7 +8,6 @@ public class ComputerDTO {
     private CompanyDTO company;
 
     public ComputerDTO() {
-        // TODO Auto-generated constructor stub
     }
 
     public final int getId() {

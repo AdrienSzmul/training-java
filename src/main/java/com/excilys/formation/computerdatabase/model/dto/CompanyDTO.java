@@ -5,7 +5,6 @@ public class CompanyDTO {
     private String name;
 
     public CompanyDTO() {
-        // TODO Auto-generated constructor stub
     }
 
     public final int getId() {

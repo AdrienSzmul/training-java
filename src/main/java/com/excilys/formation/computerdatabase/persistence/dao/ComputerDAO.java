@@ -3,7 +3,6 @@
  */
 package com.excilys.formation.computerdatabase.persistence.dao;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -38,6 +37,8 @@ public enum ComputerDAO implements IComputerDAO {
     private final String DELETE_COMPUTER = "DELETE FROM computer WHERE cu_id = ?";
     private final String DELETE_COMPUTERS_COMPANY = "DELETE FROM computer WHERE cu_ca_id = ?";
     private final String UPDATE_COMPUTER = "UPDATE computer SET cu_name = ?, cu_introduced = ?, cu_discontinued = ?, cu_ca_id = ? WHERE cu_id = ?";
+    private final String DEBUG_STRING = "%s : %s";
+    private final String EXCEPTION_DAO = "Un problème d'accès à la BDD a eu lieu";
 
     @Override
     public Long createComputer(final Computer c) throws DAOException {
@@ -54,10 +55,10 @@ public enum ComputerDAO implements IComputerDAO {
                 }
             }
             logger.debug("{}", createdId);
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-            logger.debug("{} : {}", CREATE_COMPUTER, e.getMessage());
-            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
+        } catch (SQLException e) {
+            logger.debug(String.format(DEBUG_STRING, CREATE_COMPUTER,
+                    e.getMessage()));
+            throw new DAOException(EXCEPTION_DAO);
         }
         return createdId;
     }
@@ -70,10 +71,10 @@ public enum ComputerDAO implements IComputerDAO {
                         .prepareStatement(DELETE_COMPUTER)) {
             stat.setLong(1, c.getId());
             stat.executeUpdate();
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-            logger.debug("{} : {}", DELETE_COMPUTER, e.getMessage());
-            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
+        } catch (SQLException e) {
+            logger.debug(String.format(DEBUG_STRING, DELETE_COMPUTER,
+                    e.getMessage()));
+            throw new DAOException(EXCEPTION_DAO);
         }
     }
 
@@ -95,8 +96,9 @@ public enum ComputerDAO implements IComputerDAO {
                 }
             }
             conn.commit();
-        } catch (SQLException | IOException e) {
-            logger.debug("{} : {}", DELETE_COMPUTER, e.getMessage());
+        } catch (SQLException e) {
+            logger.debug(String.format(DEBUG_STRING, DELETE_COMPUTER,
+                    e.getMessage()));
         }
     }
 
@@ -115,7 +117,7 @@ public enum ComputerDAO implements IComputerDAO {
     }
 
     @Override
-    public List<Computer> getListComputers(int pageNumber, int eltNumber,
+    public List<Computer> getListComputersSorted(int pageNumber, int eltNumber,
             String orderby, boolean ascdesc) throws DAOException {
         final int offset = pageNumber * eltNumber;
         List<Computer> listComputers = new ArrayList<>();
@@ -134,17 +136,17 @@ public enum ComputerDAO implements IComputerDAO {
                     listComputers.add(computerMapper.createComputer(rs));
                 }
             }
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-            logger.debug("{} : {}", SELECT_LIST_COMPUTERS, e.getMessage());
-            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
+        } catch (SQLException e) {
+            logger.debug(String.format(DEBUG_STRING, SELECT_LIST_COMPUTERS,
+                    e.getMessage()));
+            throw new DAOException(EXCEPTION_DAO);
         }
         return listComputers;
     }
 
     @Override
-    public List<Computer> getListComputersSearch(int pageNumber, int eltNumber,
-            String search, String orderby, boolean ascdesc)
+    public List<Computer> getListComputersSearchSorted(int pageNumber,
+            int eltNumber, String search, String orderby, boolean ascdesc)
             throws DAOException {
         final int offset = pageNumber * eltNumber;
         List<Computer> listComputers = new ArrayList<>();
@@ -168,11 +170,59 @@ public enum ComputerDAO implements IComputerDAO {
                     listComputers.add(computerMapper.createComputer(rs));
                 }
             }
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-            logger.debug("{} : {}", SELECT_LIST_COMPUTERS_SEARCH,
-                    e.getMessage());
-            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
+        } catch (SQLException e) {
+            logger.debug(String.format(DEBUG_STRING,
+                    SELECT_LIST_COMPUTERS_SEARCH, e.getMessage()));
+            throw new DAOException(EXCEPTION_DAO);
+        }
+        return listComputers;
+    }
+
+    @Override
+    public List<Computer> getListComputers(int pageNumber, int eltNumber)
+            throws DAOException {
+        final int offset = pageNumber * eltNumber;
+        List<Computer> listComputers = new ArrayList<>();
+        try (Connection conn = dbConnection.getConnection();
+                PreparedStatement stat = conn
+                        .prepareStatement(SELECT_LIST_COMPUTERS)) {
+            stat.setInt(1, eltNumber);
+            stat.setInt(2, offset);
+            try (ResultSet rs = stat.executeQuery();) {
+                while (rs.next()) {
+                    listComputers.add(computerMapper.createComputer(rs));
+                }
+            }
+        } catch (SQLException e) {
+            logger.debug(String.format(DEBUG_STRING, SELECT_LIST_COMPUTERS,
+                    e.getMessage()));
+            throw new DAOException(EXCEPTION_DAO);
+        }
+        return listComputers;
+    }
+
+    @Override
+    public List<Computer> getListComputersSearch(int pageNumber, int eltNumber,
+            String search) throws DAOException {
+        final int offset = pageNumber * eltNumber;
+        List<Computer> listComputers = new ArrayList<>();
+        try (Connection conn = dbConnection.getConnection();
+                PreparedStatement stat = conn
+                        .prepareStatement(SELECT_LIST_COMPUTERS_SEARCH)) {
+            String tmpSearch = "%" + search + "%";
+            stat.setString(1, tmpSearch);
+            stat.setString(2, tmpSearch);
+            stat.setInt(3, eltNumber);
+            stat.setInt(4, offset);
+            try (ResultSet rs = stat.executeQuery();) {
+                while (rs.next()) {
+                    listComputers.add(computerMapper.createComputer(rs));
+                }
+            }
+        } catch (SQLException e) {
+            logger.debug(String.format(DEBUG_STRING,
+                    SELECT_LIST_COMPUTERS_SEARCH, e.getMessage()));
+            throw new DAOException(EXCEPTION_DAO);
         }
         return listComputers;
     }
@@ -191,10 +241,10 @@ public enum ComputerDAO implements IComputerDAO {
                     newComputer = computerMapper.createComputer(rs);
                 }
             }
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-            logger.debug("{} : {}", SELECT_ONE_COMPUTER, e.getMessage());
-            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
+        } catch (SQLException e) {
+            logger.debug(String.format(DEBUG_STRING, SELECT_ONE_COMPUTER,
+                    e.getMessage()));
+            throw new DAOException(EXCEPTION_DAO);
         }
         return newComputer;
     }
@@ -212,10 +262,10 @@ public enum ComputerDAO implements IComputerDAO {
                     computer = computerMapper.createComputer(rs);
                 }
             }
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-            logger.debug("{} : {}", SELECT_ONE_COMPUTER, e.getMessage());
-            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
+        } catch (SQLException e) {
+            logger.debug(String.format(DEBUG_STRING, SELECT_ONE_COMPUTER,
+                    e.getMessage()));
+            throw new DAOException(EXCEPTION_DAO);
         }
         return computer;
     }
@@ -229,31 +279,26 @@ public enum ComputerDAO implements IComputerDAO {
             setStatementsSQL(c, stat);
             stat.setLong(5, c.getId());
             stat.executeUpdate();
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-            logger.debug("{} : {}", UPDATE_COMPUTER, e.getMessage());
-            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
+        } catch (SQLException e) {
+            logger.debug(String.format(DEBUG_STRING, UPDATE_COMPUTER,
+                    e.getMessage()));
+            throw new DAOException(EXCEPTION_DAO);
         }
     }
 
     @Override
     public int getPageCountComputers(final int eltNumber) throws DAOException {
         logger.info("count Computer Pages with size");
-        int pageNumber = 0;
-        try (Connection conn = dbConnection.getConnection();
-                PreparedStatement stat = conn
-                        .prepareStatement(COUNT_COMPUTERS)) {
-            try (ResultSet rs = stat.executeQuery()) {
-                rs.next();
-                final int tailleListComputers = rs.getInt(1);
-                pageNumber = tailleListComputers / eltNumber;
-            }
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-            logger.debug("{} : {}", COUNT_COMPUTERS, e.getMessage());
-            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
-        }
-        return pageNumber;
+        int compNumber = getCountComputers();
+        return compNumber / eltNumber;
+    }
+
+    @Override
+    public int getPageCountComputersSearch(final int eltNumber, String search)
+            throws DAOException {
+        logger.info("count Computer Pages with size and search");
+        int compNumber = getCountComputersSearch(search);
+        return compNumber / eltNumber;
     }
 
     @Override
@@ -267,10 +312,11 @@ public enum ComputerDAO implements IComputerDAO {
                 rs.next();
                 tailleListComputers = rs.getInt(1);
             }
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-            logger.debug("{} : {}", COUNT_COMPUTERS, e.getMessage());
-            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
+            logger.debug(String.format(DEBUG_STRING, COUNT_COMPUTERS,
+                    e.getMessage()));
+            throw new DAOException(EXCEPTION_DAO);
         }
         return tailleListComputers;
     }
@@ -288,10 +334,10 @@ public enum ComputerDAO implements IComputerDAO {
                 rs.next();
                 nbrComputersResult = rs.getInt(1);
             }
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-            logger.debug("{} : {}", COUNT_COMPUTERS_SEARCH, e.getMessage());
-            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
+        } catch (SQLException e) {
+            logger.debug(String.format(DEBUG_STRING, COUNT_COMPUTERS_SEARCH,
+                    e.getMessage()));
+            throw new DAOException(EXCEPTION_DAO);
         }
         return nbrComputersResult;
     }

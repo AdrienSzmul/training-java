@@ -3,7 +3,6 @@
  */
 package com.excilys.formation.computerdatabase.persistence.dao;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,6 +33,8 @@ public enum CompanyDAO implements ICompanyDAO {
     private final String COUNT_COMPANIES = "SELECT count(ca_id) FROM company;";
     private final String SELECT_ONE_COMPANY = "SELECT ca_id, ca_name FROM company WHERE ca_id = ?;";
     private final String DELETE_ONE_COMPANY = "DELETE FROM company WHERE ca_id = ?";
+    private final String DEBUG_STRING = "%s : %s";
+    private final String EXCEPTION_DAO = "Un problème d'accès à la BDD a eu lieu";
 
     @Override
     public List<Company> getListCompanies(final int pageNumber,
@@ -50,10 +51,10 @@ public enum CompanyDAO implements ICompanyDAO {
                     listCompanies.add(companyMapper.createCompany(rs));
                 }
             }
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-            logger.debug("{} : {}", SELECT_LIST_COMPANIES, e.getMessage());
-            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
+        } catch (SQLException e) {
+            logger.debug(String.format(DEBUG_STRING, SELECT_LIST_COMPANIES,
+                    e.getMessage()));
+            throw new DAOException(EXCEPTION_DAO);
         }
         return listCompanies;
     }
@@ -68,10 +69,10 @@ public enum CompanyDAO implements ICompanyDAO {
             rs.next();
             final int tailleListCompanies = rs.getInt(1);
             pageNumber = tailleListCompanies / taille;
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-            logger.debug("{} : {}", COUNT_COMPANIES, e.getMessage());
-            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
+        } catch (SQLException e) {
+            logger.debug(String.format(DEBUG_STRING, COUNT_COMPANIES,
+                    e.getMessage()));
+            throw new DAOException(EXCEPTION_DAO);
         }
         return pageNumber;
     }
@@ -85,10 +86,10 @@ public enum CompanyDAO implements ICompanyDAO {
                 ResultSet rs = stat.executeQuery()) {
             rs.next();
             nombreRes = rs.getInt(1);
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-            logger.debug("{} : {}", COUNT_COMPANIES, e.getMessage());
-            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
+        } catch (SQLException e) {
+            logger.debug(String.format(DEBUG_STRING, COUNT_COMPANIES,
+                    e.getMessage()));
+            throw new DAOException(EXCEPTION_DAO);
         }
         return nombreRes;
     }
@@ -106,10 +107,10 @@ public enum CompanyDAO implements ICompanyDAO {
                     companyMapper.createCompany(rs);
                 }
             }
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-            logger.debug("{} : {}", SELECT_ONE_COMPANY, e.getMessage());
-            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
+        } catch (SQLException e) {
+            logger.debug(String.format(DEBUG_STRING, SELECT_ONE_COMPANY,
+                    e.getMessage()));
+            throw new DAOException(EXCEPTION_DAO);
         }
         return c;
     }
@@ -127,10 +128,10 @@ public enum CompanyDAO implements ICompanyDAO {
                     company = companyMapper.createCompany(rs);
                 }
             }
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-            logger.debug("{} : {}", SELECT_ONE_COMPANY, e.getMessage());
-            throw new DAOException("Un problème d'accès à la BDD a eu lieu");
+        } catch (SQLException e) {
+            logger.debug(String.format(DEBUG_STRING, SELECT_ONE_COMPANY,
+                    e.getMessage()));
+            throw new DAOException(EXCEPTION_DAO);
         }
         return company;
     }
@@ -154,8 +155,9 @@ public enum CompanyDAO implements ICompanyDAO {
                 throw new DAOException("Company delete went wrong");
             }
             conn.commit();
-        } catch (SQLException | IOException e) {
-            logger.debug("{} : {}", DELETE_ONE_COMPANY, e.getMessage());
+        } catch (SQLException e) {
+            logger.debug(String.format(DEBUG_STRING, DELETE_ONE_COMPANY,
+                    e.getMessage()));
         }
     }
 }
