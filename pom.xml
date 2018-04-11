@@ -40,6 +40,8 @@
 		<mysql.version>5.1.38</mysql.version>
 		<myqsl-jdbc.version>8.0.8-dmr</myqsl-jdbc.version>
 		<hikari.version>2.6.1</hikari.version>
+		<!--  Spring  -->
+		<spring.context.version>5.0.5.RELEASE</spring.context.version>
 	</properties>
 
 	<build>
@@ -144,6 +146,12 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>${myqsl-jdbc.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.context.version}</version>
 		</dependency>
 
 		<dependency>
