@@ -25,13 +25,13 @@
 	<section id="main">
 	<div class="container">
 		<h1 id="homeTitle">
-			<c:out value="${countComputers}" />
+			<c:out value="${pageDTO.nombreElt}" />
 			Computers found
 		</h1>
 		<div id="actions" class="form-horizontal">
 			<div class="pull-left">
 				<form id="searchForm"
-					action="<tag:links target="dashboard" search="${search}" pageIndex="${pageIndex}" eltNumber="${eltNumber}"/>"
+					action="<tag:links target="dashboard" search="${search}" pageIndex="${pageDTO.currentPageNumber}" eltNumber="${pageDTO.tailleMax}"/>"
 					method="GET" class="form-inline">
 
 					<input type="search" id="searchbox" name="search"
@@ -67,25 +67,25 @@
 						</a>
 					</span></th>
 					<th><a
-						href="<tag:links target="dashboard" orderby="name" tmpOrderBy="${orderby}" ascdesc="${ascdesc}"/>"
+						href="<tag:links target="dashboard" orderby="NAME" tmpOrderBy="${orderby}" ascdesc="${ascdesc}"/>"
 						onclick="" class="sort-by">Computer name</a></th>
 					<th><a
-						href="<tag:links target="dashboard" orderby="introduced" tmpOrderBy="${orderby}"  ascdesc="${ascdesc}"/>"
+						href="<tag:links target="dashboard" orderby="INTRODUCED" tmpOrderBy="${orderby}"  ascdesc="${ascdesc}"/>"
 						onclick="" class="sort-by">Introduced date</a></th>
 					<!-- Table header for Discontinued Date -->
 					<th><a
-						href="<tag:links target="dashboard" orderby="discontinued" tmpOrderBy="${orderby}"  ascdesc="${ascdesc}"/>"
+						href="<tag:links target="dashboard" orderby="DISCONTINUED" tmpOrderBy="${orderby}"  ascdesc="${ascdesc}"/>"
 						onclick="" class="sort-by">Discontinued date</a></th>
 					<!-- Table header for Company -->
 					<th><a
-						href="<tag:links target="dashboard" orderby="company" tmpOrderBy="${orderby}"  ascdesc="${ascdesc}"/>"
+						href="<tag:links target="dashboard" orderby="COMPANY" tmpOrderBy="${orderby}"  ascdesc="${ascdesc}"/>"
 						onclick="" class="sort-by">Company</a></th>
 
 				</tr>
 			</thead>
 			<!-- Browse attribute computers -->
 			<tbody id="results">
-				<c:forEach items="${listComputers}" var="computer">
+				<c:forEach items="${pageDTO.listContent}" var="computer">
 					<tr>
 						<td class="editMode"><input type="checkbox" name="cb"
 							class="cb" value="${computer.id}"></td>

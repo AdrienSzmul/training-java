@@ -5,7 +5,7 @@ import java.util.List;
 import com.excilys.formation.computerdatabase.service.ServiceException;
 
 public abstract class Page<T> {
-    private static final Integer FIRST_PAGE = 0;
+    public static final Integer FIRST_PAGE = 0;
     private Integer pageNumber;
     protected PageLength tailleMax;
     protected List<T> pageActive = null;

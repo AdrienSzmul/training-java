@@ -2,10 +2,11 @@ package com.excilys.formation.computerdatabase.paginator;
 
 import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.ServiceException;
+import com.excilys.formation.computerdatabase.servlets.constants.ColumnNames;
 
 public class PageComputerSorted extends PageComputer {
     private ComputerService computerService = ComputerService.INSTANCE;
-    private String orderby = "cu_id";
+    private ColumnNames orderby = ColumnNames.NAME;
     private boolean ascdesc = true;
 
     public PageComputerSorted() {
@@ -15,7 +16,7 @@ public class PageComputerSorted extends PageComputer {
         super(tailleMax);
     }
 
-    public PageComputerSorted(PageLength tailleMax, String orderby,
+    public PageComputerSorted(PageLength tailleMax, ColumnNames orderby,
             boolean ascdesc) {
         super(tailleMax);
         this.orderby = orderby;
@@ -25,14 +26,14 @@ public class PageComputerSorted extends PageComputer {
     @Override
     protected void refresh(int pageNumber) throws ServiceException {
         this.pageActive = computerService.getListComputersSorted(pageNumber,
-                tailleMax.getValue(), orderby, ascdesc);
+                tailleMax.getValue(), orderby.getValue(), ascdesc);
     }
 
-    public String getOrderby() {
+    public ColumnNames getOrderby() {
         return orderby;
     }
 
-    public void setOrderby(String orderby) {
+    public void setOrderby(ColumnNames orderby) {
         this.orderby = orderby;
     }
 

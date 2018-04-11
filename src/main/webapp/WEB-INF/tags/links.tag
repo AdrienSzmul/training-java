@@ -51,16 +51,10 @@
 
 					<c:set var="tmpPathOrderBy"
 						value="${emptyText.concat('&orderby=').concat(orderby)}" />
-					<c:choose>
-						<c:when test="${orderby.equals(tmpOrderBy)}">
-							<c:set var="tmpAscDesc"
-								value="${emptyText.concat('&ascdesc=').concat(not ascdesc)}" />
-						</c:when>
-						<c:otherwise>
-							<c:set var="tmpAscDesc"
-								value="${emptyText.concat('&ascdesc=').concat(not ascdesc)}" />
-						</c:otherwise>
-					</c:choose>
+					<c:if test="${orderby.equals(tmpOrderBy)}">
+						<c:set var="tmpAscDesc"
+							value="${emptyText.concat('&ascdesc=').concat(not ascdesc)}" />
+					</c:if>
 				</c:if>
 
 				<c:set var="tmpPath" value="${ tmpPath.concat(tmpPageIndex) }" />

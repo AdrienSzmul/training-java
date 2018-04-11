@@ -16,12 +16,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.excilys.formation.computerdatabase.mapper.DashboardRequestMapper;
+import com.excilys.formation.computerdatabase.mapper.PageLengthException;
 import com.excilys.formation.computerdatabase.mapper.PageMapperDTO;
 import com.excilys.formation.computerdatabase.model.dto.ComputerDTO;
 import com.excilys.formation.computerdatabase.paginator.PageComputerSearchSorted;
 import com.excilys.formation.computerdatabase.paginator.PageComputerSorted;
 import com.excilys.formation.computerdatabase.paginator.PageLength;
 import com.excilys.formation.computerdatabase.paginator.dto.PageDTO;
+import com.excilys.formation.computerdatabase.paginator.dto.PageSearchDTO;
 import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.ServiceException;
 import com.excilys.formation.computerdatabase.servlets.constants.Views;
@@ -51,7 +53,7 @@ public class DashboardServlet extends HttpServlet {
                 PageComputerSorted computerSortedPage = DashboardRequestMapper
                         .mapDoGet(request);
                 request = setRequest(request, computerSortedPage);
-            } catch (ServiceException e) {
+            } catch (ServiceException | PageLengthException e) {
                 logger.debug(e.getMessage());
             }
         } else {
@@ -59,7 +61,7 @@ public class DashboardServlet extends HttpServlet {
                 PageComputerSearchSorted computerSearchSortedPage = DashboardRequestMapper
                         .mapSearchDoGet(request, search);
                 request = setSearchRequest(request, computerSearchSortedPage);
-            } catch (ServiceException e) {
+            } catch (ServiceException | PageLengthException e) {
                 logger.debug(e.getMessage());
             }
         }
@@ -70,12 +72,14 @@ public class DashboardServlet extends HttpServlet {
     private HttpServletRequest setSearchRequest(HttpServletRequest request,
             PageComputerSearchSorted computerSearchSortedPage)
             throws ServiceException {
-        PageDTO<ComputerDTO> computerPageDTO = PageMapperDTO
-                .createComputerPageDTOFromComputerPage(computerSearchSortedPage,
-                        computerService.getCountComputers());
-        request.setAttribute("pageDTO", computerPageDTO);
+        PageSearchDTO<ComputerDTO> computerSearchPageDTO = PageMapperDTO
+                .createComputerSearchPageDTOFromComputerSearchPage(
+                        computerSearchSortedPage,
+                        computerService.getCountComputersSearch(
+                                computerSearchSortedPage.getSearch()));
+        request.setAttribute("pageDTO", computerSearchPageDTO);
         request.setAttribute("maxNumberPages",
-                computerPageDTO.getMaxPageNumber());
+                computerSearchPageDTO.getMaxPageNumber());
         request.setAttribute("eltNumberList", PageLength.toIntList());
         request.setAttribute("orderby", computerSearchSortedPage.getOrderby());
         request.setAttribute("ascdesc", computerSearchSortedPage.isAscdesc());
