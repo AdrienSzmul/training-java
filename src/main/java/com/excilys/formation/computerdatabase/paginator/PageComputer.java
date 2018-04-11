@@ -16,7 +16,7 @@ public class PageComputer extends Page<Computer> {
     }
 
     @Override
-    protected int maxNumberOfPages() throws ServiceException {
+    public int maxNumberOfPages() throws ServiceException {
         return computerService.getPageCountComputers(this.tailleMax.getValue());
     }
 

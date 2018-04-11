@@ -1,4 +1,4 @@
-package com.excilys.formation.computerdatabase.persistence.dao;
+package com.excilys.formation.computerdatabase.servlets.constants;
 
 public enum ColumnNames {
     NAME("cu_name"), INTRODUCED("cu_introduced"), DISCONTINUED(

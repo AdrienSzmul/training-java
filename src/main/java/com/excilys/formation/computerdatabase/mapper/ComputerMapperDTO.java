@@ -8,7 +8,8 @@ import com.excilys.formation.computerdatabase.model.dto.ComputerDTO;
 
 public enum ComputerMapperDTO {
     INSTANCE;
-    public final ComputerDTO createcomputerDTOfromcomputer(Computer computer) {
+    public static final ComputerDTO createcomputerDTOfromcomputer(
+            Computer computer) {
         ComputerDTO computerDTO = new ComputerDTO();
         computerDTO.setId(computer.getId().intValue());
         computerDTO.setName(computer.getName());
@@ -25,7 +26,7 @@ public enum ComputerMapperDTO {
         return computerDTO;
     }
 
-    public final Computer createcomputerfromcomputerDTO(
+    public static final Computer createcomputerfromcomputerDTO(
             ComputerDTO computerDTO) {
         final ComputerBuilder bComputer = new Computer.ComputerBuilder();
         bComputer.withId(Long.valueOf(computerDTO.getId()));

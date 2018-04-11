@@ -14,4 +14,12 @@ public class PageSearchDTO<T> extends PageDTO<T> {
                 nombreElt);
         this.search = search;
     }
+
+    public String getSearch() {
+        return search;
+    }
+
+    public void setSearch(String search) {
+        this.search = search;
+    }
 }

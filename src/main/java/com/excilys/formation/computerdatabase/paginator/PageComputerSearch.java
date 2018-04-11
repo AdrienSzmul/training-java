@@ -22,7 +22,7 @@ public class PageComputerSearch extends PageComputer {
     }
 
     @Override
-    protected int maxNumberOfPages() throws ServiceException {
+    public int maxNumberOfPages() throws ServiceException {
         return computerService.getPageCountComputersSearch(
                 this.tailleMax.getValue(), this.search);
     }

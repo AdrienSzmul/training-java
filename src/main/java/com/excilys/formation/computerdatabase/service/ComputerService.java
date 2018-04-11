@@ -8,13 +8,14 @@ import java.util.List;
 import com.excilys.formation.computerdatabase.model.Computer;
 import com.excilys.formation.computerdatabase.persistence.dao.ComputerDAO;
 import com.excilys.formation.computerdatabase.persistence.dao.DAOException;
+import com.excilys.formation.computerdatabase.persistence.dao.IComputerDAO;
 
 /**
  * @author excilys
  */
 public enum ComputerService {
     INSTANCE;
-    private final ComputerDAO computerDAO = ComputerDAO.INSTANCE;
+    private final IComputerDAO computerDAO = ComputerDAO.INSTANCE;
     private final ValidatorComputer val = ValidatorComputer.INSTANCE;
 
     public void createComputer(final Computer c)

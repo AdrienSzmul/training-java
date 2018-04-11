@@ -15,11 +15,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.excilys.formation.computerdatabase.mapper.ComputerMapperDTO;
-import com.excilys.formation.computerdatabase.model.Computer;
+import com.excilys.formation.computerdatabase.mapper.DashboardRequestMapper;
+import com.excilys.formation.computerdatabase.mapper.PageMapperDTO;
 import com.excilys.formation.computerdatabase.model.dto.ComputerDTO;
+import com.excilys.formation.computerdatabase.paginator.PageComputerSearchSorted;
+import com.excilys.formation.computerdatabase.paginator.PageComputerSorted;
 import com.excilys.formation.computerdatabase.paginator.PageLength;
-import com.excilys.formation.computerdatabase.persistence.dao.ColumnNames;
+import com.excilys.formation.computerdatabase.paginator.dto.PageDTO;
 import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.ServiceException;
 import com.excilys.formation.computerdatabase.servlets.constants.Views;
@@ -30,6 +32,7 @@ import com.excilys.formation.computerdatabase.servlets.constants.Views;
 @WebServlet("/Dashboard")
 public class DashboardServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static final ComputerService computerService = ComputerService.INSTANCE;
     private final Logger logger = LoggerFactory
             .getLogger(DashboardServlet.class);
 
@@ -44,122 +47,53 @@ public class DashboardServlet extends HttpServlet {
             HttpServletResponse response) throws ServletException, IOException {
         String search = request.getParameter("search");
         if (StringUtils.isBlank(search)) {
-            request = setRequest(request);
+            try {
+                PageComputerSorted computerSortedPage = DashboardRequestMapper
+                        .mapDoGet(request);
+                request = setRequest(request, computerSortedPage);
+            } catch (ServiceException e) {
+                logger.debug(e.getMessage());
+            }
         } else {
-            request = setSearchRequest(request, search);
+            try {
+                PageComputerSearchSorted computerSearchSortedPage = DashboardRequestMapper
+                        .mapSearchDoGet(request, search);
+                request = setSearchRequest(request, computerSearchSortedPage);
+            } catch (ServiceException e) {
+                logger.debug(e.getMessage());
+            }
         }
         this.getServletContext().getRequestDispatcher(Views.DASHBOARD)
                 .forward(request, response);
     }
 
     private HttpServletRequest setSearchRequest(HttpServletRequest request,
-            String search) {
-        String orderBy = request.getParameter("orderby");
-        String orderByEnum = "cu_id";
-        boolean ascdesc;
-        String ascdescString = request.getParameter("ascdesc");
-        ascdesc = Boolean.valueOf(ascdescString);
-        try {
-            orderByEnum = ColumnNames.valueOf(orderBy.toUpperCase()).getValue();
-        } catch (IllegalArgumentException | NullPointerException e) {
-            logger.error(e.getMessage());
-        }
-        int eltNumber = 20;
-        int pageNumber = 0;
-        int nombreRes = 0;
-        try {
-            eltNumber = Integer.parseInt(request.getParameter("eltNumber"));
-            logger.info("Numéro de page : {}", eltNumber);
-            pageNumber = Integer.parseInt(request.getParameter("pageNumber"));
-            logger.info("taillePage : {}", pageNumber);
-        } catch (NumberFormatException e) {
-            logger.error(e.getMessage());
-        }
-        List<Computer> listComputers = null;
-        try {
-            listComputers = ComputerService.INSTANCE.getListComputersSearch(
-                    pageNumber, eltNumber, search, orderByEnum, ascdesc);
-            nombreRes = ComputerService.INSTANCE
-                    .getCountComputersSearch(search);
-        } catch (ServiceException e) {
-            logger.error(e.getMessage());
-        }
-        List<ComputerDTO> listComputersDTO = new ArrayList<>();
-        for (Computer computer : listComputers) {
-            listComputersDTO.add(ComputerMapperDTO.INSTANCE
-                    .createcomputerDTOfromcomputer(computer));
-        }
-        logger.info("nombreRes = {}", nombreRes);
-        int pageMax = nombreRes / eltNumber;
-        request.setAttribute("search", search);
-        request.setAttribute("pageIndex", pageNumber);
-        request.setAttribute("eltNumber", eltNumber);
-        request.setAttribute("countComputers", nombreRes);
-        request.setAttribute("maxNumberPages", pageMax);
-        request.setAttribute("listComputers", listComputersDTO);
+            PageComputerSearchSorted computerSearchSortedPage)
+            throws ServiceException {
+        PageDTO<ComputerDTO> computerPageDTO = PageMapperDTO
+                .createComputerPageDTOFromComputerPage(computerSearchSortedPage,
+                        computerService.getCountComputers());
+        request.setAttribute("pageDTO", computerPageDTO);
+        request.setAttribute("maxNumberPages",
+                computerPageDTO.getMaxPageNumber());
         request.setAttribute("eltNumberList", PageLength.toIntList());
-        request.setAttribute("orderby", orderBy);
-        request.setAttribute("ascdesc", ascdesc);
+        request.setAttribute("orderby", computerSearchSortedPage.getOrderby());
+        request.setAttribute("ascdesc", computerSearchSortedPage.isAscdesc());
+        request.setAttribute("search", computerSearchSortedPage.getSearch());
         return request;
     }
 
-    private HttpServletRequest setRequest(HttpServletRequest request) {
-        String orderBy = request.getParameter("orderby");
-        String orderByEnum = "cu_id";
-        boolean ascdesc;
-        String ascdescString = request.getParameter("ascdesc");
-        ascdesc = Boolean.valueOf(ascdescString);
-        try {
-            orderByEnum = ColumnNames.valueOf(orderBy.toUpperCase()).getValue();
-        } catch (IllegalArgumentException | NullPointerException e) {
-            logger.error(e.getMessage());
-        }
-        int eltNumber = 20;
-        int pageNumber = 0;
-        try {
-            eltNumber = Integer.parseInt(request.getParameter("eltNumber"));
-            logger.info("Numéro de page : {}", eltNumber);
-        } catch (NumberFormatException e) {
-            logger.error(e.getMessage());
-        }
-        try {
-            pageNumber = Integer.parseInt(request.getParameter("pageNumber"));
-            logger.info("taillePage : {}", pageNumber);
-        } catch (NumberFormatException e) {
-            logger.error(e.getMessage());
-        }
-        List<Computer> listComputers = null;
-        try {
-            listComputers = ComputerService.INSTANCE.getListComputers(
-                    pageNumber, eltNumber, orderByEnum, ascdesc);
-        } catch (ServiceException e) {
-            logger.error(e.getMessage());
-        }
-        List<ComputerDTO> listComputersDTO = new ArrayList<>();
-        for (Computer computer : listComputers) {
-            listComputersDTO.add(ComputerMapperDTO.INSTANCE
-                    .createcomputerDTOfromcomputer(computer));
-        }
-        int nombreRes = 0;
-        try {
-            nombreRes = ComputerService.INSTANCE.getCountComputers();
-        } catch (ServiceException e) {
-            logger.error(e.getMessage());
-        }
-        int pageMax = 0;
-        try {
-            pageMax = ComputerService.INSTANCE.getPageCountComputers(eltNumber);
-        } catch (ServiceException e) {
-            logger.error(e.getMessage());
-        }
-        request.setAttribute("pageIndex", pageNumber);
-        request.setAttribute("eltNumber", eltNumber);
-        request.setAttribute("countComputers", nombreRes);
-        request.setAttribute("maxNumberPages", pageMax);
-        request.setAttribute("listComputers", listComputersDTO);
+    private HttpServletRequest setRequest(HttpServletRequest request,
+            PageComputerSorted computerSortedPage) throws ServiceException {
+        PageDTO<ComputerDTO> computerPageDTO = PageMapperDTO
+                .createComputerPageDTOFromComputerPage(computerSortedPage,
+                        computerService.getCountComputers());
+        request.setAttribute("pageDTO", computerPageDTO);
+        request.setAttribute("maxNumberPages",
+                computerPageDTO.getMaxPageNumber());
         request.setAttribute("eltNumberList", PageLength.toIntList());
-        request.setAttribute("orderby", orderBy);
-        request.setAttribute("ascdesc", ascdesc);
+        request.setAttribute("orderby", computerSortedPage.getOrderby());
+        request.setAttribute("ascdesc", computerSortedPage.isAscdesc());
         return request;
     }
 
@@ -184,8 +118,6 @@ public class DashboardServlet extends HttpServlet {
         } catch (ServiceException e) {
             logger.error(e.getMessage());
         }
-        request = setRequest(request);
-        this.getServletContext().getRequestDispatcher(Views.DASHBOARD)
-                .forward(request, response);
+        this.doGet(request, response);
     }
 }
