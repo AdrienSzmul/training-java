@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:p="http://www.springframework.org/schema/p"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
@@ -14,11 +14,16 @@
 
 	<context:property-placeholder
 		location="classpath:/properties/dao.properties" />
-	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" 
-    p:url="${url}"
-    p:driverClassName="${driver}"
-    p:username="${utilisateur}"
-    p:password="${password}" />
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+		p:url="${url}" p:driverClassName="${driver}"
+		p:username="${utilisateur}" p:password="${password}" />
+	<tx:annotation-driven proxy-target-class="true"
+		transaction-manager="txManager" />
+	<bean id="txManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
 
 
 </beans>

@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.formation.computerdatabase.mapper.CompanyMapper;
 import com.excilys.formation.computerdatabase.model.Company;
@@ -147,6 +148,7 @@ public class CompanyDAO implements ICompanyDAO {
     }
 
     @Override
+    @Transactional
     public void deleteCompany(Company company) throws DAOException {
         logger.info("company deletion");
         try (Connection conn = DataSourceUtils.getConnection(datasource)) {
