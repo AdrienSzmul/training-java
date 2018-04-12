@@ -8,17 +8,24 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.sql.DataSource;
+
 import org.hsqldb.cmdline.SqlFile;
 import org.hsqldb.cmdline.SqlToolError;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.stereotype.Component;
 
-public abstract class HSQLDataBase {
-    private static final DBConnection HSQLdb = DBConnection.INSTANCE;
+@Component
+public class HSQLDataBase {
+    @Autowired
+    private DataSource dataSource;
     private static final String DROP_TABLE_COMPUTER = "DROP TABLE computer IF EXISTS;";
     private static final String DROP_TABLE_COMPANY = "DROP TABLE company IF EXISTS;";
     private static final String DROP_USER = "DROP USER admincdb;";
 
-    public static void destroy() throws SQLException, IOException {
-        try (Connection connection = HSQLdb.getConnection();
+    public void destroy() throws SQLException, IOException {
+        try (Connection connection = DataSourceUtils.getConnection(dataSource);
                 Statement statement = connection.createStatement();) {
             statement.executeUpdate(DROP_TABLE_COMPUTER);
             statement.executeUpdate(DROP_TABLE_COMPANY);
@@ -26,8 +33,8 @@ public abstract class HSQLDataBase {
         }
     }
 
-    public static void init() throws SQLException, IOException {
-        try (Connection connection = HSQLdb.getConnection();
+    public void init() throws SQLException, IOException {
+        try (Connection connection = DataSourceUtils.getConnection(dataSource);
                 InputStream inputStream = HSQLDataBase.class
                         .getResourceAsStream("/db/hsqlDB_script.sql");) {
             SqlFile sqlFile = new SqlFile(new InputStreamReader(inputStream),

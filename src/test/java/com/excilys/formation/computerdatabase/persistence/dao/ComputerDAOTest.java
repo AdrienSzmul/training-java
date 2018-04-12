@@ -28,15 +28,17 @@ import com.excilys.formation.computerdatabase.persistence.HSQLDataBase;
 public class ComputerDAOTest {
     @Autowired
     private ComputerDAO computerDAO;
+    @Autowired
+    private HSQLDataBase HSQLdb;
 
     @Before
     public void setUp() throws SQLException, IOException {
-        HSQLDataBase.init();
+        HSQLdb.init();
     }
 
     @After
     public void tearUp() throws SQLException, IOException {
-        HSQLDataBase.destroy();
+        HSQLdb.destroy();
     }
 
     @Test

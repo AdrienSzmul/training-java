@@ -10,14 +10,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.formation.computerdatabase.mapper.CompanyMapper;
 import com.excilys.formation.computerdatabase.model.Company;
-import com.excilys.formation.computerdatabase.persistence.DBConnection;
 
 /**
  * @author excilys
@@ -28,10 +30,11 @@ public class CompanyDAO implements ICompanyDAO {
      *
      */
     private final Logger logger = LoggerFactory.getLogger(CompanyDAO.class);
-    private final DBConnection dbConnection = DBConnection.INSTANCE;
     private final CompanyMapper companyMapper = CompanyMapper.INSTANCE;
     @Autowired
     private ComputerDAO computerDAO;
+    @Autowired
+    private DataSource datasource;
     private final String SELECT_LIST_COMPANIES = "SELECT ca_id, ca_name FROM company ORDER BY ca_id LIMIT ? OFFSET ?;";
     private final String COUNT_COMPANIES = "SELECT count(ca_id) FROM company;";
     private final String SELECT_ONE_COMPANY = "SELECT ca_id, ca_name FROM company WHERE ca_id = ?;";
@@ -44,7 +47,7 @@ public class CompanyDAO implements ICompanyDAO {
             final int taille) throws DAOException {
         logger.info("get List Companies");
         final List<Company> listCompanies = new ArrayList<>();
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DataSourceUtils.getConnection(datasource);
                 PreparedStatement stat = conn
                         .prepareStatement(SELECT_LIST_COMPANIES)) {
             stat.setInt(1, taille);
@@ -66,7 +69,7 @@ public class CompanyDAO implements ICompanyDAO {
     public int getPageCountCompanies(final int taille) throws DAOException {
         logger.info("count Company Pages");
         int pageNumber = 0;
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DataSourceUtils.getConnection(datasource);
                 PreparedStatement stat = conn.prepareStatement(COUNT_COMPANIES);
                 ResultSet rs = stat.executeQuery()) {
             rs.next();
@@ -84,7 +87,7 @@ public class CompanyDAO implements ICompanyDAO {
     public int getCountCompanies() throws DAOException {
         logger.info("count Companies");
         int nombreRes = 0;
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DataSourceUtils.getConnection(datasource);
                 PreparedStatement stat = conn.prepareStatement(COUNT_COMPANIES);
                 ResultSet rs = stat.executeQuery()) {
             rs.next();
@@ -101,7 +104,7 @@ public class CompanyDAO implements ICompanyDAO {
     // deprecative
     public Company showDetails(final Company c) throws DAOException {
         logger.info("show Details Company");
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DataSourceUtils.getConnection(datasource);
                 PreparedStatement stat = conn
                         .prepareStatement(SELECT_ONE_COMPANY)) {
             stat.setLong(1, c.getId());
@@ -122,7 +125,7 @@ public class CompanyDAO implements ICompanyDAO {
     public Company getCompanyById(Long id) throws DAOException {
         logger.info("get one Company");
         Company company = null;
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DataSourceUtils.getConnection(datasource);
                 PreparedStatement stat = conn
                         .prepareStatement(SELECT_ONE_COMPANY)) {
             stat.setLong(1, id);
@@ -146,7 +149,7 @@ public class CompanyDAO implements ICompanyDAO {
     @Override
     public void deleteCompany(Company company) throws DAOException {
         logger.info("company deletion");
-        try (Connection conn = dbConnection.getConnection()) {
+        try (Connection conn = DataSourceUtils.getConnection(datasource)) {
             conn.setAutoCommit(false);
             try (PreparedStatement stat = conn
                     .prepareStatement(DELETE_ONE_COMPANY)) {

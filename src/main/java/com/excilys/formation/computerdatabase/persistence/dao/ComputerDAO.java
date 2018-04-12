@@ -12,14 +12,17 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.formation.computerdatabase.mapper.ComputerMapper;
 import com.excilys.formation.computerdatabase.model.Company;
 import com.excilys.formation.computerdatabase.model.Computer;
-import com.excilys.formation.computerdatabase.persistence.DBConnection;
 
 /**
  * @author excilys
@@ -27,7 +30,6 @@ import com.excilys.formation.computerdatabase.persistence.DBConnection;
 @Repository
 public class ComputerDAO implements IComputerDAO {
     private final Logger logger = LoggerFactory.getLogger(ComputerDAO.class);
-    private final DBConnection dbConnection = DBConnection.INSTANCE;
     private final ComputerMapper computerMapper = ComputerMapper.INSTANCE;
     private final String SELECT_LIST_COMPUTERS = "SELECT cu_id, cu_name, cu_introduced, cu_discontinued, cu_ca_id, ca_id, ca_name FROM computer LEFT JOIN company ON cu_ca_id = ca_id ORDER BY %s %s LIMIT ? OFFSET ?;";
     private final String SELECT_LIST_COMPUTERS_SEARCH = "SELECT cu_id, cu_name, cu_introduced, cu_discontinued, cu_ca_id, ca_id, ca_name FROM computer LEFT JOIN company ON cu_ca_id = ca_id WHERE cu_name LIKE ? OR ca_name LIKE ? ORDER BY %s %s LIMIT ? OFFSET ?;";
@@ -40,12 +42,14 @@ public class ComputerDAO implements IComputerDAO {
     private final String UPDATE_COMPUTER = "UPDATE computer SET cu_name = ?, cu_introduced = ?, cu_discontinued = ?, cu_ca_id = ? WHERE cu_id = ?";
     private final String DEBUG_STRING = "%s : %s";
     private final String EXCEPTION_DAO = "Un problème d'accès à la BDD a eu lieu";
+    @Autowired
+    private DataSource dataSource;
 
     @Override
     public Long createComputer(final Computer c) throws DAOException {
         logger.info("create Computer");
         Long createdId = null;
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DataSourceUtils.getConnection(dataSource);
                 PreparedStatement stat = conn.prepareStatement(CREATE_COMPUTER,
                         Statement.RETURN_GENERATED_KEYS)) {
             setStatementsSQL(c, stat);
@@ -67,7 +71,7 @@ public class ComputerDAO implements IComputerDAO {
     @Override
     public void deleteComputer(final Computer c) throws DAOException {
         logger.info("delete Computer");
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DataSourceUtils.getConnection(dataSource);
                 PreparedStatement stat = conn
                         .prepareStatement(DELETE_COMPUTER)) {
             stat.setLong(1, c.getId());
@@ -84,7 +88,7 @@ public class ComputerDAO implements IComputerDAO {
     public void deleteMultipleComputers(List<Long> listComputerIds)
             throws DAOException {
         logger.info("delete multiple computers");
-        try (Connection conn = dbConnection.getConnection()) {
+        try (Connection conn = DataSourceUtils.getConnection(dataSource)) {
             conn.setAutoCommit(false);
             for (Long id : listComputerIds) {
                 try (PreparedStatement stat = conn
@@ -129,7 +133,7 @@ public class ComputerDAO implements IComputerDAO {
         } else {
             newRequest = String.format(SELECT_LIST_COMPUTERS, orderby, "DESC");
         }
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DataSourceUtils.getConnection(dataSource);
                 PreparedStatement stat = conn.prepareStatement(newRequest)) {
             stat.setInt(1, eltNumber);
             stat.setInt(2, offset);
@@ -160,7 +164,7 @@ public class ComputerDAO implements IComputerDAO {
             newRequest = String.format(SELECT_LIST_COMPUTERS_SEARCH, orderby,
                     "DESC");
         }
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DataSourceUtils.getConnection(dataSource);
                 PreparedStatement stat = conn.prepareStatement(newRequest)) {
             String tmpSearch = "%" + search + "%";
             stat.setString(1, tmpSearch);
@@ -187,7 +191,7 @@ public class ComputerDAO implements IComputerDAO {
         List<Computer> listComputers = new ArrayList<>();
         String newRequest = String.format(SELECT_LIST_COMPUTERS, "cu_name",
                 "ASC");
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DataSourceUtils.getConnection(dataSource);
                 PreparedStatement stat = conn.prepareStatement(newRequest)) {
             stat.setInt(1, eltNumber);
             stat.setInt(2, offset);
@@ -209,7 +213,7 @@ public class ComputerDAO implements IComputerDAO {
             String search) throws DAOException {
         final int offset = pageNumber * eltNumber;
         List<Computer> listComputers = new ArrayList<>();
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DataSourceUtils.getConnection(dataSource);
                 PreparedStatement stat = conn
                         .prepareStatement(SELECT_LIST_COMPUTERS_SEARCH)) {
             String tmpSearch = "%" + search + "%";
@@ -235,7 +239,7 @@ public class ComputerDAO implements IComputerDAO {
     public Computer showDetails(final Computer c) throws DAOException {
         logger.info("show Details Computer");
         Computer newComputer = null;
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DataSourceUtils.getConnection(dataSource);
                 PreparedStatement stat = conn
                         .prepareStatement(SELECT_ONE_COMPUTER)) {
             stat.setLong(1, c.getId());
@@ -256,7 +260,7 @@ public class ComputerDAO implements IComputerDAO {
     public Computer getComputerById(Long id) throws DAOException {
         logger.info("get one Computer");
         Computer computer = null;
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DataSourceUtils.getConnection(dataSource);
                 PreparedStatement stat = conn
                         .prepareStatement(SELECT_ONE_COMPUTER)) {
             stat.setLong(1, id);
@@ -276,7 +280,7 @@ public class ComputerDAO implements IComputerDAO {
     @Override
     public void updateComputer(final Computer c) throws DAOException {
         logger.info("update Computer");
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DataSourceUtils.getConnection(dataSource);
                 PreparedStatement stat = conn
                         .prepareStatement(UPDATE_COMPUTER)) {
             setStatementsSQL(c, stat);
@@ -308,7 +312,7 @@ public class ComputerDAO implements IComputerDAO {
     public int getCountComputers() throws DAOException {
         logger.info("count Computers");
         int tailleListComputers = 0;
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DataSourceUtils.getConnection(dataSource);
                 PreparedStatement stat = conn
                         .prepareStatement(COUNT_COMPUTERS)) {
             try (ResultSet rs = stat.executeQuery()) {
@@ -327,7 +331,7 @@ public class ComputerDAO implements IComputerDAO {
     @Override
     public int getCountComputersSearch(String search) throws DAOException {
         int nbrComputersResult = 0;
-        try (Connection conn = dbConnection.getConnection();
+        try (Connection conn = DataSourceUtils.getConnection(dataSource);
                 PreparedStatement stat = conn
                         .prepareStatement(COUNT_COMPUTERS_SEARCH)) {
             String tmpSearch = "%" + search + "%";
