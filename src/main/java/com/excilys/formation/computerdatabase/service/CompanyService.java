@@ -5,6 +5,9 @@ package com.excilys.formation.computerdatabase.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.excilys.formation.computerdatabase.model.Company;
 import com.excilys.formation.computerdatabase.persistence.dao.CompanyDAO;
 import com.excilys.formation.computerdatabase.persistence.dao.DAOException;
@@ -12,9 +15,10 @@ import com.excilys.formation.computerdatabase.persistence.dao.DAOException;
 /**
  * @author excilys
  */
-public enum CompanyService {
-    INSTANCE;
-    private final CompanyDAO companyDAO = CompanyDAO.INSTANCE;
+@Service
+public class CompanyService {
+    @Autowired
+    private CompanyDAO companyDAO;
 
     public List<Company> getListCompanies(final int pageNumber,
             final int taille) throws ServiceException {

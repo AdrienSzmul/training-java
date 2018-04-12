@@ -5,20 +5,21 @@ import com.excilys.formation.computerdatabase.service.ServiceException;
 import com.excilys.formation.computerdatabase.servlets.constants.ColumnNames;
 
 public class PageComputerSorted extends PageComputer {
-    private ComputerService computerService = ComputerService.INSTANCE;
     private ColumnNames orderby = ColumnNames.NAME;
     private boolean ascdesc = true;
 
-    public PageComputerSorted() {
+    public PageComputerSorted(ComputerService computerService) {
+        super(computerService);
     }
 
-    public PageComputerSorted(PageLength tailleMax) {
-        super(tailleMax);
+    public PageComputerSorted(PageLength tailleMax,
+            ComputerService computerService) {
+        super(tailleMax, computerService);
     }
 
     public PageComputerSorted(PageLength tailleMax, ColumnNames orderby,
-            boolean ascdesc) {
-        super(tailleMax);
+            boolean ascdesc, ComputerService computerService) {
+        super(tailleMax, computerService);
         this.orderby = orderby;
         this.ascdesc = ascdesc;
     }

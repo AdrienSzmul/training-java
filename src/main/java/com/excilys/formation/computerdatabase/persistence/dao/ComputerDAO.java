@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 import com.excilys.formation.computerdatabase.mapper.ComputerMapper;
 import com.excilys.formation.computerdatabase.model.Company;
@@ -23,8 +24,8 @@ import com.excilys.formation.computerdatabase.persistence.DBConnection;
 /**
  * @author excilys
  */
-public enum ComputerDAO implements IComputerDAO {
-    INSTANCE;
+@Repository
+public class ComputerDAO implements IComputerDAO {
     private final Logger logger = LoggerFactory.getLogger(ComputerDAO.class);
     private final DBConnection dbConnection = DBConnection.INSTANCE;
     private final ComputerMapper computerMapper = ComputerMapper.INSTANCE;
@@ -102,7 +103,8 @@ public enum ComputerDAO implements IComputerDAO {
         }
     }
 
-    protected void deleteMultipleComputersFromCompany(Company company,
+    @Override
+    public void deleteMultipleComputersFromCompany(Company company,
             Connection conn) throws DAOException, SQLException {
         logger.info("delete computers with company id");
         try (PreparedStatement stat = conn
@@ -183,9 +185,10 @@ public enum ComputerDAO implements IComputerDAO {
             throws DAOException {
         final int offset = pageNumber * eltNumber;
         List<Computer> listComputers = new ArrayList<>();
+        String newRequest = String.format(SELECT_LIST_COMPUTERS, "cu_name",
+                "ASC");
         try (Connection conn = dbConnection.getConnection();
-                PreparedStatement stat = conn
-                        .prepareStatement(SELECT_LIST_COMPUTERS)) {
+                PreparedStatement stat = conn.prepareStatement(newRequest)) {
             stat.setInt(1, eltNumber);
             stat.setInt(2, offset);
             try (ResultSet rs = stat.executeQuery();) {

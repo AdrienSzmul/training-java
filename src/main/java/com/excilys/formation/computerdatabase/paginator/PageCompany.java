@@ -11,10 +11,11 @@ import com.excilys.formation.computerdatabase.service.ServiceException;
  * @author excilys
  */
 public class PageCompany extends Page<Company> {
-    private static final CompanyService companyService = CompanyService.INSTANCE;
+    protected CompanyService companyService;
 
-    public PageCompany() {
+    public PageCompany(CompanyService companyService) {
         super();
+        this.companyService = companyService;
     }
 
     @Override

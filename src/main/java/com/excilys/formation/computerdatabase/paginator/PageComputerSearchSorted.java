@@ -5,24 +5,27 @@ import com.excilys.formation.computerdatabase.service.ServiceException;
 import com.excilys.formation.computerdatabase.servlets.constants.ColumnNames;
 
 public class PageComputerSearchSorted extends PageComputerSearch {
-    private ComputerService computerService = ComputerService.INSTANCE;
     private ColumnNames orderby = ColumnNames.NAME;
     private boolean ascdesc = true;
 
-    public PageComputerSearchSorted() {
+    public PageComputerSearchSorted(ComputerService computerService) {
+        super(computerService);
     }
 
-    public PageComputerSearchSorted(String search) {
-        super(search);
-    }
-
-    public PageComputerSearchSorted(String search, PageLength tailleMax) {
-        super(search, tailleMax);
+    public PageComputerSearchSorted(String search,
+            ComputerService computerService) {
+        super(search, computerService);
     }
 
     public PageComputerSearchSorted(String search, PageLength tailleMax,
-            ColumnNames orderby, boolean ascdesc) {
-        super(search, tailleMax);
+            ComputerService computerService) {
+        super(search, tailleMax, computerService);
+    }
+
+    public PageComputerSearchSorted(String search, PageLength tailleMax,
+            ColumnNames orderby, boolean ascdesc,
+            ComputerService computerService) {
+        super(search, tailleMax, computerService);
         this.orderby = orderby;
         this.ascdesc = ascdesc;
     }

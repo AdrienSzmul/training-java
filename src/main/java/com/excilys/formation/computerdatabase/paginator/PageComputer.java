@@ -5,14 +5,16 @@ import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.ServiceException;
 
 public class PageComputer extends Page<Computer> {
-    private static final ComputerService computerService = ComputerService.INSTANCE;
+    protected ComputerService computerService;
 
-    public PageComputer() {
+    public PageComputer(ComputerService computerService) {
         super();
+        this.computerService = computerService;
     }
 
-    public PageComputer(PageLength tailleMax) {
+    public PageComputer(PageLength tailleMax, ComputerService computerService) {
         super(tailleMax);
+        this.computerService = computerService;
     }
 
     @Override

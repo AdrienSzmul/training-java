@@ -9,6 +9,7 @@ import com.excilys.formation.computerdatabase.paginator.Page;
 import com.excilys.formation.computerdatabase.paginator.PageComputerSearchSorted;
 import com.excilys.formation.computerdatabase.paginator.PageComputerSorted;
 import com.excilys.formation.computerdatabase.paginator.PageLength;
+import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.ServiceException;
 import com.excilys.formation.computerdatabase.servlets.constants.ColumnNames;
 
@@ -16,10 +17,11 @@ public class DashboardRequestMapper {
     private static final Logger logger = LoggerFactory
             .getLogger(DashboardRequestMapper.class);
 
-    public DashboardRequestMapper() {
+    private DashboardRequestMapper() {
     }
 
-    public static PageComputerSorted mapDoGet(HttpServletRequest request)
+    public static PageComputerSorted mapDoGet(HttpServletRequest request,
+            ComputerService computerService)
             throws PageLengthException, ServiceException {
         PageComputerSorted pageComputerSorted;
         ColumnNames orderByEnum = RequestMapper.mapOrderBy(request, "orderby",
@@ -30,13 +32,14 @@ public class DashboardRequestMapper {
                 PageLength.TWENTY);
         boolean ascdesc = RequestMapper.mapAscDesc(request, "ascdesc", true);
         pageComputerSorted = new PageComputerSorted(eltNumber, orderByEnum,
-                ascdesc);
+                ascdesc, computerService);
         pageComputerSorted.goToPage(pageNumber);
         return pageComputerSorted;
     }
 
     public static PageComputerSearchSorted mapSearchDoGet(
-            HttpServletRequest request, String search)
+            HttpServletRequest request, String search,
+            ComputerService computerService)
             throws PageLengthException, ServiceException {
         PageComputerSearchSorted pageComputerSearchSorted;
         ColumnNames orderByEnum = RequestMapper.mapOrderBy(request, "orderby",
@@ -47,7 +50,7 @@ public class DashboardRequestMapper {
                 PageLength.TWENTY);
         boolean ascdesc = RequestMapper.mapAscDesc(request, "ascdesc", true);
         pageComputerSearchSorted = new PageComputerSearchSorted(search,
-                eltNumber, orderByEnum, ascdesc);
+                eltNumber, orderByEnum, ascdesc, computerService);
         pageComputerSearchSorted.goToPage(pageNumber);
         return pageComputerSearchSorted;
     }

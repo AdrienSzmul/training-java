@@ -4,20 +4,20 @@ import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.ServiceException;
 
 public class PageComputerSearch extends PageComputer {
-    private static final ComputerService computerService = ComputerService.INSTANCE;
     protected String search;
 
-    public PageComputerSearch() {
-        super();
+    public PageComputerSearch(ComputerService computerService) {
+        super(computerService);
     }
 
-    public PageComputerSearch(String search) {
-        super();
+    public PageComputerSearch(String search, ComputerService computerService) {
+        super(computerService);
         this.search = search;
     }
 
-    public PageComputerSearch(String search, PageLength tailleMax) {
-        super(tailleMax);
+    public PageComputerSearch(String search, PageLength tailleMax,
+            ComputerService computerService) {
+        super(tailleMax, computerService);
         this.search = search;
     }
 

@@ -5,17 +5,20 @@ package com.excilys.formation.computerdatabase.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.excilys.formation.computerdatabase.model.Computer;
 import com.excilys.formation.computerdatabase.persistence.dao.ComputerDAO;
 import com.excilys.formation.computerdatabase.persistence.dao.DAOException;
-import com.excilys.formation.computerdatabase.persistence.dao.IComputerDAO;
 
 /**
  * @author excilys
  */
-public enum ComputerService {
-    INSTANCE;
-    private final IComputerDAO computerDAO = ComputerDAO.INSTANCE;
+@Service
+public class ComputerService {
+    @Autowired
+    private ComputerDAO computerDAO;
     private final ValidatorComputer val = ValidatorComputer.INSTANCE;
 
     public void createComputer(final Computer c)

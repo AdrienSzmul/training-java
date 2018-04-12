@@ -12,6 +12,10 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.excilys.formation.computerdatabase.model.Company;
 import com.excilys.formation.computerdatabase.model.Company.CompanyBuilder;
@@ -19,9 +23,11 @@ import com.excilys.formation.computerdatabase.model.Computer;
 import com.excilys.formation.computerdatabase.model.Computer.ComputerBuilder;
 import com.excilys.formation.computerdatabase.persistence.HSQLDataBase;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("/application-context.xml")
 public class ComputerDAOTest {
-    private static final ComputerDAO computerDAO = ComputerDAO.INSTANCE;
-    private static final CompanyDAO companyDAO = CompanyDAO.INSTANCE;
+    @Autowired
+    private ComputerDAO computerDAO;
 
     @Before
     public void setUp() throws SQLException, IOException {

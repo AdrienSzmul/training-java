@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.excilys.formation.computerdatabase.mapper.CompanyMapperDTO;
 import com.excilys.formation.computerdatabase.mapper.ComputerMapperDTO;
@@ -35,6 +36,10 @@ public class AddComputerServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory
             .getLogger(AddComputerServlet.class);
+    @Autowired
+    private CompanyDAO companyDAO;
+    @Autowired
+    private ComputerService computerService;
 
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
@@ -50,8 +55,7 @@ public class AddComputerServlet extends HttpServlet {
 
     private HttpServletRequest setRequest(HttpServletRequest request) {
         try {
-            List<Company> listCompanies = CompanyDAO.INSTANCE
-                    .getListCompanies(0, 100);
+            List<Company> listCompanies = companyDAO.getListCompanies(0, 100);
             List<CompanyDTO> listCompaniesDTO = new ArrayList<>();
             listCompanies.forEach(
                     company -> listCompaniesDTO.add(CompanyMapperDTO.INSTANCE
@@ -95,10 +99,10 @@ public class AddComputerServlet extends HttpServlet {
         computerDTO.setIntroduced(introduced);
         computerDTO.setDiscontinued(discontinued);
         computerDTO.setName(computerName);
-        Computer computer = ComputerMapperDTO.INSTANCE
+        Computer computer = ComputerMapperDTO
                 .createcomputerfromcomputerDTO(computerDTO);
         try {
-            ComputerService.INSTANCE.createComputer(computer);
+            computerService.createComputer(computer);
         } catch (ValidationException e) {
             String error = "" + e.getMessage();
             logger.error("{}", e);

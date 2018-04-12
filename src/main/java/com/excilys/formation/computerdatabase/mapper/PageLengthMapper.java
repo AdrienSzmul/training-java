@@ -3,7 +3,7 @@ package com.excilys.formation.computerdatabase.mapper;
 import com.excilys.formation.computerdatabase.paginator.PageLength;
 
 public class PageLengthMapper {
-    public PageLengthMapper() {
+    private PageLengthMapper() {
     }
 
     public static PageLength toTailleMax(Integer i) throws PageLengthException {

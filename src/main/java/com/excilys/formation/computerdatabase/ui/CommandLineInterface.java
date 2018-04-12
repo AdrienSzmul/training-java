@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import com.excilys.formation.computerdatabase.model.Company;
 import com.excilys.formation.computerdatabase.model.Company.CompanyBuilder;
@@ -31,11 +33,14 @@ import com.excilys.formation.computerdatabase.service.ValidationException;
 /**
  * @author excilys
  */
+@Controller
 public class CommandLineInterface {
     private String res;
     private final BufferedReader br;
-    private final ComputerService computerService = ComputerService.INSTANCE;
-    private final CompanyService companyService = CompanyService.INSTANCE;
+    @Autowired
+    private ComputerService computerService;
+    @Autowired
+    private CompanyService companyService;
     private static final int TAILLE_MAX = PageLength.TWENTY.getValue();
     private boolean gettingOutOfCDB = true;
     private final Logger logger = LoggerFactory
@@ -291,11 +296,11 @@ public class CommandLineInterface {
     }
 
     private void getListCompanies() {
-        readPage(new PageCompany());
+        readPage(new PageCompany(companyService));
     }
 
     private void getListComputers() {
-        readPage(new PageComputer());
+        readPage(new PageComputer(computerService));
     }
 
     private String getLineInString() {

@@ -40,8 +40,8 @@
 		<mysql.version>5.1.38</mysql.version>
 		<myqsl-jdbc.version>8.0.8-dmr</myqsl-jdbc.version>
 		<hikari.version>2.6.1</hikari.version>
-		<!--  Spring  -->
-		<spring.context.version>5.0.5.RELEASE</spring.context.version>
+		<!-- Spring -->
+		<spring.version>5.0.5.RELEASE</spring.version>
 	</properties>
 
 	<build>
@@ -147,11 +147,36 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>${myqsl-jdbc.version}</version>
 		</dependency>
-
+		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>${spring.context.version}</version>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
 		</dependency>
 
 		<dependency>

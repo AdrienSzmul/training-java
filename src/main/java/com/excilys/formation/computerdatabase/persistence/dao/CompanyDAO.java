@@ -12,6 +12,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import com.excilys.formation.computerdatabase.mapper.CompanyMapper;
 import com.excilys.formation.computerdatabase.model.Company;
@@ -20,15 +22,16 @@ import com.excilys.formation.computerdatabase.persistence.DBConnection;
 /**
  * @author excilys
  */
-public enum CompanyDAO implements ICompanyDAO {
-    INSTANCE;
+@Repository
+public class CompanyDAO implements ICompanyDAO {
     /**
      *
      */
     private final Logger logger = LoggerFactory.getLogger(CompanyDAO.class);
     private final DBConnection dbConnection = DBConnection.INSTANCE;
     private final CompanyMapper companyMapper = CompanyMapper.INSTANCE;
-    private final ComputerDAO computerDAO = ComputerDAO.INSTANCE;
+    @Autowired
+    private ComputerDAO computerDAO;
     private final String SELECT_LIST_COMPANIES = "SELECT ca_id, ca_name FROM company ORDER BY ca_id LIMIT ? OFFSET ?;";
     private final String COUNT_COMPANIES = "SELECT count(ca_id) FROM company;";
     private final String SELECT_ONE_COMPANY = "SELECT ca_id, ca_name FROM company WHERE ca_id = ?;";

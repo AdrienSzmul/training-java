@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.formation.computerdatabase.mapper.DashboardRequestMapper;
 import com.excilys.formation.computerdatabase.mapper.PageLengthException;
@@ -34,7 +37,16 @@ import com.excilys.formation.computerdatabase.servlets.constants.Views;
 @WebServlet("/Dashboard")
 public class DashboardServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final ComputerService computerService = ComputerService.INSTANCE;
+    @Autowired
+    private ComputerService computerService;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
+                config.getServletContext());
+    }
+
     private final Logger logger = LoggerFactory
             .getLogger(DashboardServlet.class);
 
@@ -51,7 +63,7 @@ public class DashboardServlet extends HttpServlet {
         if (StringUtils.isBlank(search)) {
             try {
                 PageComputerSorted computerSortedPage = DashboardRequestMapper
-                        .mapDoGet(request);
+                        .mapDoGet(request, computerService);
                 request = setRequest(request, computerSortedPage);
             } catch (ServiceException | PageLengthException e) {
                 logger.debug(e.getMessage());
@@ -59,7 +71,7 @@ public class DashboardServlet extends HttpServlet {
         } else {
             try {
                 PageComputerSearchSorted computerSearchSortedPage = DashboardRequestMapper
-                        .mapSearchDoGet(request, search);
+                        .mapSearchDoGet(request, search, computerService);
                 request = setSearchRequest(request, computerSearchSortedPage);
             } catch (ServiceException | PageLengthException e) {
                 logger.debug(e.getMessage());
@@ -117,8 +129,7 @@ public class DashboardServlet extends HttpServlet {
                 .map(Long::valueOf) // maps the string to long
                 .forEach(listDelComputerIds::add); // add the result to the list
         try {
-            ComputerService.INSTANCE
-                    .deleteMultipleComputers(listDelComputerIds);
+            computerService.deleteMultipleComputers(listDelComputerIds);
         } catch (ServiceException e) {
             logger.error(e.getMessage());
         }
