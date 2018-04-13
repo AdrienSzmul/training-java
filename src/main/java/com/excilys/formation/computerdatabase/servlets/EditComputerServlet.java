@@ -85,6 +85,8 @@ public class EditComputerServlet extends HttpServlet {
             HttpServletResponse response) throws ServletException, IOException {
         setPostRequest(request);
         setRequest(request);
+        this.getServletContext().getRequestDispatcher(Views.EDIT_COMPUTER)
+                .forward(request, response);
     }
 
     private void setPostRequest(HttpServletRequest request) {
@@ -115,11 +117,7 @@ public class EditComputerServlet extends HttpServlet {
                 .createcomputerfromcomputerDTO(computerDTO);
         try {
             computerService.updateComputer(computer);
-        } catch (ValidationException e) {
-            String error = "" + e.getMessage();
-            logger.error("{}", e);
-            request.setAttribute("error", error);
-        } catch (ServiceException e) {
+        } catch (ValidationException | ServiceException e) {
             logger.error("{}", e);
         }
     }

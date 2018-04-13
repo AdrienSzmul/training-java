@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.formation.computerdatabase.mapper.CompanyMapper;
 import com.excilys.formation.computerdatabase.model.Company;
@@ -148,24 +147,18 @@ public class CompanyDAO implements ICompanyDAO {
     }
 
     @Override
-    @Transactional
     public void deleteCompany(Company company) throws DAOException {
         logger.info("company deletion");
-        try (Connection conn = DataSourceUtils.getConnection(datasource)) {
-            conn.setAutoCommit(false);
-            try (PreparedStatement stat = conn
-                    .prepareStatement(DELETE_ONE_COMPANY)) {
-                stat.setLong(1, company.getId());
-                computerDAO.deleteMultipleComputersFromCompany(company, conn);
-                stat.executeUpdate();
-            } catch (SQLException e) {
-                conn.rollback();
-                throw new DAOException("Company delete went wrong");
-            }
-            conn.commit();
+        Connection conn = DataSourceUtils.getConnection(datasource);
+        try (PreparedStatement stat = conn
+                .prepareStatement(DELETE_ONE_COMPANY)) {
+            stat.setLong(1, company.getId());
+            computerDAO.deleteMultipleComputersFromCompany(company, conn);
+            stat.executeUpdate();
         } catch (SQLException e) {
             logger.debug(String.format(DEBUG_STRING, DELETE_ONE_COMPANY,
                     e.getMessage()));
+            throw new DAOException("Company delete went wrong");
         }
     }
 }

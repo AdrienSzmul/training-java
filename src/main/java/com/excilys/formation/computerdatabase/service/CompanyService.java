@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.formation.computerdatabase.model.Company;
 import com.excilys.formation.computerdatabase.persistence.dao.CompanyDAO;
@@ -59,6 +60,7 @@ public class CompanyService {
         }
     }
 
+    @Transactional
     public void deleteCompany(Company company) throws ServiceException {
         try {
             companyDAO.deleteCompany(company);

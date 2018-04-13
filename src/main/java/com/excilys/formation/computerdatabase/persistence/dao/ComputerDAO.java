@@ -88,22 +88,17 @@ public class ComputerDAO implements IComputerDAO {
     public void deleteMultipleComputers(List<Long> listComputerIds)
             throws DAOException {
         logger.info("delete multiple computers");
-        try (Connection conn = DataSourceUtils.getConnection(dataSource)) {
-            conn.setAutoCommit(false);
-            for (Long id : listComputerIds) {
-                try (PreparedStatement stat = conn
-                        .prepareStatement(DELETE_COMPUTER)) {
-                    stat.setLong(1, id);
-                    stat.executeUpdate();
-                } catch (SQLException e) {
-                    conn.rollback();
-                    throw new DAOException("Multi-delete went wrong");
-                }
+        Connection conn = DataSourceUtils.getConnection(dataSource);
+        for (Long id : listComputerIds) {
+            try (PreparedStatement stat = conn
+                    .prepareStatement(DELETE_COMPUTER)) {
+                stat.setLong(1, id);
+                stat.executeUpdate();
+            } catch (SQLException e) {
+                logger.debug(String.format(DEBUG_STRING, DELETE_COMPUTER,
+                        e.getMessage()));
+                throw new DAOException("Multi-delete went wrong");
             }
-            conn.commit();
-        } catch (SQLException e) {
-            logger.debug(String.format(DEBUG_STRING, DELETE_COMPUTER,
-                    e.getMessage()));
         }
     }
 
@@ -361,7 +356,7 @@ public class ComputerDAO implements IComputerDAO {
     private void setStatementsSQL(final Computer c,
             final PreparedStatement stat) throws SQLException {
         logger.info("setting values in sql requests as {}",
-                stat.getParameterMetaData());
+                stat.getParameterMetaData().toString());
         stat.setString(1, c.getName());
         if (c.getIntroduced() != null) {
             stat.setDate(2, Date.valueOf(c.getIntroduced()));
