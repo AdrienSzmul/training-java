@@ -12,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Controller;
 
 import com.excilys.formation.computerdatabase.model.Company;
@@ -322,8 +324,10 @@ public class CommandLineInterface {
      */
     public static void main(final String[] args) throws IOException,
             NullNameException, DateMismatchException, MissingCompanyException {
-        // TODO Auto-generated method stub
-        final CommandLineInterface cli = new CommandLineInterface();
+        ApplicationContext context = new ClassPathXmlApplicationContext(
+                "application-context.xml");
+        final CommandLineInterface cli = context
+                .getBean(CommandLineInterface.class);
         while (cli.gettingOutOfCDB) {
             cli.mainLoop();
         }
