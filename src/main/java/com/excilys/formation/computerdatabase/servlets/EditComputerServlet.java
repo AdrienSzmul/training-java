@@ -58,8 +58,29 @@ public class EditComputerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
         request = setRequest(request);
-        this.getServletContext().getRequestDispatcher(Views.EDIT_COMPUTER)
-                .forward(request, response);
+        String computerIdStr = request.getParameter("computerId");
+        if (!StringUtils.isBlank(computerIdStr)) {
+            Long computerId = Long.valueOf(computerIdStr);
+            try {
+                Computer computer = computerService.getComputerById(computerId);
+                request.setAttribute("computerId", computerId);
+                request.setAttribute("computerName", computer.getName());
+                request.setAttribute("computerIntroduced",
+                        computer.getIntroduced());
+                request.setAttribute("computerDiscontinued",
+                        computer.getDiscontinued());
+                request.setAttribute("computerCompany",
+                        computer.getCompany().getName());
+                this.getServletContext()
+                        .getRequestDispatcher(Views.EDIT_COMPUTER)
+                        .forward(request, response);
+            } catch (ServiceException e) {
+                logger.debug(e.getMessage());
+            }
+        } else {
+            this.getServletContext().getRequestDispatcher(Views.DASHBOARD)
+                    .forward(request, response);
+        }
     }
 
     private HttpServletRequest setRequest(HttpServletRequest request) {
@@ -95,6 +116,7 @@ public class EditComputerServlet extends HttpServlet {
         String introduced = request.getParameter("introduced");
         String discontinued = request.getParameter("discontinued");
         String companyIdStr = request.getParameter("companyId");
+        logger.info("Id de l'ordinateur: {}", computerIdStr);
         logger.info("Nom rentré: {}", computerName);
         logger.info("Date de mise en place:{}", introduced);
         logger.info("Date d'arrêt de commercialisation:{}", discontinued);

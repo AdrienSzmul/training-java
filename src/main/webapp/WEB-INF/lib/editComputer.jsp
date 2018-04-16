@@ -28,32 +28,32 @@
 				<form action="EditComputer" method="POST">
 					<fieldset>
 						<div class="form-group">
-						<input type="hidden" value="${computer.id}" name=computerId id="id" />
-							<label for="computerName">Computer name</label> <input
+						<input type="hidden" value="${computerId}" name=computerId id="id" />
+							<label for="computerName"></label> <input
 								data-validation="length alphanumeric"
 								data-validation-allowing="-_" data-validation-length="4-20"
 								data-validation-error-msg="Only alpahanu and between 4 to 20 char"
 								type="text" class="form-control" id="computerName"
-								name="computerName" placeholder="Computer name">
+								name="computerName" placeholder="Computer name" value="${computerName}">
 						</div>
 						<div class="form-group">
-							<label for="introduced">Introduced date</label> <input
+							<label for="introduced"></label> <input
 								data-validation="date" data-validation-optional="true"
 								data-validation-error-msg="Date format is dd/mm/yyyy"
 								type="date" class="form-control" id="introduced"
-								name="introduced" placeholder="Introduced date">
+								name="introduced" placeholder="Introduced date" value="${computerIntroduced}">
 						</div>
 						<div class="form-group">
-							<label for="discontinued">Discontinued date</label> <input
+							<label for="discontinued"></label> <input
 								data-validation="date" data-validation-optional="true"
 								data-validation-error-msg="Date format is dd/mm/yyyy"
 								type="date" class="form-control" id="discontinued"
-								name="discontinued" placeholder="Discontinued date">
+								name="discontinued" placeholder="Discontinued date" value ="${computerDiscontinued}">
 						</div>
 						<div class="form-group">
-							<label for="companyId">Company</label> <select
+							<label for="companyId"></label> <select
 								class="form-control" id="companyId" name="companyId">
-								<option value="">--</option>
+								<option value="${computerCompany}"></option>
 								<c:forEach items="${listCompanies}" var="company">
 									<option value="${company.id}">${company.name}</option>
 
