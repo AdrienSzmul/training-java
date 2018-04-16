@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,7 +14,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.excilys.formation.computerdatabase.mapper.DashboardRequestMapper;
 import com.excilys.formation.computerdatabase.mapper.PageLengthException;
@@ -29,24 +29,15 @@ import com.excilys.formation.computerdatabase.paginator.dto.PageDTO;
 import com.excilys.formation.computerdatabase.paginator.dto.PageSearchDTO;
 import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.ServiceException;
-import com.excilys.formation.computerdatabase.servlets.constants.Views;
 
 /**
  * Servlet implementation class Dashboard
  */
-@WebServlet("/Dashboard")
-public class DashboardServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+@Controller
+@RequestMapping("/dashboard")
+public class DashboardServlet {
     @Autowired
     private ComputerService computerService;
-
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
-                config.getServletContext());
-    }
-
     private final Logger logger = LoggerFactory
             .getLogger(DashboardServlet.class);
 
@@ -56,7 +47,7 @@ public class DashboardServlet extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
      *      response)
      */
-    @Override
+    @RequestMapping(method = RequestMethod.GET)
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
         String search = request.getParameter("search");
@@ -77,8 +68,6 @@ public class DashboardServlet extends HttpServlet {
                 logger.debug(e.getMessage());
             }
         }
-        this.getServletContext().getRequestDispatcher(Views.DASHBOARD)
-                .forward(request, response);
     }
 
     private HttpServletRequest setSearchRequest(HttpServletRequest request,
@@ -117,7 +106,7 @@ public class DashboardServlet extends HttpServlet {
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
      *      response)
      */
-    @Override
+    @RequestMapping(method = RequestMethod.POST)
     protected void doPost(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
         String delComputerIdsStr = request.getParameter("selection");
