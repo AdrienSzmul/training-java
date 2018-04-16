@@ -3,7 +3,6 @@
  */
 package com.excilys.formation.computerdatabase.persistence.dao;
 
-import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,12 +11,14 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.formation.computerdatabase.mapper.ComputerMapper;
@@ -40,47 +41,27 @@ public class ComputerDAO implements IComputerDAO {
     private final String DELETE_COMPUTER = "DELETE FROM computer WHERE cu_id = ?";
     private final String DELETE_COMPUTERS_COMPANY = "DELETE FROM computer WHERE cu_ca_id = ?";
     private final String UPDATE_COMPUTER = "UPDATE computer SET cu_name = ?, cu_introduced = ?, cu_discontinued = ?, cu_ca_id = ? WHERE cu_id = ?";
-    private final String DEBUG_STRING = "%s : %s";
-    private final String EXCEPTION_DAO = "Un problème d'accès à la BDD a eu lieu";
     @Autowired
-    private DataSource dataSource;
+    private JdbcTemplate jdbcTemplate;
 
     @Override
     public Long createComputer(final Computer c) throws DAOException {
         logger.info("create Computer");
-        Long createdId = null;
-        try (Connection conn = DataSourceUtils.getConnection(dataSource);
-                PreparedStatement stat = conn.prepareStatement(CREATE_COMPUTER,
-                        Statement.RETURN_GENERATED_KEYS)) {
-            setStatementsSQL(c, stat);
-            stat.executeUpdate();
-            try (ResultSet rs = stat.getGeneratedKeys()) {
-                if (rs.next()) {
-                    createdId = rs.getLong(1);
-                }
-            }
-            logger.debug("{}", createdId);
-        } catch (SQLException e) {
-            logger.debug(String.format(DEBUG_STRING, CREATE_COMPUTER,
-                    e.getMessage()));
-            throw new DAOException(EXCEPTION_DAO);
-        }
-        return createdId;
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(CREATE_COMPUTER,
+                    Statement.RETURN_GENERATED_KEYS);
+            setStatementsSQL(c, ps);
+            return ps;
+        }, keyHolder);
+        Number createdIdNbr = keyHolder.getKey();
+        return createdIdNbr.longValue();
     }
 
     @Override
     public void deleteComputer(final Computer c) throws DAOException {
         logger.info("delete Computer");
-        try (Connection conn = DataSourceUtils.getConnection(dataSource);
-                PreparedStatement stat = conn
-                        .prepareStatement(DELETE_COMPUTER)) {
-            stat.setLong(1, c.getId());
-            stat.executeUpdate();
-        } catch (SQLException e) {
-            logger.debug(String.format(DEBUG_STRING, DELETE_COMPUTER,
-                    e.getMessage()));
-            throw new DAOException(EXCEPTION_DAO);
-        }
+        jdbcTemplate.update(DELETE_COMPUTER, new Object[] { c.getId() });
     }
 
     @Override
@@ -88,33 +69,17 @@ public class ComputerDAO implements IComputerDAO {
     public void deleteMultipleComputers(List<Long> listComputerIds)
             throws DAOException {
         logger.info("delete multiple computers");
-        Connection conn = DataSourceUtils.getConnection(dataSource);
         for (Long id : listComputerIds) {
-            try (PreparedStatement stat = conn
-                    .prepareStatement(DELETE_COMPUTER)) {
-                stat.setLong(1, id);
-                stat.executeUpdate();
-            } catch (SQLException e) {
-                logger.debug(String.format(DEBUG_STRING, DELETE_COMPUTER,
-                        e.getMessage()));
-                throw new DAOException("Multi-delete went wrong");
-            }
+            jdbcTemplate.update(DELETE_COMPUTER, new Object[] { id });
         }
     }
 
     @Override
-    public void deleteMultipleComputersFromCompany(Company company,
-            Connection conn) throws DAOException, SQLException {
+    public void deleteMultipleComputersFromCompany(Company company)
+            throws DAOException, SQLException {
         logger.info("delete computers with company id");
-        try (PreparedStatement stat = conn
-                .prepareStatement(DELETE_COMPUTERS_COMPANY)) {
-            stat.setLong(1, company.getId());
-            stat.executeUpdate();
-        } catch (SQLException e) {
-            conn.rollback();
-            throw new DAOException(
-                    "Multi-delete of computers with company id went wrong");
-        }
+        jdbcTemplate.update(DELETE_COMPUTERS_COMPANY,
+                new Object[] { company.getId() });
     }
 
     @Override
@@ -128,20 +93,17 @@ public class ComputerDAO implements IComputerDAO {
         } else {
             newRequest = String.format(SELECT_LIST_COMPUTERS, orderby, "DESC");
         }
-        try (Connection conn = DataSourceUtils.getConnection(dataSource);
-                PreparedStatement stat = conn.prepareStatement(newRequest)) {
-            stat.setInt(1, eltNumber);
-            stat.setInt(2, offset);
-            try (ResultSet rs = stat.executeQuery();) {
-                while (rs.next()) {
-                    listComputers.add(computerMapper.createComputer(rs));
-                }
-            }
-        } catch (SQLException e) {
-            logger.debug(String.format(DEBUG_STRING, SELECT_LIST_COMPUTERS,
-                    e.getMessage()));
-            throw new DAOException(EXCEPTION_DAO);
-        }
+        listComputers = jdbcTemplate.query(newRequest,
+                new PreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps)
+                            throws SQLException {
+                        ps.setInt(1, eltNumber);
+                        ps.setInt(2, offset);
+                    }
+                }, (ResultSet st, int arg1) -> {
+                    return computerMapper.createComputer(st);
+                });
         return listComputers;
     }
 
@@ -159,23 +121,20 @@ public class ComputerDAO implements IComputerDAO {
             newRequest = String.format(SELECT_LIST_COMPUTERS_SEARCH, orderby,
                     "DESC");
         }
-        try (Connection conn = DataSourceUtils.getConnection(dataSource);
-                PreparedStatement stat = conn.prepareStatement(newRequest)) {
-            String tmpSearch = "%" + search + "%";
-            stat.setString(1, tmpSearch);
-            stat.setString(2, tmpSearch);
-            stat.setInt(3, eltNumber);
-            stat.setInt(4, offset);
-            try (ResultSet rs = stat.executeQuery();) {
-                while (rs.next()) {
-                    listComputers.add(computerMapper.createComputer(rs));
-                }
-            }
-        } catch (SQLException e) {
-            logger.debug(String.format(DEBUG_STRING,
-                    SELECT_LIST_COMPUTERS_SEARCH, e.getMessage()));
-            throw new DAOException(EXCEPTION_DAO);
-        }
+        listComputers = jdbcTemplate.query(newRequest,
+                new PreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps)
+                            throws SQLException {
+                        String tmpSearch = "%" + search + "%";
+                        ps.setString(1, tmpSearch);
+                        ps.setString(2, tmpSearch);
+                        ps.setInt(3, eltNumber);
+                        ps.setInt(4, offset);
+                    }
+                }, (ResultSet st, int arg1) -> {
+                    return computerMapper.createComputer(st);
+                });
         return listComputers;
     }
 
@@ -186,20 +145,17 @@ public class ComputerDAO implements IComputerDAO {
         List<Computer> listComputers = new ArrayList<>();
         String newRequest = String.format(SELECT_LIST_COMPUTERS, "cu_name",
                 "ASC");
-        try (Connection conn = DataSourceUtils.getConnection(dataSource);
-                PreparedStatement stat = conn.prepareStatement(newRequest)) {
-            stat.setInt(1, eltNumber);
-            stat.setInt(2, offset);
-            try (ResultSet rs = stat.executeQuery();) {
-                while (rs.next()) {
-                    listComputers.add(computerMapper.createComputer(rs));
-                }
-            }
-        } catch (SQLException e) {
-            logger.debug(String.format(DEBUG_STRING, SELECT_LIST_COMPUTERS,
-                    e.getMessage()));
-            throw new DAOException(EXCEPTION_DAO);
-        }
+        listComputers = jdbcTemplate.query(newRequest,
+                new PreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps)
+                            throws SQLException {
+                        ps.setInt(1, eltNumber);
+                        ps.setInt(2, offset);
+                    }
+                }, (ResultSet st, int arg1) -> {
+                    return computerMapper.createComputer(st);
+                });
         return listComputers;
     }
 
@@ -208,84 +164,49 @@ public class ComputerDAO implements IComputerDAO {
             String search) throws DAOException {
         final int offset = pageNumber * eltNumber;
         List<Computer> listComputers = new ArrayList<>();
-        try (Connection conn = DataSourceUtils.getConnection(dataSource);
-                PreparedStatement stat = conn
-                        .prepareStatement(SELECT_LIST_COMPUTERS_SEARCH)) {
-            String tmpSearch = "%" + search + "%";
-            stat.setString(1, tmpSearch);
-            stat.setString(2, tmpSearch);
-            stat.setInt(3, eltNumber);
-            stat.setInt(4, offset);
-            try (ResultSet rs = stat.executeQuery();) {
-                while (rs.next()) {
-                    listComputers.add(computerMapper.createComputer(rs));
-                }
-            }
-        } catch (SQLException e) {
-            logger.debug(String.format(DEBUG_STRING,
-                    SELECT_LIST_COMPUTERS_SEARCH, e.getMessage()));
-            throw new DAOException(EXCEPTION_DAO);
-        }
+        listComputers = jdbcTemplate.query(SELECT_LIST_COMPUTERS_SEARCH,
+                new PreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps)
+                            throws SQLException {
+                        String tmpSearch = "%" + search + "%";
+                        ps.setString(1, tmpSearch);
+                        ps.setString(2, tmpSearch);
+                        ps.setInt(3, eltNumber);
+                        ps.setInt(4, offset);
+                    }
+                }, (ResultSet st, int arg1) -> {
+                    return computerMapper.createComputer(st);
+                });
         return listComputers;
-    }
-
-    @Override
-    // deprecative
-    public Computer showDetails(final Computer c) throws DAOException {
-        logger.info("show Details Computer");
-        Computer newComputer = null;
-        try (Connection conn = DataSourceUtils.getConnection(dataSource);
-                PreparedStatement stat = conn
-                        .prepareStatement(SELECT_ONE_COMPUTER)) {
-            stat.setLong(1, c.getId());
-            try (ResultSet rs = stat.executeQuery()) {
-                if (rs.next()) {
-                    newComputer = computerMapper.createComputer(rs);
-                }
-            }
-        } catch (SQLException e) {
-            logger.debug(String.format(DEBUG_STRING, SELECT_ONE_COMPUTER,
-                    e.getMessage()));
-            throw new DAOException(EXCEPTION_DAO);
-        }
-        return newComputer;
     }
 
     @Override
     public Computer getComputerById(Long id) throws DAOException {
         logger.info("get one Computer");
-        Computer computer = null;
-        try (Connection conn = DataSourceUtils.getConnection(dataSource);
-                PreparedStatement stat = conn
-                        .prepareStatement(SELECT_ONE_COMPUTER)) {
-            stat.setLong(1, id);
-            try (ResultSet rs = stat.executeQuery()) {
-                if (rs.next()) {
-                    computer = computerMapper.createComputer(rs);
-                }
-            }
-        } catch (SQLException e) {
-            logger.debug(String.format(DEBUG_STRING, SELECT_ONE_COMPUTER,
-                    e.getMessage()));
-            throw new DAOException(EXCEPTION_DAO);
+        Computer computer;
+        try {
+            computer = jdbcTemplate.queryForObject(SELECT_ONE_COMPUTER,
+                    new Object[] { id }, (ResultSet st, int arg1) -> {
+                        return computerMapper.createComputer(st);
+                    });
+            return computer;
+        } catch (EmptyResultDataAccessException e) {
+            logger.debug("Id doesn't match anything");
+            return null;
         }
-        return computer;
     }
 
     @Override
     public void updateComputer(final Computer c) throws DAOException {
         logger.info("update Computer");
-        try (Connection conn = DataSourceUtils.getConnection(dataSource);
-                PreparedStatement stat = conn
-                        .prepareStatement(UPDATE_COMPUTER)) {
-            setStatementsSQL(c, stat);
-            stat.setLong(5, c.getId());
-            stat.executeUpdate();
-        } catch (SQLException e) {
-            logger.debug(String.format(DEBUG_STRING, UPDATE_COMPUTER,
-                    e.getMessage()));
-            throw new DAOException(EXCEPTION_DAO);
-        }
+        jdbcTemplate.update(UPDATE_COMPUTER, new PreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps) throws SQLException {
+                setStatementsSQL(c, ps);
+                ps.setLong(5, c.getId());
+            }
+        });
     }
 
     @Override
@@ -307,40 +228,16 @@ public class ComputerDAO implements IComputerDAO {
     public int getCountComputers() throws DAOException {
         logger.info("count Computers");
         int tailleListComputers = 0;
-        try (Connection conn = DataSourceUtils.getConnection(dataSource);
-                PreparedStatement stat = conn
-                        .prepareStatement(COUNT_COMPUTERS)) {
-            try (ResultSet rs = stat.executeQuery()) {
-                rs.next();
-                tailleListComputers = rs.getInt(1);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            logger.debug(String.format(DEBUG_STRING, COUNT_COMPUTERS,
-                    e.getMessage()));
-            throw new DAOException(EXCEPTION_DAO);
-        }
+        tailleListComputers = jdbcTemplate.queryForObject(COUNT_COMPUTERS,
+                Integer.class);
         return tailleListComputers;
     }
 
     @Override
     public int getCountComputersSearch(String search) throws DAOException {
         int nbrComputersResult = 0;
-        try (Connection conn = DataSourceUtils.getConnection(dataSource);
-                PreparedStatement stat = conn
-                        .prepareStatement(COUNT_COMPUTERS_SEARCH)) {
-            String tmpSearch = "%" + search + "%";
-            stat.setString(1, tmpSearch);
-            stat.setString(2, tmpSearch);
-            try (ResultSet rs = stat.executeQuery();) {
-                rs.next();
-                nbrComputersResult = rs.getInt(1);
-            }
-        } catch (SQLException e) {
-            logger.debug(String.format(DEBUG_STRING, COUNT_COMPUTERS_SEARCH,
-                    e.getMessage()));
-            throw new DAOException(EXCEPTION_DAO);
-        }
+        nbrComputersResult = jdbcTemplate.queryForObject(COUNT_COMPUTERS_SEARCH,
+                Integer.class, new Object[] { search, search });
         return nbrComputersResult;
     }
 

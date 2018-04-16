@@ -3,19 +3,17 @@
  */
 package com.excilys.formation.computerdatabase.persistence.dao;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.formation.computerdatabase.mapper.CompanyMapper;
@@ -34,7 +32,7 @@ public class CompanyDAO implements ICompanyDAO {
     @Autowired
     private ComputerDAO computerDAO;
     @Autowired
-    private DataSource datasource;
+    private JdbcTemplate jdbcTemplate;
     private final String SELECT_LIST_COMPANIES = "SELECT ca_id, ca_name FROM company ORDER BY ca_id LIMIT ? OFFSET ?;";
     private final String COUNT_COMPANIES = "SELECT count(ca_id) FROM company;";
     private final String SELECT_ONE_COMPANY = "SELECT ca_id, ca_name FROM company WHERE ca_id = ?;";
@@ -46,99 +44,44 @@ public class CompanyDAO implements ICompanyDAO {
     public List<Company> getListCompanies(final int pageNumber,
             final int taille) throws DAOException {
         logger.info("get List Companies");
-        final List<Company> listCompanies = new ArrayList<>();
-        try (Connection conn = DataSourceUtils.getConnection(datasource);
-                PreparedStatement stat = conn
-                        .prepareStatement(SELECT_LIST_COMPANIES)) {
-            stat.setInt(1, taille);
-            stat.setInt(2, pageNumber * taille);
-            try (ResultSet rs = stat.executeQuery()) {
-                while (rs.next()) {
-                    listCompanies.add(companyMapper.createCompany(rs));
-                }
-            }
-        } catch (SQLException e) {
-            logger.debug(String.format(DEBUG_STRING, SELECT_LIST_COMPANIES,
-                    e.getMessage()));
-            throw new DAOException(EXCEPTION_DAO);
-        }
+        List<Company> listCompanies = new ArrayList<>();
+        listCompanies = jdbcTemplate.query(SELECT_LIST_COMPANIES,
+                new PreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps)
+                            throws SQLException {
+                        ps.setInt(1, taille);
+                        ps.setInt(2, pageNumber * taille);
+                    }
+                }, (ResultSet st, int arg1) -> {
+                    return CompanyMapper.INSTANCE.createCompany(st);
+                });
         return listCompanies;
     }
 
     @Override
     public int getPageCountCompanies(final int taille) throws DAOException {
         logger.info("count Company Pages");
-        int pageNumber = 0;
-        try (Connection conn = DataSourceUtils.getConnection(datasource);
-                PreparedStatement stat = conn.prepareStatement(COUNT_COMPANIES);
-                ResultSet rs = stat.executeQuery()) {
-            rs.next();
-            final int tailleListCompanies = rs.getInt(1);
-            pageNumber = tailleListCompanies / taille;
-        } catch (SQLException e) {
-            logger.debug(String.format(DEBUG_STRING, COUNT_COMPANIES,
-                    e.getMessage()));
-            throw new DAOException(EXCEPTION_DAO);
-        }
-        return pageNumber;
+        int companyCount = 0;
+        companyCount = getCountCompanies();
+        return companyCount / taille;
     }
 
     @Override
     public int getCountCompanies() throws DAOException {
         logger.info("count Companies");
         int nombreRes = 0;
-        try (Connection conn = DataSourceUtils.getConnection(datasource);
-                PreparedStatement stat = conn.prepareStatement(COUNT_COMPANIES);
-                ResultSet rs = stat.executeQuery()) {
-            rs.next();
-            nombreRes = rs.getInt(1);
-        } catch (SQLException e) {
-            logger.debug(String.format(DEBUG_STRING, COUNT_COMPANIES,
-                    e.getMessage()));
-            throw new DAOException(EXCEPTION_DAO);
-        }
+        nombreRes = jdbcTemplate.queryForObject(COUNT_COMPANIES, Integer.class);
         return nombreRes;
-    }
-
-    @Override
-    // deprecative
-    public Company showDetails(final Company c) throws DAOException {
-        logger.info("show Details Company");
-        try (Connection conn = DataSourceUtils.getConnection(datasource);
-                PreparedStatement stat = conn
-                        .prepareStatement(SELECT_ONE_COMPANY)) {
-            stat.setLong(1, c.getId());
-            try (ResultSet rs = stat.executeQuery()) {
-                if (rs.next()) {
-                    companyMapper.createCompany(rs);
-                }
-            }
-        } catch (SQLException e) {
-            logger.debug(String.format(DEBUG_STRING, SELECT_ONE_COMPANY,
-                    e.getMessage()));
-            throw new DAOException(EXCEPTION_DAO);
-        }
-        return c;
     }
 
     @Override
     public Company getCompanyById(Long id) throws DAOException {
         logger.info("get one Company");
-        Company company = null;
-        try (Connection conn = DataSourceUtils.getConnection(datasource);
-                PreparedStatement stat = conn
-                        .prepareStatement(SELECT_ONE_COMPANY)) {
-            stat.setLong(1, id);
-            try (ResultSet rs = stat.executeQuery()) {
-                if (rs.next()) {
-                    company = companyMapper.createCompany(rs);
-                }
-            }
-        } catch (SQLException e) {
-            logger.debug(String.format(DEBUG_STRING, SELECT_ONE_COMPANY,
-                    e.getMessage()));
-            throw new DAOException(EXCEPTION_DAO);
-        }
+        Company company = jdbcTemplate.queryForObject(SELECT_ONE_COMPANY,
+                new Object[] { id }, (ResultSet st, int arg1) -> {
+                    return CompanyMapper.INSTANCE.createCompany(st);
+                });
         return company;
     }
 
@@ -147,18 +90,11 @@ public class CompanyDAO implements ICompanyDAO {
     }
 
     @Override
-    public void deleteCompany(Company company) throws DAOException {
+    public void deleteCompany(Company company)
+            throws DAOException, SQLException {
         logger.info("company deletion");
-        Connection conn = DataSourceUtils.getConnection(datasource);
-        try (PreparedStatement stat = conn
-                .prepareStatement(DELETE_ONE_COMPANY)) {
-            stat.setLong(1, company.getId());
-            computerDAO.deleteMultipleComputersFromCompany(company, conn);
-            stat.executeUpdate();
-        } catch (SQLException e) {
-            logger.debug(String.format(DEBUG_STRING, DELETE_ONE_COMPANY,
-                    e.getMessage()));
-            throw new DAOException("Company delete went wrong");
-        }
+        jdbcTemplate.update(DELETE_ONE_COMPANY,
+                new Object[] { company.getId() });
+        computerDAO.deleteMultipleComputersFromCompany(company);
     }
 }

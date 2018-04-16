@@ -48,13 +48,16 @@ public class ComputerDAOTest {
                 .withIntroduced(LocalDate.parse("2012-12-23"))
                 .withDiscontinued(null).withCompany(company).build();
         computer.setId(computerDAO.createComputer(computer));
-        assertEquals(computerDAO.showDetails(computer).getName(), "José");
-        assertEquals(computerDAO.showDetails(computer).getIntroduced(),
+        assertEquals(computerDAO.getComputerById(computer.getId()).getName(),
+                "José");
+        assertEquals(
+                computerDAO.getComputerById(computer.getId()).getIntroduced(),
                 LocalDate.parse("2012-12-23"));
-        assertNull(computerDAO.showDetails(computer).getDiscontinued());
-        computerDAO.showDetails(computer).getCompany().getName();
-        assertEquals(computerDAO.showDetails(computer).getCompany().getName(),
-                "Apple Inc.");
+        assertNull(computerDAO.getComputerById(computer.getId())
+                .getDiscontinued());
+        computerDAO.getComputerById(computer.getId()).getCompany().getName();
+        assertEquals(computerDAO.getComputerById(computer.getId()).getCompany()
+                .getName(), "Apple Inc.");
     }
 
     @Test
@@ -65,7 +68,7 @@ public class ComputerDAOTest {
                 .withDiscontinued(null).withCompany(company).build();
         computer.setId(computerDAO.createComputer(computer));
         computerDAO.deleteComputer(computer);
-        assertNull(computerDAO.showDetails(computer));
+        assertNull(computerDAO.getComputerById(computer.getId()));
     }
 
     @Test
@@ -76,13 +79,13 @@ public class ComputerDAOTest {
     }
 
     @Test
-    public void testShowDetails() throws DAOException {
+    public void testGetComputerById() throws DAOException {
         Company company = new CompanyBuilder().withId(1l).build();
         Computer computer = new ComputerBuilder().withName("José")
                 .withIntroduced(LocalDate.parse("2012-12-23"))
                 .withDiscontinued(null).withCompany(company).build();
         computer.setId(computerDAO.createComputer(computer));
-        assertNotNull(computerDAO.showDetails(computer));
+        assertNotNull(computerDAO.getComputerById(computer.getId()));
     }
 
     @Test
@@ -95,6 +98,7 @@ public class ComputerDAOTest {
         Computer computerNew = new ComputerBuilder().withName("Josée")
                 .withId(computer.getId()).build();
         computerDAO.updateComputer(computerNew);
-        assertEquals(computerDAO.showDetails(computer).getName(), "Josée");
+        assertEquals(computerDAO.getComputerById(computer.getId()).getName(),
+                "Josée");
     }
 }

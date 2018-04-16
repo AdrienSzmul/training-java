@@ -3,6 +3,7 @@
  */
 package com.excilys.formation.computerdatabase.service;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,7 @@ public class CompanyService {
     public void deleteCompany(Company company) throws ServiceException {
         try {
             companyDAO.deleteCompany(company);
-        } catch (DAOException e) {
+        } catch (DAOException | SQLException e) {
             throw new ServiceException(e.getMessage());
         }
     }

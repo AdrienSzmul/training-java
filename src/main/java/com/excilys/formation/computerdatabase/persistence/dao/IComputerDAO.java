@@ -3,7 +3,6 @@
  */
 package com.excilys.formation.computerdatabase.persistence.dao;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -19,8 +18,6 @@ public interface IComputerDAO {
     abstract void updateComputer(Computer c) throws DAOException;
 
     abstract void deleteComputer(Computer c) throws DAOException;
-
-    abstract Computer showDetails(Computer c) throws DAOException;
 
     abstract List<Computer> getListComputers(int pageNumber, int eltNumber)
             throws DAOException;
@@ -48,6 +45,6 @@ public interface IComputerDAO {
     int getPageCountComputersSearch(int eltNumber, String search)
             throws DAOException;
 
-    void deleteMultipleComputersFromCompany(Company company, Connection conn)
+    void deleteMultipleComputersFromCompany(Company company)
             throws DAOException, SQLException;
 }

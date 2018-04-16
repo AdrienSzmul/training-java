@@ -108,14 +108,6 @@ public class ComputerService {
         }
     }
 
-    public Computer showDetails(final Computer c) throws ServiceException {
-        try {
-            return computerDAO.showDetails(c);
-        } catch (DAOException e) {
-            throw new ServiceException(e.getMessage());
-        }
-    }
-
     public Computer getComputerById(final Long id) throws ServiceException {
         try {
             return computerDAO.getComputerById(id);
