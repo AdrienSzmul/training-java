@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tag"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -8,11 +9,17 @@
 <title>Computer Database</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="utf-8">
+<spring:url value="/static/css/bootstrap.min.css" var="cssBoot"/>
+<spring:url value="/static/css/font-awesome.css" var="fontAwe"/>
+<spring:url value="/static/css/main.css" var="mainCss"/>
+
 <!-- Bootstrap -->
-<link href="static/css/bootstrap.min.css" rel="stylesheet"
+<link href="${cssBoot}"
+	rel="stylesheet" media="screen">
+<link href="${fontAwe}"
+	rel="stylesheet" media="screen">
+<link href="${mainCss}" rel="stylesheet"
 	media="screen">
-<link href="static/css/font-awesome.css" rel="stylesheet" media="screen">
-<link href="static/css/main.css" rel="stylesheet" media="screen">
 </head>
 <body>
 	<header class="navbar navbar-inverse navbar-fixed-top">
@@ -105,9 +112,12 @@
 	<footer class="navbar-fixed-bottom"> <tag:eltNumber /> <tag:pageNumber />
 
 	</footer>
-	<script src="static/js/jquery.min.js"></script>
-	<script src="static/js/bootstrap.min.js"></script>
-	<script src="static/js/dashboard.js"></script>
+	<spring:url value="/static/js/jquery.min.js" var="jQuery"/>
+	<spring:url value="/static/js/bootstrap.min.js" var="jsBoot"/>
+	<spring:url value="/static/js/dashboard.js" var="jsDash"/>
+	<script src="${jQuery}"></script>
+	<script src="${jsBoot}"></script>
+	<script src="${jsDash}"></script>
 
 </body>
 </html>

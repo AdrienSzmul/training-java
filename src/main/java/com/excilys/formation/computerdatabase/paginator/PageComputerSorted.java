@@ -1,8 +1,8 @@
 package com.excilys.formation.computerdatabase.paginator;
 
+import com.excilys.formation.computerdatabase.controllers.constants.ColumnNames;
 import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.ServiceException;
-import com.excilys.formation.computerdatabase.servlets.constants.ColumnNames;
 
 public class PageComputerSorted extends PageComputer {
     private ColumnNames orderby = ColumnNames.NAME;

@@ -1,4 +1,4 @@
-package com.excilys.formation.computerdatabase.servlets;
+package com.excilys.formation.computerdatabase.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import com.excilys.formation.computerdatabase.controllers.constants.Views;
 import com.excilys.formation.computerdatabase.mapper.CompanyMapperDTO;
 import com.excilys.formation.computerdatabase.mapper.ComputerMapperDTO;
 import com.excilys.formation.computerdatabase.model.Company;
@@ -28,16 +29,15 @@ import com.excilys.formation.computerdatabase.persistence.dao.DAOException;
 import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.ServiceException;
 import com.excilys.formation.computerdatabase.service.ValidationException;
-import com.excilys.formation.computerdatabase.servlets.constants.Views;
 
 /**
- * Servlet implementation class AddComputerServlet
+ * Servlet implementation class EditComputerServlet
  */
-@WebServlet("/AddComputer")
-public class AddComputerServlet extends HttpServlet {
+@WebServlet("/EditComputer")
+public class EditComputerServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory
-            .getLogger(AddComputerServlet.class);
+            .getLogger(EditComputerServlet.class);
     @Autowired
     private CompanyDAO companyDAO;
     @Autowired
@@ -58,8 +58,29 @@ public class AddComputerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
         request = setRequest(request);
-        this.getServletContext().getRequestDispatcher(Views.ADD_COMPUTER)
-                .forward(request, response);
+        String computerIdStr = request.getParameter("computerId");
+        if (!StringUtils.isBlank(computerIdStr)) {
+            Long computerId = Long.valueOf(computerIdStr);
+            try {
+                Computer computer = computerService.getComputerById(computerId);
+                request.setAttribute("computerId", computerId);
+                request.setAttribute("computerName", computer.getName());
+                request.setAttribute("computerIntroduced",
+                        computer.getIntroduced());
+                request.setAttribute("computerDiscontinued",
+                        computer.getDiscontinued());
+                request.setAttribute("computerCompany",
+                        computer.getCompany().getName());
+                this.getServletContext()
+                        .getRequestDispatcher(Views.EDIT_COMPUTER)
+                        .forward(request, response);
+            } catch (ServiceException e) {
+                logger.debug(e.getMessage());
+            }
+        } else {
+            this.getServletContext().getRequestDispatcher(Views.DASHBOARD)
+                    .forward(request, response);
+        }
     }
 
     private HttpServletRequest setRequest(HttpServletRequest request) {
@@ -85,23 +106,29 @@ public class AddComputerServlet extends HttpServlet {
             HttpServletResponse response) throws ServletException, IOException {
         setPostRequest(request);
         setRequest(request);
-        this.getServletContext().getRequestDispatcher(Views.ADD_COMPUTER)
+        this.getServletContext().getRequestDispatcher(Views.EDIT_COMPUTER)
                 .forward(request, response);
     }
 
     private void setPostRequest(HttpServletRequest request) {
+        String computerIdStr = request.getParameter("computerId");
         String computerName = request.getParameter("computerName");
         String introduced = request.getParameter("introduced");
         String discontinued = request.getParameter("discontinued");
         String companyIdStr = request.getParameter("companyId");
+        logger.info("Id de l'ordinateur: {}", computerIdStr);
         logger.info("Nom rentré: {}", computerName);
         logger.info("Date de mise en place:{}", introduced);
         logger.info("Date d'arrêt de commercialisation:{}", discontinued);
         logger.info("Id de la compagnie:{}", companyIdStr);
         ComputerDTO computerDTO = new ComputerDTO();
+        if (!StringUtils.isBlank(computerIdStr)) {
+            int computerId = Integer.valueOf(computerIdStr);
+            computerDTO.setId(computerId);
+        }
         if (!StringUtils.isBlank(companyIdStr)) {
             CompanyDTO companyDTO = new CompanyDTO();
-            int companyId = Integer.parseInt(companyIdStr);
+            int companyId = Integer.valueOf(companyIdStr);
             companyDTO.setId(companyId);
             computerDTO.setCompany(companyDTO);
         }
@@ -111,12 +138,8 @@ public class AddComputerServlet extends HttpServlet {
         Computer computer = ComputerMapperDTO
                 .createcomputerfromcomputerDTO(computerDTO);
         try {
-            computerService.createComputer(computer);
-        } catch (ValidationException e) {
-            String error = "" + e.getMessage();
-            logger.error("{}", e);
-            request.setAttribute("error", error);
-        } catch (ServiceException e) {
+            computerService.updateComputer(computer);
+        } catch (ValidationException | ServiceException e) {
             logger.error("{}", e);
         }
     }

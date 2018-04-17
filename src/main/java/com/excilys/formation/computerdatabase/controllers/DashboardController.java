@@ -1,9 +1,10 @@
-package com.excilys.formation.computerdatabase.servlets;
+package com.excilys.formation.computerdatabase.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,7 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
+import com.excilys.formation.computerdatabase.controllers.constants.Views;
 import com.excilys.formation.computerdatabase.mapper.DashboardRequestMapper;
 import com.excilys.formation.computerdatabase.mapper.PageLengthException;
 import com.excilys.formation.computerdatabase.mapper.PageMapperDTO;
@@ -34,12 +38,11 @@ import com.excilys.formation.computerdatabase.service.ServiceException;
  * Servlet implementation class Dashboard
  */
 @Controller
-@RequestMapping("/dashboard")
-public class DashboardServlet {
+public class DashboardController {
     @Autowired
     private ComputerService computerService;
     private final Logger logger = LoggerFactory
-            .getLogger(DashboardServlet.class);
+            .getLogger(DashboardController.class);
 
     /**
      * @throws IOException
@@ -47,30 +50,32 @@ public class DashboardServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
      *      response)
      */
-    @RequestMapping(method = RequestMethod.GET)
-    protected void doGet(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
-        String search = request.getParameter("search");
-        if (StringUtils.isBlank(search)) {
+    @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
+    protected ModelAndView doGet(@RequestParam Map<String, String> allParams)
+            throws ServletException, IOException {
+        ModelAndView mav = new ModelAndView(Views.DASHBOARD);
+        if (StringUtils.isBlank(allParams.get("search"))) {
             try {
                 PageComputerSorted computerSortedPage = DashboardRequestMapper
-                        .mapDoGet(request, computerService);
-                request = setRequest(request, computerSortedPage);
+                        .mapDoGet(allParams, computerService);
+                mav = setRequest(mav, computerSortedPage);
             } catch (ServiceException | PageLengthException e) {
                 logger.debug(e.getMessage());
             }
         } else {
             try {
                 PageComputerSearchSorted computerSearchSortedPage = DashboardRequestMapper
-                        .mapSearchDoGet(request, search, computerService);
-                request = setSearchRequest(request, computerSearchSortedPage);
+                        .mapSearchDoGet(allParams, allParams.get("search"),
+                                computerService);
+                mav = setSearchRequest(mav, computerSearchSortedPage);
             } catch (ServiceException | PageLengthException e) {
                 logger.debug(e.getMessage());
             }
         }
+        return mav;
     }
 
-    private HttpServletRequest setSearchRequest(HttpServletRequest request,
+    private ModelAndView setSearchRequest(ModelAndView mav,
             PageComputerSearchSorted computerSearchSortedPage)
             throws ServiceException {
         PageSearchDTO<ComputerDTO> computerSearchPageDTO = PageMapperDTO
@@ -78,28 +83,27 @@ public class DashboardServlet {
                         computerSearchSortedPage,
                         computerService.getCountComputersSearch(
                                 computerSearchSortedPage.getSearch()));
-        request.setAttribute("pageDTO", computerSearchPageDTO);
-        request.setAttribute("maxNumberPages",
+        mav.addObject("pageDTO", computerSearchPageDTO);
+        mav.addObject("maxNumberPages",
                 computerSearchPageDTO.getMaxPageNumber());
-        request.setAttribute("eltNumberList", PageLength.toIntList());
-        request.setAttribute("orderby", computerSearchSortedPage.getOrderby());
-        request.setAttribute("ascdesc", computerSearchSortedPage.isAscdesc());
-        request.setAttribute("search", computerSearchSortedPage.getSearch());
-        return request;
+        mav.addObject("eltNumberList", PageLength.toIntList());
+        mav.addObject("orderby", computerSearchSortedPage.getOrderby());
+        mav.addObject("ascdesc", computerSearchSortedPage.isAscdesc());
+        mav.addObject("search", computerSearchSortedPage.getSearch());
+        return mav;
     }
 
-    private HttpServletRequest setRequest(HttpServletRequest request,
+    private ModelAndView setRequest(ModelAndView mav,
             PageComputerSorted computerSortedPage) throws ServiceException {
         PageDTO<ComputerDTO> computerPageDTO = PageMapperDTO
                 .createComputerPageDTOFromComputerPage(computerSortedPage,
                         computerService.getCountComputers());
-        request.setAttribute("pageDTO", computerPageDTO);
-        request.setAttribute("maxNumberPages",
-                computerPageDTO.getMaxPageNumber());
-        request.setAttribute("eltNumberList", PageLength.toIntList());
-        request.setAttribute("orderby", computerSortedPage.getOrderby());
-        request.setAttribute("ascdesc", computerSortedPage.isAscdesc());
-        return request;
+        mav.addObject("pageDTO", computerPageDTO);
+        mav.addObject("maxNumberPages", computerPageDTO.getMaxPageNumber());
+        mav.addObject("eltNumberList", PageLength.toIntList());
+        mav.addObject("orderby", computerSortedPage.getOrderby());
+        mav.addObject("ascdesc", computerSortedPage.isAscdesc());
+        return mav;
     }
 
     /**
@@ -122,6 +126,5 @@ public class DashboardServlet {
         } catch (ServiceException e) {
             logger.error(e.getMessage());
         }
-        this.doGet(request, response);
     }
 }

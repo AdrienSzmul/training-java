@@ -1,17 +1,17 @@
 package com.excilys.formation.computerdatabase.mapper;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.excilys.formation.computerdatabase.controllers.constants.ColumnNames;
 import com.excilys.formation.computerdatabase.paginator.Page;
 import com.excilys.formation.computerdatabase.paginator.PageComputerSearchSorted;
 import com.excilys.formation.computerdatabase.paginator.PageComputerSorted;
 import com.excilys.formation.computerdatabase.paginator.PageLength;
 import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.ServiceException;
-import com.excilys.formation.computerdatabase.servlets.constants.ColumnNames;
 
 public class DashboardRequestMapper {
     private static final Logger logger = LoggerFactory
@@ -20,17 +20,17 @@ public class DashboardRequestMapper {
     private DashboardRequestMapper() {
     }
 
-    public static PageComputerSorted mapDoGet(HttpServletRequest request,
+    public static PageComputerSorted mapDoGet(Map<String, String> allParams,
             ComputerService computerService)
             throws PageLengthException, ServiceException {
         PageComputerSorted pageComputerSorted;
-        ColumnNames orderByEnum = RequestMapper.mapOrderBy(request, "orderby",
+        ColumnNames orderByEnum = RequestMapper.mapOrderBy(allParams, "orderby",
                 ColumnNames.NAME);
-        Integer pageNumber = RequestMapper.mapPageNumber(request, "pageNumber",
-                Page.FIRST_PAGE);
-        PageLength eltNumber = RequestMapper.mapPageSize(request, "eltNumber",
+        Integer pageNumber = RequestMapper.mapPageNumber(allParams,
+                "pageNumber", Page.FIRST_PAGE);
+        PageLength eltNumber = RequestMapper.mapPageSize(allParams, "eltNumber",
                 PageLength.TWENTY);
-        boolean ascdesc = RequestMapper.mapAscDesc(request, "ascdesc", true);
+        boolean ascdesc = RequestMapper.mapAscDesc(allParams, "ascdesc", true);
         pageComputerSorted = new PageComputerSorted(eltNumber, orderByEnum,
                 ascdesc, computerService);
         pageComputerSorted.goToPage(pageNumber);
@@ -38,17 +38,17 @@ public class DashboardRequestMapper {
     }
 
     public static PageComputerSearchSorted mapSearchDoGet(
-            HttpServletRequest request, String search,
+            Map<String, String> allParams, String search,
             ComputerService computerService)
             throws PageLengthException, ServiceException {
         PageComputerSearchSorted pageComputerSearchSorted;
-        ColumnNames orderByEnum = RequestMapper.mapOrderBy(request, "orderby",
+        ColumnNames orderByEnum = RequestMapper.mapOrderBy(allParams, "orderby",
                 ColumnNames.NAME);
-        Integer pageNumber = RequestMapper.mapPageNumber(request, "pageNumber",
-                Page.FIRST_PAGE);
-        PageLength eltNumber = RequestMapper.mapPageSize(request, "eltNumber",
+        Integer pageNumber = RequestMapper.mapPageNumber(allParams,
+                "pageNumber", Page.FIRST_PAGE);
+        PageLength eltNumber = RequestMapper.mapPageSize(allParams, "eltNumber",
                 PageLength.TWENTY);
-        boolean ascdesc = RequestMapper.mapAscDesc(request, "ascdesc", true);
+        boolean ascdesc = RequestMapper.mapAscDesc(allParams, "ascdesc", true);
         pageComputerSearchSorted = new PageComputerSearchSorted(search,
                 eltNumber, orderByEnum, ascdesc, computerService);
         pageComputerSearchSorted.goToPage(pageNumber);
