@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -31,7 +30,6 @@ import com.excilys.formation.computerdatabase.model.Computer;
 @Repository
 public class ComputerDAO implements IComputerDAO {
     private final Logger logger = LoggerFactory.getLogger(ComputerDAO.class);
-    private final ComputerMapper computerMapper = ComputerMapper.INSTANCE;
     private final String SELECT_LIST_COMPUTERS = "SELECT cu_id, cu_name, cu_introduced, cu_discontinued, cu_ca_id, ca_id, ca_name FROM computer LEFT JOIN company ON cu_ca_id = ca_id ORDER BY %s %s LIMIT ? OFFSET ?;";
     private final String SELECT_LIST_COMPUTERS_SEARCH = "SELECT cu_id, cu_name, cu_introduced, cu_discontinued, cu_ca_id, ca_id, ca_name FROM computer LEFT JOIN company ON cu_ca_id = ca_id WHERE cu_name LIKE ? OR ca_name LIKE ? ORDER BY %s %s LIMIT ? OFFSET ?;";
     private final String COUNT_COMPUTERS = "SELECT count(cu_id) FROM computer;";
@@ -41,8 +39,14 @@ public class ComputerDAO implements IComputerDAO {
     private final String DELETE_COMPUTER = "DELETE FROM computer WHERE cu_id = ?";
     private final String DELETE_COMPUTERS_COMPANY = "DELETE FROM computer WHERE cu_ca_id = ?";
     private final String UPDATE_COMPUTER = "UPDATE computer SET cu_name = ?, cu_introduced = ?, cu_discontinued = ?, cu_ca_id = ? WHERE cu_id = ?";
-    @Autowired
     private JdbcTemplate jdbcTemplate;
+    private ComputerMapper computerMapper;
+
+    public ComputerDAO(ComputerMapper computerMapper,
+            JdbcTemplate jdbcTemplate) {
+        this.computerMapper = computerMapper;
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Long createComputer(final Computer c) throws DAOException {

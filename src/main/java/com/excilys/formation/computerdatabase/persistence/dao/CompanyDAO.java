@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.stereotype.Repository;
@@ -28,17 +27,20 @@ public class CompanyDAO implements ICompanyDAO {
      *
      */
     private final Logger logger = LoggerFactory.getLogger(CompanyDAO.class);
-    private final CompanyMapper companyMapper = CompanyMapper.INSTANCE;
-    @Autowired
+    private CompanyMapper companyMapper;
     private ComputerDAO computerDAO;
-    @Autowired
     private JdbcTemplate jdbcTemplate;
     private final String SELECT_LIST_COMPANIES = "SELECT ca_id, ca_name FROM company ORDER BY ca_id LIMIT ? OFFSET ?;";
     private final String COUNT_COMPANIES = "SELECT count(ca_id) FROM company;";
     private final String SELECT_ONE_COMPANY = "SELECT ca_id, ca_name FROM company WHERE ca_id = ?;";
     private final String DELETE_ONE_COMPANY = "DELETE FROM company WHERE ca_id = ?";
-    private final String DEBUG_STRING = "%s : %s";
-    private final String EXCEPTION_DAO = "Un problème d'accès à la BDD a eu lieu";
+
+    public CompanyDAO(CompanyMapper companyMapper, ComputerDAO computerDAO,
+            JdbcTemplate jdbcTemplate) {
+        this.companyMapper = companyMapper;
+        this.computerDAO = computerDAO;
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public List<Company> getListCompanies(final int pageNumber,
@@ -54,7 +56,7 @@ public class CompanyDAO implements ICompanyDAO {
                         ps.setInt(2, pageNumber * taille);
                     }
                 }, (ResultSet st, int arg1) -> {
-                    return CompanyMapper.INSTANCE.createCompany(st);
+                    return companyMapper.createCompany(st);
                 });
         return listCompanies;
     }
@@ -80,7 +82,7 @@ public class CompanyDAO implements ICompanyDAO {
         logger.info("get one Company");
         Company company = jdbcTemplate.queryForObject(SELECT_ONE_COMPANY,
                 new Object[] { id }, (ResultSet st, int arg1) -> {
-                    return CompanyMapper.INSTANCE.createCompany(st);
+                    return companyMapper.createCompany(st);
                 });
         return company;
     }

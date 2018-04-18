@@ -4,19 +4,14 @@ import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatche
 
 public class MyCdbInitializer
         extends AbstractAnnotationConfigDispatcherServletInitializer {
-    public MyCdbInitializer() {
-        // TODO Auto-generated constructor stub
-    }
-
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        // TODO Auto-generated method stub
-        return null;
+        return new Class[] { MyWebConfig.class };
     }
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class[] { MyWebConfig.class };
+        return null;
     }
 
     @Override

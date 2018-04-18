@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,10 +38,18 @@ import com.excilys.formation.computerdatabase.service.ServiceException;
  */
 @Controller
 public class DashboardController {
-    @Autowired
     private ComputerService computerService;
+    private DashboardRequestMapper dashMapper;
+    private PageMapperDTO pageMapperDTO;
     private final Logger logger = LoggerFactory
             .getLogger(DashboardController.class);
+
+    public DashboardController(ComputerService computerService,
+            DashboardRequestMapper dashMapper, PageMapperDTO pageMapperDTO) {
+        this.computerService = computerService;
+        this.dashMapper = dashMapper;
+        this.pageMapperDTO = pageMapperDTO;
+    }
 
     /**
      * @throws IOException
@@ -56,17 +63,16 @@ public class DashboardController {
         ModelAndView mav = new ModelAndView(Views.DASHBOARD);
         if (StringUtils.isBlank(allParams.get("search"))) {
             try {
-                PageComputerSorted computerSortedPage = DashboardRequestMapper
-                        .mapDoGet(allParams, computerService);
+                PageComputerSorted computerSortedPage = dashMapper
+                        .mapDoGet(allParams);
                 mav = setRequest(mav, computerSortedPage);
             } catch (ServiceException | PageLengthException e) {
                 logger.debug(e.getMessage());
             }
         } else {
             try {
-                PageComputerSearchSorted computerSearchSortedPage = DashboardRequestMapper
-                        .mapSearchDoGet(allParams, allParams.get("search"),
-                                computerService);
+                PageComputerSearchSorted computerSearchSortedPage = dashMapper
+                        .mapSearchDoGet(allParams, allParams.get("search"));
                 mav = setSearchRequest(mav, computerSearchSortedPage);
             } catch (ServiceException | PageLengthException e) {
                 logger.debug(e.getMessage());
@@ -78,7 +84,7 @@ public class DashboardController {
     private ModelAndView setSearchRequest(ModelAndView mav,
             PageComputerSearchSorted computerSearchSortedPage)
             throws ServiceException {
-        PageSearchDTO<ComputerDTO> computerSearchPageDTO = PageMapperDTO
+        PageSearchDTO<ComputerDTO> computerSearchPageDTO = pageMapperDTO
                 .createComputerSearchPageDTOFromComputerSearchPage(
                         computerSearchSortedPage,
                         computerService.getCountComputersSearch(
@@ -95,7 +101,7 @@ public class DashboardController {
 
     private ModelAndView setRequest(ModelAndView mav,
             PageComputerSorted computerSortedPage) throws ServiceException {
-        PageDTO<ComputerDTO> computerPageDTO = PageMapperDTO
+        PageDTO<ComputerDTO> computerPageDTO = pageMapperDTO
                 .createComputerPageDTOFromComputerPage(computerSortedPage,
                         computerService.getCountComputers());
         mav.addObject("pageDTO", computerPageDTO);

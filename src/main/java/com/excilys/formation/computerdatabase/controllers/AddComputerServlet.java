@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.formation.computerdatabase.controllers.constants.Views;
@@ -33,15 +32,24 @@ import com.excilys.formation.computerdatabase.service.ValidationException;
 /**
  * Servlet implementation class AddComputerServlet
  */
-@WebServlet("/AddComputer")
+@Controller
 public class AddComputerServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory
             .getLogger(AddComputerServlet.class);
-    @Autowired
     private CompanyDAO companyDAO;
-    @Autowired
     private ComputerService computerService;
+    private CompanyMapperDTO companyMapperDTO;
+    private ComputerMapperDTO computerMapperDTO;
+
+    public AddComputerServlet(CompanyDAO companyDAO,
+            ComputerService computerService, CompanyMapperDTO companyMapperDTO,
+            ComputerMapperDTO computerMapperDTO) {
+        this.companyDAO = companyDAO;
+        this.computerService = computerService;
+        this.companyMapperDTO = companyMapperDTO;
+        this.computerMapperDTO = computerMapperDTO;
+    }
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -66,9 +74,8 @@ public class AddComputerServlet extends HttpServlet {
         try {
             List<Company> listCompanies = companyDAO.getListCompanies(0, 100);
             List<CompanyDTO> listCompaniesDTO = new ArrayList<>();
-            listCompanies.forEach(
-                    company -> listCompaniesDTO.add(CompanyMapperDTO.INSTANCE
-                            .createCompanyDTOfromCompany(company)));
+            listCompanies.forEach(company -> listCompaniesDTO.add(
+                    companyMapperDTO.createCompanyDTOfromCompany(company)));
             request.setAttribute("listCompanies", listCompaniesDTO);
         } catch (DAOException e) {
             logger.error("Erreur lors de la lecture en BDD", e);
@@ -108,7 +115,7 @@ public class AddComputerServlet extends HttpServlet {
         computerDTO.setIntroduced(introduced);
         computerDTO.setDiscontinued(discontinued);
         computerDTO.setName(computerName);
-        Computer computer = ComputerMapperDTO
+        Computer computer = computerMapperDTO
                 .createcomputerfromcomputerDTO(computerDTO);
         try {
             computerService.createComputer(computer);

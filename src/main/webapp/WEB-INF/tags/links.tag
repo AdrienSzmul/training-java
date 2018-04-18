@@ -10,7 +10,7 @@
 <%@ attribute name="tmpOrderBy" required="false"%>
 <%@ attribute name="ascdesc" required="false"%>
 
-<c:set var="pathDash" value="/cdb/Dashboard" />
+<c:set var="pathDash" value="/cdb/dashboard" />
 
 <c:set var="emptyText" value="" />
 <c:set var="tmpPath" value="" />

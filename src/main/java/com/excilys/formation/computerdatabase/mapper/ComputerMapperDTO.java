@@ -2,14 +2,21 @@ package com.excilys.formation.computerdatabase.mapper;
 
 import java.time.LocalDate;
 
+import org.springframework.stereotype.Component;
+
 import com.excilys.formation.computerdatabase.model.Computer;
 import com.excilys.formation.computerdatabase.model.Computer.ComputerBuilder;
 import com.excilys.formation.computerdatabase.model.dto.ComputerDTO;
 
-public enum ComputerMapperDTO {
-    INSTANCE;
-    public static final ComputerDTO createcomputerDTOfromcomputer(
-            Computer computer) {
+@Component
+public class ComputerMapperDTO {
+    private CompanyMapperDTO companyMapperDTO;
+
+    public ComputerMapperDTO(CompanyMapperDTO companyMapperDTO) {
+        this.companyMapperDTO = companyMapperDTO;
+    }
+
+    public final ComputerDTO createcomputerDTOfromcomputer(Computer computer) {
         ComputerDTO computerDTO = new ComputerDTO();
         computerDTO.setId(computer.getId().intValue());
         computerDTO.setName(computer.getName());
@@ -20,13 +27,13 @@ public enum ComputerMapperDTO {
             computerDTO.setDiscontinued(computer.getDiscontinued().toString());
         }
         if (computer.getCompany() != null) {
-            computerDTO.setCompany(CompanyMapperDTO.INSTANCE
+            computerDTO.setCompany(companyMapperDTO
                     .createCompanyDTOfromCompany(computer.getCompany()));
         }
         return computerDTO;
     }
 
-    public static final Computer createcomputerfromcomputerDTO(
+    public final Computer createcomputerfromcomputerDTO(
             ComputerDTO computerDTO) {
         final ComputerBuilder bComputer = new Computer.ComputerBuilder();
         bComputer.withId(Long.valueOf(computerDTO.getId()));
@@ -42,7 +49,7 @@ public enum ComputerMapperDTO {
                     LocalDate.parse(computerDTO.getDiscontinued()));
         }
         if (computerDTO.getCompany() != null) {
-            bComputer.withCompany(CompanyMapperDTO.INSTANCE
+            bComputer.withCompany(companyMapperDTO
                     .createCompanyfromCompanyDTO(computerDTO.getCompany()));
         }
         return bComputer.build();

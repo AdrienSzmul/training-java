@@ -5,7 +5,6 @@ package com.excilys.formation.computerdatabase.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,15 +17,20 @@ import com.excilys.formation.computerdatabase.persistence.dao.DAOException;
  */
 @Service
 public class ComputerService {
-    @Autowired
     private ComputerDAO computerDAO;
-    @Autowired
     private CompanyService companyService;
-    private final ValidatorComputer val = ValidatorComputer.INSTANCE;
+    private ValidatorComputer val;
+
+    public ComputerService(ComputerDAO computerDAO,
+            CompanyService companyService, ValidatorComputer val) {
+        this.computerDAO = computerDAO;
+        this.companyService = companyService;
+        this.val = val;
+    }
 
     public void createComputer(final Computer c)
             throws ValidationException, ServiceException {
-        val.validateComputer(c, companyService);
+        val.validateComputer(c);
         try {
             computerDAO.createComputer(c);
         } catch (DAOException e) {
@@ -119,7 +123,7 @@ public class ComputerService {
     public void updateComputer(final Computer c)
             throws ValidationException, ServiceException {
         if (c.getId() != null) {
-            val.validateComputer(c, companyService);
+            val.validateComputer(c);
         } else {
             throw new ServiceException(
                     "L'id du computer que vous voulez modifié est null");

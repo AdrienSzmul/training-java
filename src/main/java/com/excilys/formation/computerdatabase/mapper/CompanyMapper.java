@@ -3,14 +3,16 @@ package com.excilys.formation.computerdatabase.mapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.springframework.stereotype.Component;
+
 import com.excilys.formation.computerdatabase.model.Company;
 import com.excilys.formation.computerdatabase.model.Company.CompanyBuilder;
 
 /**
  * @author excilys
  */
-public enum CompanyMapper {
-    INSTANCE;
+@Component
+public class CompanyMapper {
     /**
      * @return Company object
      * @param rs

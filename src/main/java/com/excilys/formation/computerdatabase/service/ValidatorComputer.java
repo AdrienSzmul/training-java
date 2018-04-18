@@ -3,15 +3,22 @@
  */
 package com.excilys.formation.computerdatabase.service;
 
+import org.springframework.stereotype.Component;
+
 import com.excilys.formation.computerdatabase.model.Computer;
 
 /**
  * @author excilys
  */
-public enum ValidatorComputer {
-    INSTANCE;
-    public void validateComputer(final Computer c,
-            CompanyService companyService) throws ValidationException {
+@Component
+public class ValidatorComputer {
+    private CompanyService companyService;
+
+    public ValidatorComputer(CompanyService companyService) {
+        this.companyService = companyService;
+    }
+
+    public void validateComputer(final Computer c) throws ValidationException {
         if (c.getName() == null) {
             throw new NullNameException(
                     "Le nom de votre PC ne peut être nul !");

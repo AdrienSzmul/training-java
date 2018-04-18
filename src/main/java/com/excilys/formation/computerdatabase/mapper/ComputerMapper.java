@@ -6,15 +6,21 @@ package com.excilys.formation.computerdatabase.mapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.springframework.stereotype.Component;
+
 import com.excilys.formation.computerdatabase.model.Computer;
 import com.excilys.formation.computerdatabase.model.Computer.ComputerBuilder;
 
 /**
  * @author excilys
  */
-public enum ComputerMapper {
-    INSTANCE;
-    private final CompanyMapper companyMapper = CompanyMapper.INSTANCE;
+@Component
+public class ComputerMapper {
+    private CompanyMapper companyMapper;
+
+    public ComputerMapper(CompanyMapper companyMapper) {
+        this.companyMapper = companyMapper;
+    }
 
     /**
      * @throws SQLException

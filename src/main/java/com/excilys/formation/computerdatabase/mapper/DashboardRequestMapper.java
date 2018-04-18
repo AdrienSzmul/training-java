@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.excilys.formation.computerdatabase.controllers.constants.ColumnNames;
 import com.excilys.formation.computerdatabase.paginator.Page;
@@ -13,15 +14,17 @@ import com.excilys.formation.computerdatabase.paginator.PageLength;
 import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.ServiceException;
 
+@Component
 public class DashboardRequestMapper {
     private static final Logger logger = LoggerFactory
             .getLogger(DashboardRequestMapper.class);
+    private ComputerService computerService;
 
-    private DashboardRequestMapper() {
+    private DashboardRequestMapper(ComputerService computerService) {
+        this.computerService = computerService;
     }
 
-    public static PageComputerSorted mapDoGet(Map<String, String> allParams,
-            ComputerService computerService)
+    public PageComputerSorted mapDoGet(Map<String, String> allParams)
             throws PageLengthException, ServiceException {
         PageComputerSorted pageComputerSorted;
         ColumnNames orderByEnum = RequestMapper.mapOrderBy(allParams, "orderby",
@@ -37,9 +40,8 @@ public class DashboardRequestMapper {
         return pageComputerSorted;
     }
 
-    public static PageComputerSearchSorted mapSearchDoGet(
-            Map<String, String> allParams, String search,
-            ComputerService computerService)
+    public PageComputerSearchSorted mapSearchDoGet(
+            Map<String, String> allParams, String search)
             throws PageLengthException, ServiceException {
         PageComputerSearchSorted pageComputerSearchSorted;
         ColumnNames orderByEnum = RequestMapper.mapOrderBy(allParams, "orderby",

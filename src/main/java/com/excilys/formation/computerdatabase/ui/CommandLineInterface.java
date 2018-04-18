@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -39,16 +38,17 @@ import com.excilys.formation.computerdatabase.service.ValidationException;
 public class CommandLineInterface {
     private String res;
     private final BufferedReader br;
-    @Autowired
     private ComputerService computerService;
-    @Autowired
     private CompanyService companyService;
     private static final int TAILLE_MAX = PageLength.TWENTY.getValue();
     private boolean gettingOutOfCDB = true;
     private final Logger logger = LoggerFactory
             .getLogger(CommandLineInterface.class);
 
-    public CommandLineInterface() {
+    public CommandLineInterface(ComputerService computerService,
+            CompanyService companyService) {
+        this.computerService = computerService;
+        this.companyService = companyService;
         br = new BufferedReader(new InputStreamReader(System.in));
     }
 
