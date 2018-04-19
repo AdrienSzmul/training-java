@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.formation.computerdatabase.model.Company;
 import com.excilys.formation.computerdatabase.persistence.dao.CompanyDAO;
+import com.excilys.formation.computerdatabase.persistence.dao.ComputerDAO;
 import com.excilys.formation.computerdatabase.persistence.dao.DAOException;
 
 /**
@@ -19,9 +20,11 @@ import com.excilys.formation.computerdatabase.persistence.dao.DAOException;
 @Service
 public class CompanyService {
     private CompanyDAO companyDAO;
+    private ComputerDAO computerDAO;
 
-    public CompanyService(CompanyDAO companyDAO) {
+    public CompanyService(CompanyDAO companyDAO, ComputerDAO computerDAO) {
         this.companyDAO = companyDAO;
+        this.computerDAO = computerDAO;
     }
 
     public List<Company> getListCompanies(final int pageNumber,
@@ -66,6 +69,7 @@ public class CompanyService {
     @Transactional
     public void deleteCompany(Company company) throws ServiceException {
         try {
+            computerDAO.deleteMultipleComputersFromCompany(company);
             companyDAO.deleteCompany(company);
         } catch (DAOException | SQLException e) {
             throw new ServiceException(e.getMessage());

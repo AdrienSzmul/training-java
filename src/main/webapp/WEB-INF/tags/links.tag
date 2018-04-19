@@ -10,7 +10,7 @@
 <%@ attribute name="tmpOrderBy" required="false"%>
 <%@ attribute name="ascdesc" required="false"%>
 
-<c:set var="pathDash" value="/cdb/dashboard" />
+<c:set var="pathDash" value="/computer-database/dashboard" />
 
 <c:set var="emptyText" value="" />
 <c:set var="tmpPath" value="" />
@@ -64,12 +64,15 @@
 				<c:set var="tmpPath" value="${ tmpPath.concat(tmpAscDesc) }" />
 			</c:when>
 			<c:when test="${target.equals('edit')}">
-				<c:set var="tmpPath" value="${tmpPath.concat('/cdb/EditComputer')}" />
+				<c:set var="tmpPath" value="${tmpPath.concat('/computer-database/editComputer')}" />
 				<c:if
 					test="${not empty computerId and ''.concat(computerId).matches('[0-9]+')}">
 					<c:set var="tmpPath"
 						value="${tmpPath.concat('?computerId=').concat(computerId)}" />
 				</c:if>
+			</c:when>
+			<c:when test="${target.equals('add')}">
+				<c:set var="tmpPath" value="${tmpPath.concat('/computer-database/addComputer')}" />
 			</c:when>
 		</c:choose>
 	</c:when>

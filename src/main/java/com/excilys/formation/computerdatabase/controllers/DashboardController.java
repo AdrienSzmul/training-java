@@ -60,6 +60,9 @@ public class DashboardController {
     @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
     protected ModelAndView doGet(@RequestParam Map<String, String> allParams)
             throws ServletException, IOException {
+        for (String u : allParams.keySet()) {
+            logger.debug("{} : {}", u, allParams.get(u));
+        }
         ModelAndView mav = new ModelAndView(Views.DASHBOARD);
         if (StringUtils.isBlank(allParams.get("search"))) {
             try {
@@ -89,6 +92,9 @@ public class DashboardController {
                         computerSearchSortedPage,
                         computerService.getCountComputersSearch(
                                 computerSearchSortedPage.getSearch()));
+        Integer nombreElt = computerService
+                .getCountComputersSearch(computerSearchSortedPage.getSearch());
+        logger.debug(nombreElt.toString());
         mav.addObject("pageDTO", computerSearchPageDTO);
         mav.addObject("maxNumberPages",
                 computerSearchPageDTO.getMaxPageNumber());
@@ -116,10 +122,10 @@ public class DashboardController {
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
      *      response)
      */
-    @RequestMapping(method = RequestMethod.POST)
-    protected void doPost(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
-        String delComputerIdsStr = request.getParameter("selection");
+    @RequestMapping(value = "/dashboard", method = RequestMethod.POST)
+    protected void doPost(
+            @RequestParam(value = "selection") String delComputerIdsStr)
+            throws ServletException, IOException {
         List<Long> listDelComputerIds = new ArrayList<>();
         Arrays.stream(delComputerIdsStr.split(",")) // allows to make actions on
                                                     // each elt between ','

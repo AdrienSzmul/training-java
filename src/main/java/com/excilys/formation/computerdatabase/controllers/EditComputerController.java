@@ -3,8 +3,8 @@ package com.excilys.formation.computerdatabase.controllers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +14,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.excilys.formation.computerdatabase.controllers.constants.Views;
 import com.excilys.formation.computerdatabase.mapper.CompanyMapperDTO;
@@ -33,16 +36,16 @@ import com.excilys.formation.computerdatabase.service.ValidationException;
  * Servlet implementation class EditComputerServlet
  */
 @Controller
-public class EditComputerServlet extends HttpServlet {
+public class EditComputerController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory
-            .getLogger(EditComputerServlet.class);
+            .getLogger(EditComputerController.class);
     private CompanyDAO companyDAO;
     private ComputerService computerService;
     private ComputerMapperDTO computerMapperDTO;
     private CompanyMapperDTO companyMapperDTO;
 
-    public EditComputerServlet(CompanyDAO companyDAO,
+    public EditComputerController(CompanyDAO companyDAO,
             ComputerService computerService,
             ComputerMapperDTO computerMapperDTO,
             CompanyMapperDTO companyMapperDTO) {
@@ -52,78 +55,69 @@ public class EditComputerServlet extends HttpServlet {
         this.companyMapperDTO = companyMapperDTO;
     }
 
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
-                config.getServletContext());
-    }
-
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
      *      response)
      */
-    @Override
-    protected void doGet(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
-        request = setRequest(request);
-        String computerIdStr = request.getParameter("computerId");
+    @RequestMapping(value = "/editComputer", method = RequestMethod.GET)
+    protected ModelAndView doGet(@RequestParam Map<String, String> allParams)
+            throws ServletException, IOException {
+        ModelAndView mav = new ModelAndView(Views.EDIT_COMPUTER);
+        mav = setRequest(mav);
+        String computerIdStr = allParams.get("computerId");
         if (!StringUtils.isBlank(computerIdStr)) {
             Long computerId = Long.valueOf(computerIdStr);
             try {
                 Computer computer = computerService.getComputerById(computerId);
-                request.setAttribute("computerId", computerId);
-                request.setAttribute("computerName", computer.getName());
-                request.setAttribute("computerIntroduced",
-                        computer.getIntroduced());
-                request.setAttribute("computerDiscontinued",
+                mav.addObject("computerId", computerId);
+                mav.addObject("computerName", computer.getName());
+                mav.addObject("computerIntroduced", computer.getIntroduced());
+                mav.addObject("computerDiscontinued",
                         computer.getDiscontinued());
-                request.setAttribute("computerCompany",
+                mav.addObject("computerCompany",
                         computer.getCompany().getName());
-                this.getServletContext()
-                        .getRequestDispatcher(Views.EDIT_COMPUTER)
-                        .forward(request, response);
             } catch (ServiceException e) {
                 logger.debug(e.getMessage());
             }
         } else {
-            this.getServletContext().getRequestDispatcher(Views.DASHBOARD)
-                    .forward(request, response);
+            mav.setViewName(Views.DASHBOARD);
         }
+        return mav;
     }
 
-    private HttpServletRequest setRequest(HttpServletRequest request) {
+    private ModelAndView setRequest(ModelAndView mav) {
         try {
             List<Company> listCompanies = companyDAO.getListCompanies(0, 100);
             List<CompanyDTO> listCompaniesDTO = new ArrayList<>();
             listCompanies.forEach(company -> listCompaniesDTO.add(
                     companyMapperDTO.createCompanyDTOfromCompany(company)));
-            request.setAttribute("listCompanies", listCompaniesDTO);
+            mav.addObject("listCompanies", listCompaniesDTO);
         } catch (DAOException e) {
             logger.error("Erreur lors de la lecture en BDD", e);
         }
-        return request;
+        return mav;
     }
 
     /**
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
      *      response)
      */
-    @Override
-    protected void doPost(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
-        setPostRequest(request);
-        setRequest(request);
-        this.getServletContext().getRequestDispatcher(Views.EDIT_COMPUTER)
-                .forward(request, response);
+    @RequestMapping(value = "/editComputer", method = RequestMethod.POST)
+    protected ModelAndView doPost(@RequestParam Map<String, String> allParams)
+            throws ServletException, IOException {
+        ModelAndView mav = new ModelAndView(Views.EDIT_COMPUTER);
+        setPostRequest(mav, allParams);
+        setRequest(mav);
+        return mav;
     }
 
-    private void setPostRequest(HttpServletRequest request) {
-        String computerIdStr = request.getParameter("computerId");
-        String computerName = request.getParameter("computerName");
-        String introduced = request.getParameter("introduced");
-        String discontinued = request.getParameter("discontinued");
-        String companyIdStr = request.getParameter("companyId");
+    private void setPostRequest(ModelAndView mav,
+            Map<String, String> allParams) {
+        String computerIdStr = allParams.get("computerId");
+        String computerName = allParams.get("computerName");
+        String introduced = allParams.get("introduced");
+        String discontinued = allParams.get("discontinued");
+        String companyIdStr = allParams.get("companyId");
         logger.info("Id de l'ordinateur: {}", computerIdStr);
         logger.info("Nom rentré: {}", computerName);
         logger.info("Date de mise en place:{}", introduced);
@@ -136,9 +130,11 @@ public class EditComputerServlet extends HttpServlet {
         }
         if (!StringUtils.isBlank(companyIdStr)) {
             CompanyDTO companyDTO = new CompanyDTO();
-            int companyId = Integer.valueOf(companyIdStr);
-            companyDTO.setId(companyId);
-            computerDTO.setCompany(companyDTO);
+            if (companyIdStr.matches("[0-9]+")) {
+                int companyId = Integer.valueOf(companyIdStr);
+                companyDTO.setId(companyId);
+                computerDTO.setCompany(companyDTO);
+            }
         }
         computerDTO.setIntroduced(introduced);
         computerDTO.setDiscontinued(discontinued);

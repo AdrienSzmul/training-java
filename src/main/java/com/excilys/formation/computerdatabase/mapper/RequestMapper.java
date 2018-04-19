@@ -29,7 +29,7 @@ public class RequestMapper {
 
     public static Integer mapPageNumber(Map<String, String> allParams,
             String size, Integer defaultPage) {
-        String sizeStr = allParams.get("size");
+        String sizeStr = allParams.get("pageNumber");
         if (!StringUtils.isBlank(sizeStr) && sizeStr.matches("[0-9]+")) {
             return Integer.parseInt(sizeStr);
         }
@@ -38,7 +38,7 @@ public class RequestMapper {
 
     public static PageLength mapPageSize(Map<String, String> allParams,
             String size, PageLength defaultSize) throws PageLengthException {
-        String sizeStr = allParams.get("size");
+        String sizeStr = allParams.get("eltNumber");
         if (!StringUtils.isBlank(sizeStr) && sizeStr.matches("[0-9]+")) {
             Integer tmpSize = Integer.parseInt(sizeStr);
             try {
@@ -52,7 +52,7 @@ public class RequestMapper {
 
     public static boolean mapAscDesc(Map<String, String> allParams,
             String state, Boolean defaultState) {
-        String stateStr = allParams.get("state");
+        String stateStr = allParams.get("ascdesc");
         if (!StringUtils.isBlank(stateStr)) {
             if (stateStr.equals("true")) {
                 return true;

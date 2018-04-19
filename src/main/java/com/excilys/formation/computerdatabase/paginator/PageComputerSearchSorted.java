@@ -1,31 +1,27 @@
 package com.excilys.formation.computerdatabase.paginator;
 
 import com.excilys.formation.computerdatabase.controllers.constants.ColumnNames;
-import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.ServiceException;
 
 public class PageComputerSearchSorted extends PageComputerSearch {
     private ColumnNames orderby = ColumnNames.NAME;
     private boolean ascdesc = true;
 
-    public PageComputerSearchSorted(ComputerService computerService) {
-        super(computerService);
+    public PageComputerSearchSorted() {
+        super();
     }
 
-    public PageComputerSearchSorted(String search,
-            ComputerService computerService) {
-        super(search, computerService);
+    public PageComputerSearchSorted(String search) {
+        super(search);
+    }
+
+    public PageComputerSearchSorted(String search, PageLength tailleMax) {
+        super(search, tailleMax);
     }
 
     public PageComputerSearchSorted(String search, PageLength tailleMax,
-            ComputerService computerService) {
-        super(search, tailleMax, computerService);
-    }
-
-    public PageComputerSearchSorted(String search, PageLength tailleMax,
-            ColumnNames orderby, boolean ascdesc,
-            ComputerService computerService) {
-        super(search, tailleMax, computerService);
+            ColumnNames orderby, boolean ascdesc) {
+        super(search, tailleMax);
         this.orderby = orderby;
         this.ascdesc = ascdesc;
     }

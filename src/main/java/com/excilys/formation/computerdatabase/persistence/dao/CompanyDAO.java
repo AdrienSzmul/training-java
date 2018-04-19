@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,18 +30,16 @@ public class CompanyDAO implements ICompanyDAO {
      */
     private final Logger logger = LoggerFactory.getLogger(CompanyDAO.class);
     private CompanyMapper companyMapper;
-    private ComputerDAO computerDAO;
     private JdbcTemplate jdbcTemplate;
+    private DataSource dataSource;
     private final String SELECT_LIST_COMPANIES = "SELECT ca_id, ca_name FROM company ORDER BY ca_id LIMIT ? OFFSET ?;";
     private final String COUNT_COMPANIES = "SELECT count(ca_id) FROM company;";
     private final String SELECT_ONE_COMPANY = "SELECT ca_id, ca_name FROM company WHERE ca_id = ?;";
     private final String DELETE_ONE_COMPANY = "DELETE FROM company WHERE ca_id = ?";
 
-    public CompanyDAO(CompanyMapper companyMapper, ComputerDAO computerDAO,
-            JdbcTemplate jdbcTemplate) {
+    public CompanyDAO(CompanyMapper companyMapper, DataSource dataSource) {
         this.companyMapper = companyMapper;
-        this.computerDAO = computerDAO;
-        this.jdbcTemplate = jdbcTemplate;
+        jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     @Override
@@ -97,6 +97,5 @@ public class CompanyDAO implements ICompanyDAO {
         logger.info("company deletion");
         jdbcTemplate.update(DELETE_ONE_COMPANY,
                 new Object[] { company.getId() });
-        computerDAO.deleteMultipleComputersFromCompany(company);
     }
 }

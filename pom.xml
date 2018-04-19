@@ -6,7 +6,7 @@
 
 	<groupId>com.excilys.formation.computerdatabase</groupId>
 	<artifactId>computer-database</artifactId>
-	<version>4.2.1</version>
+	<version>0.2.0</version>
 
 	<packaging>war</packaging>
 
@@ -89,7 +89,7 @@
 				<configuration>
 					<url>http://localhost:8080/manager/text</url>
 					<server>TomcatServer</server>
-					<path>/cdb</path>
+					<path>/computer-database</path>
 				</configuration>
 			</plugin>
 		</plugins>

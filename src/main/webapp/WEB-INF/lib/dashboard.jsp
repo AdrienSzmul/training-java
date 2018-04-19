@@ -47,14 +47,15 @@
 				</form>
 			</div>
 			<div class="pull-right">
-				<a class="btn btn-success" id="addComputer" href="AddComputer">Add
-					Computer</a> <a class="btn btn-default" id="editComputer" href="#"
+				<a class="btn btn-success" id="addComputer"
+					href="<tag:links target="add"/>">Add Computer</a> <a
+					class="btn btn-default" id="editComputer" href="#"
 					onclick="$.fn.toggleEditMode();">Edit</a>
 			</div>
 		</div>
 	</div>
 
-	<form id="deleteForm" action="Dashboard" method="POST">
+	<form id="deleteForm" action="dashboard" method="POST">
 		<input type="hidden" name="selection">
 	</form>
 

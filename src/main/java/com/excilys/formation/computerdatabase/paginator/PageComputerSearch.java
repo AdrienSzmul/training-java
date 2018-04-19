@@ -1,23 +1,21 @@
 package com.excilys.formation.computerdatabase.paginator;
 
-import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.ServiceException;
 
 public class PageComputerSearch extends PageComputer {
     protected String search;
 
-    public PageComputerSearch(ComputerService computerService) {
-        super(computerService);
+    public PageComputerSearch() {
+        super();
     }
 
-    public PageComputerSearch(String search, ComputerService computerService) {
-        super(computerService);
+    public PageComputerSearch(String search) {
+        super();
         this.search = search;
     }
 
-    public PageComputerSearch(String search, PageLength tailleMax,
-            ComputerService computerService) {
-        super(tailleMax, computerService);
+    public PageComputerSearch(String search, PageLength tailleMax) {
+        super(tailleMax);
         this.search = search;
     }
 

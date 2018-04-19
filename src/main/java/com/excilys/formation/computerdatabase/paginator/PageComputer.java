@@ -5,16 +5,14 @@ import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.ServiceException;
 
 public class PageComputer extends Page<Computer> {
-    protected ComputerService computerService;
+    ComputerService computerService;
 
-    public PageComputer(ComputerService computerService) {
+    public PageComputer() {
         super();
-        this.computerService = computerService;
     }
 
-    public PageComputer(PageLength tailleMax, ComputerService computerService) {
+    public PageComputer(PageLength tailleMax) {
         super(tailleMax);
-        this.computerService = computerService;
     }
 
     @Override
@@ -26,5 +24,9 @@ public class PageComputer extends Page<Computer> {
     protected void refresh(final int pageNumber) throws ServiceException {
         this.pageActive = computerService.getListComputers(pageNumber,
                 this.tailleMax.getValue());
+    }
+
+    public void setComputerService(ComputerService computerService) {
+        this.computerService = computerService;
     }
 }

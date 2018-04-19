@@ -11,11 +11,10 @@ import com.excilys.formation.computerdatabase.service.ServiceException;
  * @author excilys
  */
 public class PageCompany extends Page<Company> {
-    protected CompanyService companyService;
+    CompanyService companyService;
 
-    public PageCompany(CompanyService companyService) {
+    public PageCompany() {
         super();
-        this.companyService = companyService;
     }
 
     @Override
@@ -27,5 +26,9 @@ public class PageCompany extends Page<Company> {
     protected final void refresh(final int pageNumber) throws ServiceException {
         this.pageActive = companyService.getListCompanies(pageNumber,
                 this.tailleMax.getValue());
+    }
+
+    public void setCompanyService(CompanyService companyService) {
+        this.companyService = companyService;
     }
 }

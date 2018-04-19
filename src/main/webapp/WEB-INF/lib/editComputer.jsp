@@ -25,7 +25,7 @@
 		<div class="row">
 			<div class="col-xs-8 col-xs-offset-2 box">
 				<h1>Edit Computer</h1>
-				<form action="EditComputer" method="POST">
+				<form action="editComputer" method="POST">
 					<fieldset>
 						<div class="form-group">
 						<input type="hidden" value="${computerId}" name=computerId id="id" />

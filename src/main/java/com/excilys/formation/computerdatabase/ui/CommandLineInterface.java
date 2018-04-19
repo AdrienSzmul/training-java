@@ -20,8 +20,7 @@ import com.excilys.formation.computerdatabase.model.Company.CompanyBuilder;
 import com.excilys.formation.computerdatabase.model.Computer;
 import com.excilys.formation.computerdatabase.model.Computer.ComputerBuilder;
 import com.excilys.formation.computerdatabase.paginator.Page;
-import com.excilys.formation.computerdatabase.paginator.PageCompany;
-import com.excilys.formation.computerdatabase.paginator.PageComputer;
+import com.excilys.formation.computerdatabase.paginator.PageFactory;
 import com.excilys.formation.computerdatabase.paginator.PageLength;
 import com.excilys.formation.computerdatabase.service.CompanyService;
 import com.excilys.formation.computerdatabase.service.ComputerService;
@@ -40,15 +39,17 @@ public class CommandLineInterface {
     private final BufferedReader br;
     private ComputerService computerService;
     private CompanyService companyService;
+    private PageFactory pageFactory;
     private static final int TAILLE_MAX = PageLength.TWENTY.getValue();
     private boolean gettingOutOfCDB = true;
     private final Logger logger = LoggerFactory
             .getLogger(CommandLineInterface.class);
 
     public CommandLineInterface(ComputerService computerService,
-            CompanyService companyService) {
+            CompanyService companyService, PageFactory pageFactory) {
         this.computerService = computerService;
         this.companyService = companyService;
+        this.pageFactory = pageFactory;
         br = new BufferedReader(new InputStreamReader(System.in));
     }
 
@@ -298,11 +299,11 @@ public class CommandLineInterface {
     }
 
     private void getListCompanies() {
-        readPage(new PageCompany(companyService));
+        readPage(pageFactory.createPageCompany());
     }
 
     private void getListComputers() {
-        readPage(new PageComputer(computerService));
+        readPage(pageFactory.createPageComputer());
     }
 
     private String getLineInString() {

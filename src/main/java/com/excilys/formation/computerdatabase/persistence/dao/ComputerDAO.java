@@ -11,6 +11,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -41,11 +43,11 @@ public class ComputerDAO implements IComputerDAO {
     private final String UPDATE_COMPUTER = "UPDATE computer SET cu_name = ?, cu_introduced = ?, cu_discontinued = ?, cu_ca_id = ? WHERE cu_id = ?";
     private JdbcTemplate jdbcTemplate;
     private ComputerMapper computerMapper;
+    private DataSource dataSource;
 
-    public ComputerDAO(ComputerMapper computerMapper,
-            JdbcTemplate jdbcTemplate) {
+    public ComputerDAO(ComputerMapper computerMapper, DataSource dataSource) {
         this.computerMapper = computerMapper;
-        this.jdbcTemplate = jdbcTemplate;
+        jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     @Override
@@ -240,8 +242,9 @@ public class ComputerDAO implements IComputerDAO {
     @Override
     public int getCountComputersSearch(String search) throws DAOException {
         int nbrComputersResult = 0;
+        String tmpSearch = "%" + search + "%";
         nbrComputersResult = jdbcTemplate.queryForObject(COUNT_COMPUTERS_SEARCH,
-                Integer.class, new Object[] { search, search });
+                Integer.class, new Object[] { tmpSearch, tmpSearch });
         return nbrComputersResult;
     }
 

@@ -9,23 +9,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.JstlView;
 
 @Configuration
-@EnableWebMvc
-@EnableTransactionManagement
-@ComponentScan(basePackages = "com.excilys.formation.computerdatabase")
 @PropertySource("classpath:/properties/dao.properties")
-public class MyWebConfig implements WebMvcConfigurer {
+@ComponentScan(basePackages = { "com.excilys.formation.computerdatabase.config",
+        "com.excilys.formation.computerdatabase.persistence.dao",
+        "com.excilys.formation.computerdatabase.service",
+        "com.excilys.formation.computerdatabase.paginator",
+        "com.excilys.formation.computerdatabase.mapper" })
+public class MyWebAppConfig implements WebMvcConfigurer {
     private static final String URL = "url";
     private static final String PASSWORD = "password";
     private static final String DRIVER = "driver";
@@ -49,28 +44,7 @@ public class MyWebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        return jdbcTemplate;
-    }
-
-    @Bean
-    public PlatformTransactionManager txManager() {
+    public DataSourceTransactionManager txManager() {
         return new DataSourceTransactionManager(dataSource());
-    }
-
-    @Bean
-    public InternalResourceViewResolver viewResolver() {
-        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-        viewResolver.setViewClass(JstlView.class);
-        viewResolver.setPrefix("/WEB-INF/lib/");
-        viewResolver.setSuffix(".jsp");
-        return viewResolver;
-    }
-
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/static/**")
-                .addResourceLocations("/static/");
     }
 }

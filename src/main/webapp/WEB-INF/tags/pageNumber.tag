@@ -11,7 +11,7 @@
 			aria-label="First"> <span aria-hidden="true">&laquo;&laquo;</span>
 		</a></li>
 		<li><a
-			href="<cst:links target="dashboard" pageIndex="${pageDTO.currentPageNumber-1<0?0:pageDTO.currentPageNumber-1}" eltNumber="${pageDTO.tailleMax}" search="${search}" orderby="${orderby}"/>"
+			href="<cst:links target="dashboard" pageIndex="${(pageDTO.currentPageNumber-1)<0?0:pageDTO.currentPageNumber-1}" eltNumber="${pageDTO.tailleMax}" search="${search}" orderby="${orderby}"/>"
 			aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
 		</a></li>
 		<li><a
@@ -29,7 +29,7 @@
 			aria-label="Next"> <span aria-hidden="true">&raquo;</span>
 		</a></li>
 		<li><a
-			href="<cst:links target="dashboard" pageIndex="${end}" eltNumber="${pageDTO.tailleMax}" search="${search}" orderby="${orderby}"/>"
+			href="<cst:links target="dashboard" pageIndex="${end-1}" eltNumber="${pageDTO.tailleMax}" search="${search}" orderby="${orderby}"/>"
 			aria-label="Last"> <span aria-hidden="true">&raquo;&raquo;</span>
 		</a></li>
 	</ul>
