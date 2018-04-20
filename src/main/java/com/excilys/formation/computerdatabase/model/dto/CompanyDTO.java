@@ -22,4 +22,9 @@ public class CompanyDTO {
     public final void setName(String nameCompanyDTO) {
         this.name = nameCompanyDTO;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

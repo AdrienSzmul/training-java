@@ -58,7 +58,8 @@ public class DashboardController {
      *      response)
      */
     @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
-    protected ModelAndView doGet(@RequestParam Map<String, String> allParams)
+    protected ModelAndView showDashboard(
+            @RequestParam Map<String, String> allParams)
             throws ServletException, IOException {
         for (String u : allParams.keySet()) {
             logger.debug("{} : {}", u, allParams.get(u));
@@ -123,7 +124,7 @@ public class DashboardController {
      *      response)
      */
     @RequestMapping(value = "/dashboard", method = RequestMethod.POST)
-    protected void doPost(
+    protected void deleteComputers(
             @RequestParam(value = "selection") String delComputerIdsStr)
             throws ServletException, IOException {
         List<Long> listDelComputerIds = new ArrayList<>();

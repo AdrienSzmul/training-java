@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tag"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -25,48 +27,61 @@
 		<div class="row">
 			<div class="col-xs-8 col-xs-offset-2 box">
 				<h1>Edit Computer</h1>
-				<form action="editComputer" method="POST">
+				<c:set var="formPathEdit">
+					<tag:links target="edit" />
+				</c:set>
+				<form:form action="${formPathEdit}" method="POST"
+					modelAttribute="computerDTO">
 					<fieldset>
 						<div class="form-group">
-						<input type="hidden" value="${computerId}" name=computerId id="id" />
-							<label for="computerName"></label> <input
-								data-validation="length alphanumeric"
-								data-validation-allowing="-_" data-validation-length="4-20"
+							<form:label path="name">Computer name</form:label>
+							<form:input data-validation="length alphanumeric"
+								data-validation-allowing="-_ " data-validation-length="4-20"
 								data-validation-error-msg="Only alpahanu and between 4 to 20 char"
-								type="text" class="form-control" id="computerName"
-								name="computerName" placeholder="Computer name" value="${computerName}">
+								type="text" class="form-control" id="computerName" path="name"
+								placeholder="Computer name" value="${computerDTO.name}" />
 						</div>
 						<div class="form-group">
-							<label for="introduced"></label> <input
-								data-validation="date" data-validation-optional="true"
+							<form:label path="introduced">Introduced date</form:label>
+							<form:input data-validation="date"
+								data-validation-optional="true"
 								data-validation-error-msg="Date format is dd/mm/yyyy"
 								type="date" class="form-control" id="introduced"
-								name="introduced" placeholder="Introduced date" value="${computerIntroduced}">
+								path="introduced" placeholder="Introduced date"
+								value="${computerDTO.introduced}" />
 						</div>
 						<div class="form-group">
-							<label for="discontinued"></label> <input
-								data-validation="date" data-validation-optional="true"
+							<form:label path="discontinued">Discontinued date</form:label>
+							<form:input data-validation="date"
+								data-validation-optional="true"
 								data-validation-error-msg="Date format is dd/mm/yyyy"
 								type="date" class="form-control" id="discontinued"
-								name="discontinued" placeholder="Discontinued date" value ="${computerDiscontinued}">
+								path="discontinued" placeholder="Discontinued date"
+								value="${computerDTO.discontinued}" />
 						</div>
 						<div class="form-group">
-							<label for="companyId"></label> <select
-								class="form-control" id="companyId" name="companyId">
-								<option value="${computerCompany}"></option>
-								<c:forEach items="${listCompanies}" var="company">
-									<option value="${company.id}">${company.name}</option>
-
-								</c:forEach>
-
-							</select>
+							<form:label path="company.id">Company</form:label>
+							<form:select class="form-control" id="companyId"
+								path="company.id">
+								<form:option value="${computerDTO.company}">
+									<c:choose>
+										<c:when test="${not empty computerDTO}">
+										${computerDTO.company}
+										</c:when>
+										<c:otherwise>
+										--
+										</c:otherwise>
+									</c:choose>
+								</form:option>
+								<form:options items="${listCompanies}" itemValue="id"></form:options>
+							</form:select>
 						</div>
 					</fieldset>
 					<div class="actions pull-right">
-						<input type="submit" value="Edit" class="btn btn-primary">
-						or <a href="Dashboard" class="btn btn-default">Cancel</a>
+						<input type="submit" value="Edit" class="btn btn-primary" /> or <a
+							href="dashboard" class="btn btn-default">Cancel</a>
 					</div>
-				</form>
+				</form:form>
 			</div>
 		</div>
 	</div>

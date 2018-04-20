@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,8 +37,7 @@ import com.excilys.formation.computerdatabase.service.ValidationException;
  * Servlet implementation class EditComputerServlet
  */
 @Controller
-public class EditComputerController extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+public class EditComputerController {
     private static final Logger logger = LoggerFactory
             .getLogger(EditComputerController.class);
     private CompanyDAO companyDAO;
@@ -60,28 +60,12 @@ public class EditComputerController extends HttpServlet {
      *      response)
      */
     @RequestMapping(value = "/editComputer", method = RequestMethod.GET)
-    protected ModelAndView doGet(@RequestParam Map<String, String> allParams)
+    protected ModelAndView showFormFilled(
+            @ModelAttribute("computerDTO") ComputerDTO computerDTO)
             throws ServletException, IOException {
-        ModelAndView mav = new ModelAndView(Views.EDIT_COMPUTER);
+        ModelAndView mav = new ModelAndView(Views.EDIT_COMPUTER, "computerDTO",
+                computerDTO);
         mav = setRequest(mav);
-        String computerIdStr = allParams.get("computerId");
-        if (!StringUtils.isBlank(computerIdStr)) {
-            Long computerId = Long.valueOf(computerIdStr);
-            try {
-                Computer computer = computerService.getComputerById(computerId);
-                mav.addObject("computerId", computerId);
-                mav.addObject("computerName", computer.getName());
-                mav.addObject("computerIntroduced", computer.getIntroduced());
-                mav.addObject("computerDiscontinued",
-                        computer.getDiscontinued());
-                mav.addObject("computerCompany",
-                        computer.getCompany().getName());
-            } catch (ServiceException e) {
-                logger.debug(e.getMessage());
-            }
-        } else {
-            mav.setViewName(Views.DASHBOARD);
-        }
         return mav;
     }
 
