@@ -30,7 +30,9 @@ public class ValidatorComputer {
         }
         if (c.getCompany() != null) {
             try {
-                if (c.getCompany().getId() != null || companyService
+                System.out.println(
+                        companyService.getCompanyById(c.getCompany().getId()));
+                if (c.getCompany().getId() != null && companyService
                         .getCompanyById(c.getCompany().getId()) == null) {
                     throw new MissingCompanyException(
                             "L'id de company que vous avez donné n'existe pas !");

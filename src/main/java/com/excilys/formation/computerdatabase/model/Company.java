@@ -13,7 +13,7 @@ public class Company {
     private Long id;
     private String name;
 
-    private Company(final CompanyBuilder companyBuilder) {
+    public Company(final CompanyBuilder companyBuilder) {
         super();
         this.id = companyBuilder.id;
         this.name = companyBuilder.name;

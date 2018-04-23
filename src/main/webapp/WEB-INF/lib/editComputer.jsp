@@ -33,6 +33,7 @@
 				<form:form action="${formPathEdit}" method="POST"
 					modelAttribute="computerDTO">
 					<fieldset>
+						<form:input type="hidden" id="id" path="id" value="${computerDTO.id}"/>
 						<div class="form-group">
 							<form:label path="name">Computer name</form:label>
 							<form:input data-validation="length alphanumeric"
@@ -63,15 +64,8 @@
 							<form:label path="company.id">Company</form:label>
 							<form:select class="form-control" id="companyId"
 								path="company.id">
-								<form:option value="${computerDTO.company}">
-									<c:choose>
-										<c:when test="${not empty computerDTO}">
-										${computerDTO.company}
-										</c:when>
-										<c:otherwise>
-										--
-										</c:otherwise>
-									</c:choose>
+								<form:option value="0">--
+									
 								</form:option>
 								<form:options items="${listCompanies}" itemValue="id"></form:options>
 							</form:select>
