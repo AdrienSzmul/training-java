@@ -87,7 +87,7 @@ public class ComputerController {
         return mav;
     }
 
-    @PostMapping(value = "/editComputer")
+    @GetMapping(value = "/editComputer")
     protected ModelAndView showFormFilled(
             @RequestParam(value = "computerId") Long id)
             throws ServletException, IOException, ServiceException {
