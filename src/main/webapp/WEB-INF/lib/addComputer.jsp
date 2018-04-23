@@ -2,11 +2,12 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tag"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>Computer Database</title>
+<title><spring:message code="field.title"/></title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Bootstrap -->
 <link href="static/css/bootstrap.min.css" rel="stylesheet"
@@ -17,8 +18,7 @@
 <body>
 	<header class="navbar navbar-inverse navbar-fixed-top">
 	<div class="container">
-		<a class="navbar-brand" href="<tag:links target="dashboard"/>"> Application - Computer
-			Database </a>
+		<a class="navbar-brand" href="<tag:links target="dashboard"/>"><spring:message code="field.header"/></a>
 	</div>
 	</header>
 
@@ -26,13 +26,13 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-xs-8 col-xs-offset-2 box">
-				<h1>Add Computer</h1>
+				<h1><spring:message code="field.btnAddComp"/></h1>
 				<c:set var="formPathAdd"><tag:links target="add"/></c:set>
 				<form:form action="${formPathAdd}" method="POST"
 					modelAttribute="computerDTO">
 					<fieldset>
 						<div class="form-group">
-							<form:label path="name">Computer name</form:label>
+							<form:label path="name"><spring:message code="field.tableHeadName"/></form:label>
 							<form:input data-validation="length alphanumeric"
 								data-validation-allowing="-_ " data-validation-length="4-20"
 								data-validation-error-msg="Only alpahanu and between 4 to 20 char"
@@ -40,7 +40,7 @@
 								placeholder="Computer name" />
 						</div>
 						<div class="form-group">
-							<form:label path="introduced">Introduced date</form:label>
+							<form:label path="introduced"><spring:message code="field.tableHeadIntroduced"/></form:label>
 							<form:input data-validation="date"
 								data-validation-optional="true"
 								data-validation-error-msg="Date format is dd/mm/yyyy"
@@ -48,7 +48,7 @@
 								path="introduced" placeholder="Introduced date" />
 						</div>
 						<div class="form-group">
-							<form:label path="discontinued">Discontinued date</form:label>
+							<form:label path="discontinued"><spring:message code="field.tableHeadDiscontinued"/></form:label>
 							<form:input data-validation="date"
 								data-validation-optional="true"
 								data-validation-error-msg="Date format is dd/mm/yyyy"
@@ -56,7 +56,7 @@
 								path="discontinued" placeholder="Discontinued date" />
 						</div>
 						<div class="form-group">
-							<form:label path="company.id">Company</form:label>
+							<form:label path="company.id"><spring:message code="field.tableHeadCompany"/></form:label>
 							<form:select class="form-control" id="companyId"
 								path="company.id">
 								<form:option value="0">--</form:option>
@@ -65,8 +65,8 @@
 						</div>
 					</fieldset>
 					<div class="actions pull-right">
-						<input type="submit" value="Add" class="btn btn-primary" />
-						or <a href="Dashboard" class="btn btn-default">Cancel</a>
+						<input type="submit" value="<spring:message code="field.btnAdd"/>" class="btn btn-primary" />
+						or <a href="Dashboard" class="btn btn-default"><spring:message code="field.cancel"/></a>
 					</div>
 				</form:form>
 			</div>
