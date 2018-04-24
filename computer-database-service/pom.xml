@@ -4,16 +4,16 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>${parent.groupId}</groupId>
-		<artifactId>${parent.artifactId}</artifactId>
-		<version>${parent.version}</version>
+		<groupId>com.excilys.formation.computerdatabase</groupId>
+		<artifactId>computer-database</artifactId>
+		<version>0.5.0</version>
 	</parent>
 	<artifactId>computer-database-service</artifactId>
 	<packaging>jar</packaging>
 	<name>computer-database-service</name>
 	<dependencies>
 		<dependency>
-			<groupId>${parent.groupId}</groupId>
+			<groupId>com.excilys.formation.computerdatabase</groupId>
 			<artifactId>computer-database-persistence</artifactId>
 			<version>${parent.version}</version>
 		</dependency>
