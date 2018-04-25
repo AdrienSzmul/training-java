@@ -1,11 +1,9 @@
 package com.excilys.formation.computerdatabase.config;
 
-import org.springframework.context.annotation.Import;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
-@Import(PersistenceJPAConfig.class)
 public class MyCdbInitializer
         extends AbstractAnnotationConfigDispatcherServletInitializer {
     @Override
@@ -15,7 +13,7 @@ public class MyCdbInitializer
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class[] { PersistenceJPAConfig.class };
+        return new Class[] { MyWebAppConfig.class };
     }
 
     @Override

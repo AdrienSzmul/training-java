@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -55,10 +56,18 @@ public class CompanyDAO implements ICompanyDAO {
         CriteriaBuilder builder = entityManagerFactory.getCriteriaBuilder();
         CriteriaQuery<Company> criteria = builder.createQuery(Company.class);
         Root<Company> companyRoot = criteria.from(Company.class);
-        criteria.select(companyRoot);
-        listCompanies = entityManagerFactory.createEntityManager()
-                .createQuery(criteria).getResultList();
-        return listCompanies;
+        CriteriaQuery<Company> select = criteria.select(companyRoot);
+        select.orderBy(builder.asc(companyRoot.get("ca_id")));
+        TypedQuery<Company> typedQuery = entityManagerFactory
+                .createEntityManager().createQuery(select);
+        typedQuery.setFirstResult(pageNumber * taille);
+        typedQuery.setMaxResults(taille);
+        listCompanies = typedQuery.getResultList();
+        if (!listCompanies.isEmpty()) {
+            return listCompanies;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -72,9 +81,12 @@ public class CompanyDAO implements ICompanyDAO {
     @Override
     public int getCountCompanies() throws DAOException {
         logger.info("count Companies");
-        int nombreRes = 0;
-        nombreRes = jdbcTemplate.queryForObject(COUNT_COMPANIES, Integer.class);
-        return nombreRes;
+        CriteriaBuilder builder = entityManagerFactory.getCriteriaBuilder();
+        CriteriaQuery<Long> count = builder.createQuery(Long.class);
+        count.select(builder.count(count.from(Company.class)));
+        Long nombreRes = entityManagerFactory.createEntityManager()
+                .createQuery(count).getSingleResult();
+        return nombreRes.intValue();
     }
 
     @Override

@@ -10,19 +10,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.formation.computerdatabase.model.Company;
-import com.excilys.formation.computerdatabase.persistence.dao.CompanyDAO;
-import com.excilys.formation.computerdatabase.persistence.dao.ComputerDAO;
 import com.excilys.formation.computerdatabase.persistence.dao.DAOException;
+import com.excilys.formation.computerdatabase.persistence.dao.ICompanyDAO;
+import com.excilys.formation.computerdatabase.persistence.dao.IComputerDAO;
 
 /**
  * @author excilys
  */
 @Service
 public class CompanyService {
-    private CompanyDAO companyDAO;
-    private ComputerDAO computerDAO;
+    private ICompanyDAO companyDAO;
+    private IComputerDAO computerDAO;
 
-    public CompanyService(CompanyDAO companyDAO, ComputerDAO computerDAO) {
+    public CompanyService(ICompanyDAO companyDAO, IComputerDAO computerDAO) {
         this.companyDAO = companyDAO;
         this.computerDAO = computerDAO;
     }

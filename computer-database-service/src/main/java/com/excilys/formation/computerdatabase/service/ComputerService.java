@@ -9,19 +9,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.formation.computerdatabase.model.Computer;
-import com.excilys.formation.computerdatabase.persistence.dao.ComputerDAO;
 import com.excilys.formation.computerdatabase.persistence.dao.DAOException;
+import com.excilys.formation.computerdatabase.persistence.dao.IComputerDAO;
 
 /**
  * @author excilys
  */
 @Service
 public class ComputerService {
-    private ComputerDAO computerDAO;
+    private IComputerDAO computerDAO;
     private CompanyService companyService;
     private ValidatorComputer val;
 
-    public ComputerService(ComputerDAO computerDAO,
+    public ComputerService(IComputerDAO computerDAO,
             CompanyService companyService, ValidatorComputer val) {
         this.computerDAO = computerDAO;
         this.companyService = companyService;

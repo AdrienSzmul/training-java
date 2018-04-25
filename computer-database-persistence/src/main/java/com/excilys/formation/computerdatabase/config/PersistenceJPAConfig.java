@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -22,6 +23,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @PropertySource("classpath:/properties/dao.properties")
+@ComponentScan(basePackages = { "com.excilys.formation.computerdatabase.config",
+        "com.excilys.formation.computerdatabase.persistence",
+        "com.excilys.formation.computerdatabase.mapper",
+        "com.excilys.formation.computerdatabase.model",
+        "com.excilys.formation.computerdatabase.persistence.dao" })
 public class PersistenceJPAConfig {
     private static final String URL = "url";
     private static final String PASSWORD = "password";
