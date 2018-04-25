@@ -3,17 +3,32 @@
  */
 package com.excilys.formation.computerdatabase.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * @author excilys
  */
+@Entity
+@Table(name = "company")
 public class Company {
     /**
      *
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "ca_id")
     private Long id;
+    @Column(name = "ca_name")
     private String name;
 
-    public Company(final CompanyBuilder companyBuilder) {
+    public Company() {
+    }
+
+    public Company(CompanyBuilder companyBuilder) {
         super();
         this.id = companyBuilder.id;
         this.name = companyBuilder.name;
@@ -26,22 +41,22 @@ public class Company {
         public CompanyBuilder() {
         }
 
-        public CompanyBuilder(final Long idCompany, final String nameCompany) {
+        public CompanyBuilder(Long idCompany, String nameCompany) {
             this.id = idCompany;
             this.name = nameCompany;
         }
 
-        public final CompanyBuilder withId(final Long idCompany) {
+        public CompanyBuilder withId(Long idCompany) {
             this.id = idCompany;
             return this;
         }
 
-        public final CompanyBuilder withName(final String nameCompany) {
+        public CompanyBuilder withName(String nameCompany) {
             this.name = nameCompany;
             return this;
         }
 
-        public final Company build() {
+        public Company build() {
             return new Company(this);
         }
     }
@@ -49,7 +64,7 @@ public class Company {
     /**
      * @return the id
      */
-    public final Long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -57,14 +72,14 @@ public class Company {
      * @param id
      *            the id to set
      */
-    public final void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
     /**
      * @return the name
      */
-    public final String getName() {
+    public String getName() {
         return name;
     }
 
@@ -72,7 +87,7 @@ public class Company {
      * @param name
      *            the name to set
      */
-    public final void setName(final String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -81,46 +96,8 @@ public class Company {
      * @see java.lang.Object#toString()
      */
     @Override
-    public final String toString() {
+    public String toString() {
         return new StringBuilder().append("Company : ").append(id)
                 .append(" name : ").append(name).toString();
-    }
-
-    @Override
-    public final int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        return result;
-    }
-
-    @Override
-    public final boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Company other = (Company) obj;
-        if (id == null) {
-            if (other.id != null) {
-                return false;
-            }
-        } else if (!id.equals(other.id)) {
-            return false;
-        }
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!name.equals(other.name)) {
-            return false;
-        }
-        return true;
     }
 }

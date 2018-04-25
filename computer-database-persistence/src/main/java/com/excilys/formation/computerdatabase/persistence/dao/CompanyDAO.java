@@ -3,18 +3,20 @@
  */
 package com.excilys.formation.computerdatabase.persistence.dao;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.formation.computerdatabase.mapper.CompanyMapper;
@@ -32,14 +34,17 @@ public class CompanyDAO implements ICompanyDAO {
     private CompanyMapper companyMapper;
     private JdbcTemplate jdbcTemplate;
     private DataSource dataSource;
+    private EntityManagerFactory entityManagerFactory;
     private final String SELECT_LIST_COMPANIES = "SELECT ca_id, ca_name FROM company ORDER BY ca_id LIMIT ? OFFSET ?;";
     private final String COUNT_COMPANIES = "SELECT count(ca_id) FROM company;";
     private final String SELECT_ONE_COMPANY = "SELECT ca_id, ca_name FROM company WHERE ca_id = ?;";
     private final String DELETE_ONE_COMPANY = "DELETE FROM company WHERE ca_id = ?";
 
-    public CompanyDAO(CompanyMapper companyMapper, DataSource dataSource) {
+    public CompanyDAO(CompanyMapper companyMapper, DataSource dataSource,
+            EntityManagerFactory entityManagerFactory) {
         this.companyMapper = companyMapper;
         jdbcTemplate = new JdbcTemplate(dataSource);
+        this.entityManagerFactory = entityManagerFactory;
     }
 
     @Override
@@ -47,17 +52,12 @@ public class CompanyDAO implements ICompanyDAO {
             final int taille) throws DAOException {
         logger.info("get List Companies");
         List<Company> listCompanies = new ArrayList<>();
-        listCompanies = jdbcTemplate.query(SELECT_LIST_COMPANIES,
-                new PreparedStatementSetter() {
-                    @Override
-                    public void setValues(PreparedStatement ps)
-                            throws SQLException {
-                        ps.setInt(1, taille);
-                        ps.setInt(2, pageNumber * taille);
-                    }
-                }, (ResultSet st, int arg1) -> {
-                    return companyMapper.createCompany(st);
-                });
+        CriteriaBuilder builder = entityManagerFactory.getCriteriaBuilder();
+        CriteriaQuery<Company> criteria = builder.createQuery(Company.class);
+        Root<Company> companyRoot = criteria.from(Company.class);
+        criteria.select(companyRoot);
+        listCompanies = entityManagerFactory.createEntityManager()
+                .createQuery(criteria).getResultList();
         return listCompanies;
     }
 
