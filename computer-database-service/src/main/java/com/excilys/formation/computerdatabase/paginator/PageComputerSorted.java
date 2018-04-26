@@ -25,7 +25,7 @@ public class PageComputerSorted extends PageComputer {
     @Override
     protected void refresh(int pageNumber) throws ServiceException {
         this.pageActive = computerService.getListComputersSorted(pageNumber,
-                tailleMax.getValue(), orderby.getValue(), ascdesc);
+                tailleMax.getValue(), orderby.name().toLowerCase(), ascdesc);
     }
 
     public ColumnNames getOrderby() {

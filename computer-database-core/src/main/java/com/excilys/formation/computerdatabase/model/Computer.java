@@ -37,6 +37,9 @@ public class Computer {
     @JoinColumn(name = "cu_ca_id", foreignKey = @ForeignKey(name = "ca_id"))
     private Company company;
 
+    public Computer() {
+    }
+
     public Computer(ComputerBuilder builder) {
         this.id = builder.id;
         this.name = builder.name;

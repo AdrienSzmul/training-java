@@ -1,5 +1,6 @@
 package com.excilys.formation.computerdatabase.persistence.dao;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -41,33 +42,22 @@ public class CompanyDAOTest {
     @Test
     public void testGetListCompanies() throws DAOException {
         List<Company> listCompanies = new ArrayList<Company>();
-        listCompanies = companyDAO.getListCompanies(0, 100);
+        listCompanies = companyDAO.getListCompanies(0, 5);
         assertNotNull(listCompanies);
-        assertTrue(
-                listCompanies.get(12).getId() < listCompanies.get(24).getId());
+        assertTrue(listCompanies.get(1).getId() < listCompanies.get(2).getId());
     }
-    // @Test
-    // public void testGetPageCountCompanies() {
-    // fail("Not yet implemented");
-    // }
-    //
-    // @Test
-    // public void testGetCountCompanies() {
-    // fail("Not yet implemented");
-    // }
-    //
-    // @Test
-    // public void testGetCompanyById() {
-    // fail("Not yet implemented");
-    // }
-    //
-    // @Test
-    // public void testGetLogger() {
-    // fail("Not yet implemented");
-    // }
-    //
-    // @Test
-    // public void testDeleteCompany() {
-    // fail("Not yet implemented");
-    // }
+
+    @Test
+    public void testGetCountCompanies() throws DAOException {
+        int nombreRes = companyDAO.getCountCompanies();
+        assertNotNull(nombreRes);
+        assertTrue(nombreRes == 5);
+    }
+
+    @Test
+    public void testGetCompanyById() throws DAOException {
+        Company company = companyDAO.getCompanyById(2L);
+        assertTrue(company.getId() == 2L);
+        assertEquals(company.getName(), "Thinking Machines");
+    }
 }

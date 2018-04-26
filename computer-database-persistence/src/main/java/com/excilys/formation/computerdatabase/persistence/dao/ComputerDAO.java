@@ -5,26 +5,36 @@ package com.excilys.formation.computerdatabase.persistence.dao;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.formation.computerdatabase.mapper.ComputerMapper;
 import com.excilys.formation.computerdatabase.model.Company;
+import com.excilys.formation.computerdatabase.model.Company_;
 import com.excilys.formation.computerdatabase.model.Computer;
+import com.excilys.formation.computerdatabase.model.Computer_;
 
 /**
  * @author excilys
@@ -44,6 +54,8 @@ public class ComputerDAO implements IComputerDAO {
     private JdbcTemplate jdbcTemplate;
     private ComputerMapper computerMapper;
     private DataSource dataSource;
+    @PersistenceContext
+    EntityManager entityManager;
 
     public ComputerDAO(ComputerMapper computerMapper, DataSource dataSource) {
         this.computerMapper = computerMapper;
@@ -67,16 +79,25 @@ public class ComputerDAO implements IComputerDAO {
     @Override
     public void deleteComputer(final Computer c) throws DAOException {
         logger.info("delete Computer");
-        jdbcTemplate.update(DELETE_COMPUTER, new Object[] { c.getId() });
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaDelete<Computer> deleteComputer = builder
+                .createCriteriaDelete(Computer.class);
+        Root<Computer> root = deleteComputer.from(Computer.class);
+        deleteComputer.where(builder.equal(root.get(Computer_.id), c.getId()));
+        entityManager.createQuery(deleteComputer).executeUpdate();
     }
 
     @Override
-    // Transaction model implemented here
     public void deleteMultipleComputers(List<Long> listComputerIds)
             throws DAOException {
         logger.info("delete multiple computers");
         for (Long id : listComputerIds) {
-            jdbcTemplate.update(DELETE_COMPUTER, new Object[] { id });
+            CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+            CriteriaDelete<Computer> deleteComputer = builder
+                    .createCriteriaDelete(Computer.class);
+            Root<Computer> root = deleteComputer.from(Computer.class);
+            deleteComputer.where(builder.equal(root.get(Computer_.id), id));
+            entityManager.createQuery(deleteComputer).executeUpdate();
         }
     }
 
@@ -84,8 +105,28 @@ public class ComputerDAO implements IComputerDAO {
     public void deleteMultipleComputersFromCompany(Company company)
             throws DAOException, SQLException {
         logger.info("delete computers with company id");
-        jdbcTemplate.update(DELETE_COMPUTERS_COMPANY,
-                new Object[] { company.getId() });
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaDelete<Computer> deleteComputer = builder
+                .createCriteriaDelete(Computer.class);
+        Root<Computer> root = deleteComputer.from(Computer.class);
+        deleteComputer.where(
+                builder.equal(root.get(Computer_.company), company.getId()));
+        entityManager.createQuery(deleteComputer).executeUpdate();
+    }
+
+    @Override
+    public void updateComputer(final Computer c) throws DAOException {
+        logger.info("update Computer");
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaUpdate<Computer> updateComputer = builder
+                .createCriteriaUpdate(Computer.class);
+        Root<Computer> root = updateComputer.from(Computer.class);
+        updateComputer.where(builder.equal(root.get(Computer_.id), c.getId()));
+        updateComputer.set("name", c.getId());
+        updateComputer.set("introduced", c.getIntroduced());
+        updateComputer.set("discontinued", c.getDiscontinued());
+        updateComputer.set("company", c.getCompany());
+        entityManager.createQuery(updateComputer).executeUpdate();
     }
 
     @Override
@@ -93,24 +134,18 @@ public class ComputerDAO implements IComputerDAO {
             String orderby, boolean ascdesc) throws DAOException {
         final int offset = pageNumber * eltNumber;
         List<Computer> listComputers = new ArrayList<>();
-        String newRequest;
-        if (!ascdesc) {
-            newRequest = String.format(SELECT_LIST_COMPUTERS, orderby, "ASC");
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Computer> criteria = builder.createQuery(Computer.class);
+        Root<Computer> computerRoot = criteria.from(Computer.class);
+        CriteriaQuery<Computer> select = criteria.select(computerRoot);
+        setOrderBy(orderby, ascdesc, builder, computerRoot, select);
+        TypedQuery<Computer> typedQuery = setOffset(eltNumber, offset, select);
+        listComputers = typedQuery.getResultList();
+        if (!listComputers.isEmpty()) {
+            return listComputers;
         } else {
-            newRequest = String.format(SELECT_LIST_COMPUTERS, orderby, "DESC");
+            return null;
         }
-        listComputers = jdbcTemplate.query(newRequest,
-                new PreparedStatementSetter() {
-                    @Override
-                    public void setValues(PreparedStatement ps)
-                            throws SQLException {
-                        ps.setInt(1, eltNumber);
-                        ps.setInt(2, offset);
-                    }
-                }, (ResultSet st, int arg1) -> {
-                    return computerMapper.createComputer(st);
-                });
-        return listComputers;
     }
 
     @Override
@@ -118,30 +153,21 @@ public class ComputerDAO implements IComputerDAO {
             int eltNumber, String search, String orderby, boolean ascdesc)
             throws DAOException {
         final int offset = pageNumber * eltNumber;
+        String searchPC = "%" + search + "%";
         List<Computer> listComputers = new ArrayList<>();
-        String newRequest;
-        if (!ascdesc) {
-            newRequest = String.format(SELECT_LIST_COMPUTERS_SEARCH, orderby,
-                    "ASC");
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Computer> criteria = builder.createQuery(Computer.class);
+        Root<Computer> computerRoot = criteria.from(Computer.class);
+        CriteriaQuery<Computer> select = setSearchAndCompanyJoin(searchPC,
+                builder, criteria, computerRoot);
+        setOrderBy(orderby, ascdesc, builder, computerRoot, select);
+        TypedQuery<Computer> typedQuery = setOffset(eltNumber, offset, select);
+        listComputers = typedQuery.getResultList();
+        if (!listComputers.isEmpty()) {
+            return listComputers;
         } else {
-            newRequest = String.format(SELECT_LIST_COMPUTERS_SEARCH, orderby,
-                    "DESC");
+            return null;
         }
-        listComputers = jdbcTemplate.query(newRequest,
-                new PreparedStatementSetter() {
-                    @Override
-                    public void setValues(PreparedStatement ps)
-                            throws SQLException {
-                        String tmpSearch = "%" + search + "%";
-                        ps.setString(1, tmpSearch);
-                        ps.setString(2, tmpSearch);
-                        ps.setInt(3, eltNumber);
-                        ps.setInt(4, offset);
-                    }
-                }, (ResultSet st, int arg1) -> {
-                    return computerMapper.createComputer(st);
-                });
-        return listComputers;
     }
 
     @Override
@@ -149,70 +175,84 @@ public class ComputerDAO implements IComputerDAO {
             throws DAOException {
         final int offset = pageNumber * eltNumber;
         List<Computer> listComputers = new ArrayList<>();
-        String newRequest = String.format(SELECT_LIST_COMPUTERS, "cu_name",
-                "ASC");
-        listComputers = jdbcTemplate.query(newRequest,
-                new PreparedStatementSetter() {
-                    @Override
-                    public void setValues(PreparedStatement ps)
-                            throws SQLException {
-                        ps.setInt(1, eltNumber);
-                        ps.setInt(2, offset);
-                    }
-                }, (ResultSet st, int arg1) -> {
-                    return computerMapper.createComputer(st);
-                });
-        return listComputers;
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Computer> criteria = builder.createQuery(Computer.class);
+        Root<Computer> companyRoot = criteria.from(Computer.class);
+        CriteriaQuery<Computer> select = criteria.select(companyRoot);
+        select.orderBy(builder.asc(companyRoot.get(Computer_.id)));
+        TypedQuery<Computer> typedQuery = setOffset(eltNumber, offset, select);
+        listComputers = typedQuery.getResultList();
+        if (!listComputers.isEmpty()) {
+            return listComputers;
+        } else {
+            return null;
+        }
     }
 
     @Override
     public List<Computer> getListComputersSearch(int pageNumber, int eltNumber,
             String search) throws DAOException {
         final int offset = pageNumber * eltNumber;
+        String searchPC = "%" + search + "%";
         List<Computer> listComputers = new ArrayList<>();
-        listComputers = jdbcTemplate.query(SELECT_LIST_COMPUTERS_SEARCH,
-                new PreparedStatementSetter() {
-                    @Override
-                    public void setValues(PreparedStatement ps)
-                            throws SQLException {
-                        String tmpSearch = "%" + search + "%";
-                        ps.setString(1, tmpSearch);
-                        ps.setString(2, tmpSearch);
-                        ps.setInt(3, eltNumber);
-                        ps.setInt(4, offset);
-                    }
-                }, (ResultSet st, int arg1) -> {
-                    return computerMapper.createComputer(st);
-                });
-        return listComputers;
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Computer> criteria = builder.createQuery(Computer.class);
+        Root<Computer> computerRoot = criteria.from(Computer.class);
+        CriteriaQuery<Computer> select = setSearchAndCompanyJoin(searchPC,
+                builder, criteria, computerRoot);
+        select.orderBy(builder.asc(computerRoot.get(Computer_.id)));
+        TypedQuery<Computer> typedQuery = setOffset(eltNumber, offset, select);
+        listComputers = typedQuery.getResultList();
+        if (!listComputers.isEmpty()) {
+            return listComputers;
+        } else {
+            return null;
+        }
+    }
+
+    private CriteriaQuery<Computer> setSearchAndCompanyJoin(String searchPC,
+            CriteriaBuilder builder, CriteriaQuery<Computer> criteria,
+            Root<Computer> computerRoot) {
+        Join<Computer, Company> companyJoin = computerRoot
+                .join(Computer_.company, JoinType.LEFT);
+        Predicate searchP = builder.or(
+                builder.like(computerRoot.get(Computer_.name), searchPC),
+                builder.like(companyJoin.get(Company_.name), searchPC));
+        CriteriaQuery<Computer> select = criteria.select(computerRoot);
+        select.where(searchP);
+        return select;
+    }
+
+    private void setOrderBy(String orderby, boolean ascdesc,
+            CriteriaBuilder builder, Root<Computer> computerRoot,
+            CriteriaQuery<Computer> select) {
+        if (!ascdesc) {
+            select.orderBy(builder.desc(computerRoot.get(orderby)));
+        } else {
+            select.orderBy(builder.asc(computerRoot.get(orderby)));
+        }
+    }
+
+    private TypedQuery<Computer> setOffset(int eltNumber, final int offset,
+            CriteriaQuery<Computer> select) {
+        TypedQuery<Computer> typedQuery = entityManager.createQuery(select);
+        typedQuery.setFirstResult(offset);
+        typedQuery.setMaxResults(eltNumber);
+        return typedQuery;
     }
 
     @Override
     public Computer getComputerById(Long id) throws DAOException {
         logger.info("get one Computer");
-        Computer computer;
-        try {
-            computer = jdbcTemplate.queryForObject(SELECT_ONE_COMPUTER,
-                    new Object[] { id }, (ResultSet st, int arg1) -> {
-                        return computerMapper.createComputer(st);
-                    });
-            return computer;
-        } catch (EmptyResultDataAccessException e) {
-            logger.debug("Id doesn't match anything");
-            return null;
-        }
-    }
-
-    @Override
-    public void updateComputer(final Computer c) throws DAOException {
-        logger.info("update Computer");
-        jdbcTemplate.update(UPDATE_COMPUTER, new PreparedStatementSetter() {
-            @Override
-            public void setValues(PreparedStatement ps) throws SQLException {
-                setStatementsSQL(c, ps);
-                ps.setLong(5, c.getId());
-            }
-        });
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Computer> getComputer = builder
+                .createQuery(Computer.class);
+        Root<Computer> root = getComputer.from(Computer.class);
+        getComputer.select(root);
+        getComputer.where(builder.equal(root.get(Computer_.id), id));
+        Computer computer = entityManager.createQuery(getComputer)
+                .getSingleResult();
+        return computer;
     }
 
     @Override
@@ -233,19 +273,29 @@ public class ComputerDAO implements IComputerDAO {
     @Override
     public int getCountComputers() throws DAOException {
         logger.info("count Computers");
-        int tailleListComputers = 0;
-        tailleListComputers = jdbcTemplate.queryForObject(COUNT_COMPUTERS,
-                Integer.class);
-        return tailleListComputers;
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> count = builder.createQuery(Long.class);
+        count.select(builder.count(count.from(Computer.class)));
+        Long nombreRes = entityManager.createQuery(count).getSingleResult();
+        return nombreRes.intValue();
     }
 
     @Override
     public int getCountComputersSearch(String search) throws DAOException {
-        int nbrComputersResult = 0;
         String tmpSearch = "%" + search + "%";
-        nbrComputersResult = jdbcTemplate.queryForObject(COUNT_COMPUTERS_SEARCH,
-                Integer.class, new Object[] { tmpSearch, tmpSearch });
-        return nbrComputersResult;
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> criteria = builder.createQuery(Long.class);
+        Root<Computer> computerRoot = criteria.from(Computer.class);
+        criteria.select(builder.count(computerRoot));
+        Join<Computer, Company> companyJoin = computerRoot
+                .join(Computer_.company, JoinType.LEFT);
+        Predicate searchP = builder.or(
+                builder.like(computerRoot.get(Computer_.name), tmpSearch),
+                builder.like(companyJoin.get(Company_.name), tmpSearch));
+        criteria.select(builder.count(computerRoot));
+        criteria.where(searchP);
+        Long nombreRes = entityManager.createQuery(criteria).getSingleResult();
+        return nombreRes.intValue();
     }
 
     public final Logger getLogger() {

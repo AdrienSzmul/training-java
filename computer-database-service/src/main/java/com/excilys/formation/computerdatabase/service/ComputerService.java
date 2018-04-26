@@ -120,6 +120,7 @@ public class ComputerService {
         }
     }
 
+    @Transactional
     public void updateComputer(final Computer c)
             throws ValidationException, ServiceException {
         if (c.getId() != null) {
@@ -135,6 +136,7 @@ public class ComputerService {
         }
     }
 
+    @Transactional
     public void deleteComputer(final Computer c) throws ServiceException {
         try {
             computerDAO.deleteComputer(c);
