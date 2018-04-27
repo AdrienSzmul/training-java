@@ -615,3 +615,13 @@ insert into computer (cu_id,cu_name,cu_introduced,cu_discontinued,cu_ca_id) valu
 insert into computer (cu_id,cu_name,cu_introduced,cu_discontinued,cu_ca_id) values (572,'Dell Vostro',null,null,null);
 insert into computer (cu_id,cu_name,cu_introduced,cu_discontinued,cu_ca_id) values (573,'Gateway LT3103U','2008-01-01',null,null);
 insert into computer (cu_id,cu_name,cu_introduced,cu_discontinued,cu_ca_id) values (574,'iPhone 4S','2011-10-14',null,1);
+
+insert into users (username, password, enabled) values ('adrien', '123adr', true);
+insert into users (username, password, enabled) values ('josé', '123jos', false);
+insert into users (username, password, enabled) values ('maxb', '123max', true);
+
+insert into authorities (username, authority) values ('adrien', 'admin');
+insert into authorities (username, authority) values ('maxb', 'utilisateur');
+insert into authorities (username, authority) values ('maxb', 'utilisateur');
+
+
