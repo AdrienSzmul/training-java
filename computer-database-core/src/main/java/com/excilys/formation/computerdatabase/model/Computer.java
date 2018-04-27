@@ -5,20 +5,43 @@ package com.excilys.formation.computerdatabase.model;
 
 import java.time.LocalDate;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * @author excilys
  */
+@Entity
+@Table(name = "computer")
 public class Computer {
     /**
      *
      */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cu_id")
     private Long id;
+    @Column(name = "cu_name")
     private String name;
+    @Column(name = "cu_introduced")
     private LocalDate introduced;
+    @Column(name = "cu_discontinued")
     private LocalDate discontinued;
+    @ManyToOne
+    @JoinColumn(name = "cu_ca_id", foreignKey = @ForeignKey(name = "ca_id"))
     private Company company;
 
-    public Computer(final ComputerBuilder builder) {
+    public Computer() {
+    }
+
+    public Computer(ComputerBuilder builder) {
         this.id = builder.id;
         this.name = builder.name;
         this.introduced = builder.introduced;
@@ -33,35 +56,33 @@ public class Computer {
         private LocalDate discontinued;
         private Company company;
 
-        public final ComputerBuilder withId(final Long idComputer) {
+        public ComputerBuilder withId(Long idComputer) {
             this.id = idComputer;
             return this;
         }
 
-        public final ComputerBuilder withName(final String nameComputer) {
+        public ComputerBuilder withName(String nameComputer) {
             this.name = nameComputer;
             return this;
         }
 
-        public final ComputerBuilder withIntroduced(
-                final LocalDate introducedComputer) {
+        public ComputerBuilder withIntroduced(LocalDate introducedComputer) {
             this.introduced = introducedComputer;
             return this;
         }
 
-        public final ComputerBuilder withDiscontinued(
-                final LocalDate discontinuedComputer) {
+        public ComputerBuilder withDiscontinued(
+                LocalDate discontinuedComputer) {
             this.discontinued = discontinuedComputer;
             return this;
         }
 
-        public final ComputerBuilder withCompany(
-                final Company companyComputer) {
+        public ComputerBuilder withCompany(Company companyComputer) {
             this.company = companyComputer;
             return this;
         }
 
-        public final Computer build() {
+        public Computer build() {
             return new Computer(this);
         }
     }
@@ -69,7 +90,7 @@ public class Computer {
     /**
      * @return the id
      */
-    public final Long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -77,14 +98,14 @@ public class Computer {
      * @param id
      *            the id to set
      */
-    public final void setId(final Long idComputer) {
+    public void setId(Long idComputer) {
         this.id = idComputer;
     }
 
     /**
      * @return the name
      */
-    public final String getName() {
+    public String getName() {
         return name;
     }
 
@@ -92,14 +113,14 @@ public class Computer {
      * @param name
      *            the name to set
      */
-    public final void setName(final String nameComputer) {
+    public void setName(String nameComputer) {
         this.name = nameComputer;
     }
 
     /**
      * @return the introduced
      */
-    public final LocalDate getIntroduced() {
+    public LocalDate getIntroduced() {
         return introduced;
     }
 
@@ -107,14 +128,14 @@ public class Computer {
      * @param introduced
      *            the introduced to set
      */
-    public final void setIntroduced(final LocalDate introducedComputer) {
+    public void setIntroduced(LocalDate introducedComputer) {
         this.introduced = introducedComputer;
     }
 
     /**
      * @return the discontinued
      */
-    public final LocalDate getDiscontinued() {
+    public LocalDate getDiscontinued() {
         return discontinued;
     }
 
@@ -122,14 +143,14 @@ public class Computer {
      * @param discontinued
      *            the discontinued to set
      */
-    public final void setDiscontinued(final LocalDate discontinuedComputer) {
+    public void setDiscontinued(LocalDate discontinuedComputer) {
         this.discontinued = discontinuedComputer;
     }
 
     /**
      * @return the company_id
      */
-    public final Company getCompany() {
+    public Company getCompany() {
         return company;
     }
 
@@ -137,7 +158,7 @@ public class Computer {
      * @param company_id
      *            the company_id to set
      */
-    public final void setCompany(final Company companyComputer) {
+    public void setCompany(Company companyComputer) {
         this.company = companyComputer;
     }
 
@@ -146,75 +167,11 @@ public class Computer {
      * @see java.lang.Object#toString()
      */
     @Override
-    public final String toString() {
+    public String toString() {
         return new StringBuilder().append("Computer : ").append(id)
                 .append(" name: ").append(name).append(" introduced in: ")
                 .append(introduced).append(" discontinued in: ")
                 .append(discontinued).append(" from the company: ")
                 .append(company.getName()).toString();
-    }
-
-    @Override
-    public final int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((company == null) ? 0 : company.hashCode());
-        result = prime * result
-                + ((discontinued == null) ? 0 : discontinued.hashCode());
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result
-                + ((introduced == null) ? 0 : introduced.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        return result;
-    }
-
-    @Override
-    public final boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Computer other = (Computer) obj;
-        if (company == null) {
-            if (other.company != null) {
-                return false;
-            }
-        } else if (!company.equals(other.company)) {
-            return false;
-        }
-        if (discontinued == null) {
-            if (other.discontinued != null) {
-                return false;
-            }
-        } else if (!discontinued.equals(other.discontinued)) {
-            return false;
-        }
-        if (id == null) {
-            if (other.id != null) {
-                return false;
-            }
-        } else if (!id.equals(other.id)) {
-            return false;
-        }
-        if (introduced == null) {
-            if (other.introduced != null) {
-                return false;
-            }
-        } else if (!introduced.equals(other.introduced)) {
-            return false;
-        }
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!name.equals(other.name)) {
-            return false;
-        }
-        return true;
     }
 }

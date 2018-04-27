@@ -73,7 +73,7 @@
 					</fieldset>
 					<div class="actions pull-right">
 						<input type="submit" value="<spring:message code="field.btnEdit"/>" class="btn btn-primary" /> or <a
-							href="dashboard" class="btn btn-default"><spring:message code="field.Cancel"/></a>
+							href="dashboard" class="btn btn-default"><spring:message code="field.cancel"/></a>
 					</div>
 				</form:form>
 			</div>
