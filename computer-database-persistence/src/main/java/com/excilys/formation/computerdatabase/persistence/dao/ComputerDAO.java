@@ -3,10 +3,7 @@
  */
 package com.excilys.formation.computerdatabase.persistence.dao;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,16 +18,11 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.excilys.formation.computerdatabase.mapper.ComputerMapper;
 import com.excilys.formation.computerdatabase.model.Company;
 import com.excilys.formation.computerdatabase.model.Company_;
 import com.excilys.formation.computerdatabase.model.Computer;
@@ -42,38 +34,16 @@ import com.excilys.formation.computerdatabase.model.Computer_;
 @Repository
 public class ComputerDAO implements IComputerDAO {
     private final Logger logger = LoggerFactory.getLogger(ComputerDAO.class);
-    private final String SELECT_LIST_COMPUTERS = "SELECT cu_id, cu_name, cu_introduced, cu_discontinued, cu_ca_id, ca_id, ca_name FROM computer LEFT JOIN company ON cu_ca_id = ca_id ORDER BY %s %s LIMIT ? OFFSET ?;";
-    private final String SELECT_LIST_COMPUTERS_SEARCH = "SELECT cu_id, cu_name, cu_introduced, cu_discontinued, cu_ca_id, ca_id, ca_name FROM computer LEFT JOIN company ON cu_ca_id = ca_id WHERE cu_name LIKE ? OR ca_name LIKE ? ORDER BY %s %s LIMIT ? OFFSET ?;";
-    private final String COUNT_COMPUTERS = "SELECT count(cu_id) FROM computer;";
-    private final String COUNT_COMPUTERS_SEARCH = "SELECT count(cu_id) FROM computer LEFT JOIN company ON cu_ca_id = ca_id WHERE cu_name LIKE ? OR ca_name LIKE ?";
-    private final String SELECT_ONE_COMPUTER = "SELECT cu_id, cu_name, cu_introduced, cu_discontinued, cu_ca_id, ca_id, ca_name FROM computer LEFT JOIN company ON cu_ca_id = ca_id WHERE cu_id = ?;";
-    private final String CREATE_COMPUTER = "INSERT INTO computer (cu_name, cu_introduced, cu_discontinued, cu_ca_id) VALUES (?, ?, ?, ?)";
-    private final String DELETE_COMPUTER = "DELETE FROM computer WHERE cu_id = ?";
-    private final String DELETE_COMPUTERS_COMPANY = "DELETE FROM computer WHERE cu_ca_id = ?";
-    private final String UPDATE_COMPUTER = "UPDATE computer SET cu_name = ?, cu_introduced = ?, cu_discontinued = ?, cu_ca_id = ? WHERE cu_id = ?";
-    private JdbcTemplate jdbcTemplate;
-    private ComputerMapper computerMapper;
-    private DataSource dataSource;
     @PersistenceContext
-    EntityManager entityManager;
-
-    public ComputerDAO(ComputerMapper computerMapper, DataSource dataSource) {
-        this.computerMapper = computerMapper;
-        jdbcTemplate = new JdbcTemplate(dataSource);
-    }
+    private EntityManager entityManager;
 
     @Override
     public Long createComputer(final Computer c) throws DAOException {
         logger.info("create Computer");
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(CREATE_COMPUTER,
-                    Statement.RETURN_GENERATED_KEYS);
-            setStatementsSQL(c, ps);
-            return ps;
-        }, keyHolder);
-        Number createdIdNbr = keyHolder.getKey();
-        return createdIdNbr.longValue();
+        c.setId(null);
+        entityManager.persist(c);
+        entityManager.flush();
+        return c.getId();
     }
 
     @Override
@@ -227,9 +197,23 @@ public class ComputerDAO implements IComputerDAO {
             CriteriaBuilder builder, Root<Computer> computerRoot,
             CriteriaQuery<Computer> select) {
         if (!ascdesc) {
-            select.orderBy(builder.desc(computerRoot.get(orderby)));
+            if (orderby.matches("company")) {
+                Join<Computer, Company> companyJoin = computerRoot
+                        .join(Computer_.company, JoinType.LEFT);
+                orderby = "name";
+                select.orderBy(builder.desc(companyJoin.get(orderby)));
+            } else {
+                select.orderBy(builder.desc(computerRoot.get(orderby)));
+            }
         } else {
-            select.orderBy(builder.asc(computerRoot.get(orderby)));
+            if (orderby.matches("company")) {
+                Join<Computer, Company> companyJoin = computerRoot
+                        .join(Computer_.company, JoinType.LEFT);
+                orderby = "name";
+                select.orderBy(builder.asc(companyJoin.get(orderby)));
+            } else {
+                select.orderBy(builder.asc(computerRoot.get(orderby)));
+            }
         }
     }
 
@@ -300,32 +284,5 @@ public class ComputerDAO implements IComputerDAO {
 
     public final Logger getLogger() {
         return logger;
-    }
-
-    // Ici on oblige la vérification nulle pour éviter d'avoir un crash peu
-    // parlant
-    // si on rentre des valeurs nulles (même si on fait la vérif avec un
-    // validator
-    // avant)
-    private void setStatementsSQL(final Computer c,
-            final PreparedStatement stat) throws SQLException {
-        logger.info("setting values in sql requests as {}",
-                stat.getParameterMetaData().toString());
-        stat.setString(1, c.getName());
-        if (c.getIntroduced() != null) {
-            stat.setDate(2, Date.valueOf(c.getIntroduced()));
-        } else {
-            stat.setNull(2, java.sql.Types.DATE);
-        }
-        if (c.getDiscontinued() != null) {
-            stat.setDate(3, Date.valueOf(c.getDiscontinued()));
-        } else {
-            stat.setNull(3, java.sql.Types.DATE);
-        }
-        if (c.getCompany() != null) {
-            stat.setLong(4, c.getCompany().getId());
-        } else {
-            stat.setNull(4, java.sql.Types.BIGINT);
-        }
     }
 }

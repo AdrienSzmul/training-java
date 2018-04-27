@@ -28,6 +28,7 @@ public class ComputerService {
         this.val = val;
     }
 
+    @Transactional
     public void createComputer(final Computer c)
             throws ValidationException, ServiceException {
         val.validateComputer(c);
