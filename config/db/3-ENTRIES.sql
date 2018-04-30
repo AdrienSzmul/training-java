@@ -622,6 +622,6 @@ insert into users (username, password, enabled) values ('maxb', '123max', true);
 
 insert into authorities (username, authority) values ('adrien', 'admin');
 insert into authorities (username, authority) values ('maxb', 'utilisateur');
-insert into authorities (username, authority) values ('maxb', 'utilisateur');
+insert into authorities (username, authority) values ('josé', 'utilisateur');
 
 
