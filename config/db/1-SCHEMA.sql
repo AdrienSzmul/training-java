@@ -4,6 +4,8 @@ drop schema if exists `computer-database-db`;
 
   drop table if exists computer;
   drop table if exists company;
+  drop table if exists users;
+  drop table if exists authorities;
 
 CREATE TABLE company (
     ca_id BIGINT NOT NULL AUTO_INCREMENT,
