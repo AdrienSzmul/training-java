@@ -44,7 +44,8 @@
 		<mysql.version>5.1.38</mysql.version>
 		<myqsl-jdbc.version>8.0.8-dmr</myqsl-jdbc.version>
 		<!-- Spring -->
-		<spring.version>5.0.5.RELEASE</spring.version>
+		<spring.version>5.0.4.RELEASE</spring.version>
+		<org.springframework.security.version>5.0.4.RELEASE</org.springframework.security.version>
 		<!-- Hibernate -->
 		<hibernate.version>5.2.16.Final</hibernate.version>
 		<dom4j.version>1.6.1</dom4j.version>
@@ -243,6 +244,17 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-web</artifactId>
+				<version>${org.springframework.security.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-config</artifactId>
+				<version>${org.springframework.security.version}</version>
+			</dependency>
 
 			<dependency>
 				<groupId>org.hibernate</groupId>
@@ -287,6 +299,8 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>${commons.version}</version>
 		</dependency>
+
+
 
 		<!-- logging -->
 		<dependency>

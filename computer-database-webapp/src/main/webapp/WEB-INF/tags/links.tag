@@ -74,6 +74,9 @@
 			<c:when test="${target.equals('add')}">
 				<c:set var="tmpPath" value="${tmpPath.concat('/computer-database/addComputer')}" />
 			</c:when>
+			<c:when test="${target.equals('login')}">
+				<c:set var="tmpPath" value="${tmpPath.concat('/computer-database/login')}" />
+			</c:when>
 		</c:choose>
 	</c:when>
 	<c:otherwise>
