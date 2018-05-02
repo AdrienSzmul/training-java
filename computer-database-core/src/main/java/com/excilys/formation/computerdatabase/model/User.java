@@ -1,34 +1,32 @@
 package com.excilys.formation.computerdatabase.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "users")
-public class Users {
+public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String username;
     private String password;
     private boolean enabled;
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "users_roles")
-    private List<Authorities> listAuthority;
+    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private Collection<Role> roles;
 
-    public Users() {
-    }
-
-    public Users(String username, String password, boolean enabled) {
-        this.username = username;
-        this.password = password;
-        this.enabled = enabled;
-        this.listAuthority = new ArrayList<>();
+    public User() {
+        this.enabled = false;
     }
 
     public String getUsername() {
@@ -55,11 +53,19 @@ public class Users {
         this.enabled = enabled;
     }
 
-    public List<Authorities> getListAuthority() {
-        return listAuthority;
+    public Long getId() {
+        return id;
     }
 
-    public void setListAuthority(List<Authorities> listAuthority) {
-        this.listAuthority = listAuthority;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
     }
 }

@@ -5,7 +5,11 @@ drop schema if exists `computer-database-db`;
   drop table if exists computer;
   drop table if exists company;
   drop table if exists users;
-  drop table if exists authorities;
+  drop table if exists roles;
+  drop table if exists privileges;
+  drop table if exists users_role;
+  drop table if exists roles;
+  
 
 CREATE TABLE company (
     ca_id BIGINT NOT NULL AUTO_INCREMENT,
@@ -25,19 +29,33 @@ CREATE TABLE computer (
 ;
   
 CREATE TABLE users (
-    username VARCHAR(50) NOT NULL PRIMARY KEY,
-    password VARCHAR(50) NOT NULL,
+    id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    username VARCHAR(100) NOT NULL,
+    password VARCHAR(100) NOT NULL,
     enabled BOOLEAN NOT NULL
 );
+                 
+CREATE TABLE roles (
+    id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+);
+ 
+CREATE TABLE privileges (
+    id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+);
+ 
+CREATE TABLE users_role (
+    role_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL
+);
 
-CREATE TABLE authorities (
-    username VARCHAR(50) NOT NULL,
-    authority VARCHAR(50) NOT NULL,
-    CONSTRAINT fk_authorities_users FOREIGN KEY (username)
-        REFERENCES users (username)
+CREATE TABLE role_privileges (
+    role_id BIGINT NOT NULL,
+    privilege_id BIGINT NOT NULL
 );
 
 
   alter table computer add constraint fk_computer_company_1 foreign key (cu_ca_id) references company (ca_id) on delete restrict on update restrict;
   create index ix_computer_company_1 on computer (cu_ca_id);
-  create unique index ix_auth_username on authorities (username,authority);
+  
