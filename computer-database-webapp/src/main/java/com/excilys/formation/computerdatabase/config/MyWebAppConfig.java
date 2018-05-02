@@ -10,10 +10,8 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 @Configuration
 @PropertySource("classpath:/properties/dao.properties")
 @Import(PersistenceJPAConfig.class)
-@ComponentScan(basePackages = { "com.excilys.formation.computerdatabase.config",
-        "com.excilys.formation.computerdatabase.service",
+@ComponentScan(basePackages = {
         "com.excilys.formation.computerdatabase.paginator",
-        "com.excilys.formation.computerdatabase.mapper",
         "com.excilys.formation.computerdatabase.ui",
         "com.excilys.formation.computerdatabase.controllers" })
 public class MyWebAppConfig {

@@ -23,11 +23,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @PropertySource("classpath:/properties/dao.properties")
-@ComponentScan(basePackages = { "com.excilys.formation.computerdatabase.config",
+@ComponentScan(basePackages = {
         "com.excilys.formation.computerdatabase.persistence",
         "com.excilys.formation.computerdatabase.mapper",
-        "com.excilys.formation.computerdatabase.model",
-        "com.excilys.formation.computerdatabase.persistence.dao" })
+        "com.excilys.formation.computerdatabase.model" })
 public class PersistenceJPAConfig {
     private static final String URL = "url";
     private static final String PASSWORD = "password";
