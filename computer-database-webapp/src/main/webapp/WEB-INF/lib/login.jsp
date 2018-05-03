@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tag"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -16,27 +17,44 @@
 <link href="${cssBoot}" rel="stylesheet" media="screen">
 <link href="${fontAwe}" rel="stylesheet" media="screen">
 <link href="${mainCss}" rel="stylesheet" media="screen">
-<title>Login Computer Database</title>
+<title><spring:message code="field.loginTitle"/></title>
 </head>
+
 <body>
-	<h1>Login</h1>
-	<form name='f' action="<tag:links target="dashboard"/>" method='POST'>
-		<table>
-			<tr>
-				<td>User:</td>
-				<td><input type='text' name='username' value=''></td>
-			</tr>
-			<tr>
-				<td>Password:</td>
-				<td><input type='password' name='password' /></td>
-			</tr>
-			<tr>
-				<td><input name="submit" type="submit" value="submit" /></td>
-			</tr>
-		</table>
-	</form>
+	<header class="navbar navbar-inverse navbar-fixed-top">
+	<div class="container">
+		<a class="navbar-brand" href="<tag:links target="dashboard"/>"><spring:message
+				code="field.header" /></a>
+	</div>
+	</header>
+
+
+
+	<section id="main">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-8 col-xs-offset-2 box">
+				<h1><spring:message code="field.loginH"/></h1>
+				<form:form name='f' action="login" method='POST'>
+					<fieldset>
+						<div class="form-group">
+							<label><spring:message code="field.user"/></label> <input type='text' name='username' value='' class="form-control" />
+						</div>
+						<div class="form-group">
+							<label><spring:message code="field.pwd"/></label> <input type='password' name='password' class="form-control" />
+						</div>
+					</fieldset>
+					<div class="actions pull-right">
+						<input type="submit" value="Login" class="btn btn-primary" />
+					</div>
+				</form:form>
+			</div>
+		</div>
+	</div>
+	</section>
 	<script src="${jQuery}"></script>
 	<script src="${jsBoot}"></script>
 	<script src="${jsDash}"></script>
 </body>
+
 </html>

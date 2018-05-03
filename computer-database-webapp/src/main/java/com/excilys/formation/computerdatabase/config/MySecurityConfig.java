@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.DigestAuthenticationFilter;
@@ -27,9 +27,22 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
         this.userDetailsService = userDetailsService;
     }
 
+    @SuppressWarnings("deprecation")
     @Bean
     public PasswordEncoder encoder() {
-        return new BCryptPasswordEncoder(11);
+        return NoOpPasswordEncoder.getInstance();
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests().antMatchers("/login*").anonymous()
+                .antMatchers("/dashboard")
+                .access("hasAuthority('USER') or hasAuthority('ADMIN')")
+                .antMatchers("/editComputer").hasAuthority("ADMIN")
+                .antMatchers("/addComputer").hasAuthority("ADMIN").anyRequest()
+                .authenticated().and().formLogin().loginPage("/login")
+                .defaultSuccessUrl("/dashboard").failureUrl("/login?error=true")
+                .and().logout().logoutSuccessUrl("/login");
     }
 
     @Override
@@ -52,14 +65,6 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
         digestAuthenticationFilter
                 .setAuthenticationEntryPoint(digestEntryPoint());
         digestAuthenticationFilter.setUserDetailsService(userDetailsService);
-        digestAuthenticationFilter.setPasswordAlreadyEncoded(true);
         return digestAuthenticationFilter;
-    }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().anyRequest().authenticated().and().formLogin()
-                .and()
-                .addFilter(digestAuthenticationFilter(digestEntryPoint()));
     }
 }
