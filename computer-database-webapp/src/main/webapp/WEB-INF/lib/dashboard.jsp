@@ -3,10 +3,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tag"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title><spring:message code="field.title"/></title>
+<title><spring:message code="field.title" /></title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="utf-8">
 <spring:url value="/static/css/bootstrap.min.css" var="cssBoot" />
@@ -23,7 +24,8 @@
 <body>
 	<header class="navbar navbar-inverse navbar-fixed-top">
 	<div class="container">
-		<a class="navbar-brand" href="<tag:links target="dashboard"/>"><spring:message code="field.header"/></a>
+		<a class="navbar-brand" href="<tag:links target="dashboard"/>"><spring:message
+				code="field.header" /></a>
 	</div>
 	</header>
 
@@ -31,7 +33,10 @@
 	<div class="container">
 		<h1 id="homeTitle">
 			<c:out value="${pageDTO.nombreElt}" />
-			<spring:message code="field.found"/>
+			<spring:message code="field.found" />
+			<form:form action="logout" method="POST">
+				<input type="submit" name="logout" value="Logout">
+			</form:form>
 		</h1>
 		<div id="actions" class="form-horizontal">
 			<div class="pull-left">
@@ -40,23 +45,26 @@
 					method="GET" class="form-inline">
 
 					<input type="search" id="searchbox" name="search"
-						class="form-control" placeholder="<spring:message code="field.search"/>" /> <input
-						type="submit" id="searchsubmit" value="<spring:message code="field.btnSearch"/>"
+						class="form-control"
+						placeholder="<spring:message code="field.search"/>" /> <input
+						type="submit" id="searchsubmit"
+						value="<spring:message code="field.btnSearch"/>"
 						class="btn btn-primary" />
 				</form>
 			</div>
 			<div class="pull-right">
 				<a class="btn btn-success" id="addComputer"
-					href="<tag:links target="add"/>"><spring:message code="field.btnAdd"/></a> <a
-					class="btn btn-default" id="editComputer" href="#"
-					onclick="$.fn.toggleEditMode();"><spring:message code="field.btnEdit"/></a>
+					href="<tag:links target="add"/>"><spring:message
+						code="field.btnAdd" /></a> <a class="btn btn-default"
+					id="editComputer" href="#" onclick="$.fn.toggleEditMode();"><spring:message
+						code="field.btnEdit" /></a>
 			</div>
 		</div>
 	</div>
 
-	<form id="deleteForm" action="dashboard" method="POST">
+	<form:form id="deleteForm" action="dashboard" method="POST">
 		<input type="hidden" name="selection">
-	</form>
+	</form:form>
 
 	<div class="container" style="margin-top: 10px;">
 		<table class="table table-striped table-bordered">
@@ -74,18 +82,22 @@
 					</span></th>
 					<th><a
 						href="<tag:links target="dashboard" orderby="NAME" tmpOrderBy="${orderby}" ascdesc="${ascdesc}"/>"
-						onclick="" class="sort-by"><spring:message code="field.tableHeadName"/></a></th>
+						onclick="" class="sort-by"><spring:message
+								code="field.tableHeadName" /></a></th>
 					<th><a
 						href="<tag:links target="dashboard" orderby="INTRODUCED" tmpOrderBy="${orderby}"  ascdesc="${ascdesc}"/>"
-						onclick="" class="sort-by"><spring:message code="field.tableHeadIntroduced"/></a></th>
+						onclick="" class="sort-by"><spring:message
+								code="field.tableHeadIntroduced" /></a></th>
 					<!-- Table header for Discontinued Date -->
 					<th><a
 						href="<tag:links target="dashboard" orderby="DISCONTINUED" tmpOrderBy="${orderby}"  ascdesc="${ascdesc}"/>"
-						onclick="" class="sort-by"><spring:message code="field.tableHeadDiscontinued"/></a></th>
+						onclick="" class="sort-by"><spring:message
+								code="field.tableHeadDiscontinued" /></a></th>
 					<!-- Table header for Company -->
 					<th><a
 						href="<tag:links target="dashboard" orderby="COMPANY" tmpOrderBy="${orderby}"  ascdesc="${ascdesc}"/>"
-						onclick="" class="sort-by"><spring:message code="field.tableHeadCompany"/></a></th>
+						onclick="" class="sort-by"><spring:message
+								code="field.tableHeadCompany" /></a></th>
 
 				</tr>
 			</thead>
@@ -108,9 +120,8 @@
 	</div>
 	</section>
 
-	<footer class="navbar-fixed-bottom"> <tag:eltNumber /> <tag:pageNumber />
-
-	</footer>
+	<footer class="navbar-fixed-bottom"> <tag:eltNumber />
+	<tag:pageNumber /> </footer>
 
 	<script src="${jQuery}"></script>
 	<script src="${jsBoot}"></script>

@@ -620,14 +620,14 @@ insert into users (id, username, password, enabled) values (1,'adrien', '123adr'
 insert into users (id, username, password, enabled) values (2,'josé', '123jos', false);
 insert into users (id, username, password, enabled) values (3,'maxb', '123max', true);
 
-insert into roles (id, name) values (1, 'admin');
-insert into roles (id, name) values (2, 'user');
+insert into roles (id, name) values (1, 'ADMIN');
+insert into roles (id, name) values (2, 'USER');
 
-insert into privileges (id, name) values (1, 'View dashboard');
-insert into privileges (id, name) values (2, 'Edit computer');
-insert into privileges (id, name) values (3, 'Add computer');
-insert into privileges (id, name) values (4, 'Delete computer(s)');
-insert into privileges (id, name) values (5, 'Search computer(s)');
+insert into privileges (id, name) values (1, 'VIEW_DASHBOARD');
+insert into privileges (id, name) values (2, 'EDIT_COMPUTER');
+insert into privileges (id, name) values (3, 'ADD_COMPUTER');
+insert into privileges (id, name) values (4, 'DELETE_COMPUTER');
+insert into privileges (id, name) values (5, 'SEARCH_COMPUTER');
 
 insert into users_role (role_id, user_id) values (2,1);
 insert into users_role (role_id, user_id) values (2,2);

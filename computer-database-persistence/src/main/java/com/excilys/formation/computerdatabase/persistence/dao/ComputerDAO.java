@@ -243,7 +243,8 @@ public class ComputerDAO implements IComputerDAO {
     public int getPageCountComputers(final int eltNumber) throws DAOException {
         logger.info("count Computer Pages with size");
         int compNumber = getCountComputers();
-        return compNumber / eltNumber;
+        return compNumber % eltNumber == 0 ? compNumber / eltNumber
+                : compNumber / eltNumber + 1;
     }
 
     @Override
@@ -251,7 +252,8 @@ public class ComputerDAO implements IComputerDAO {
             throws DAOException {
         logger.info("count Computer Pages with size and search");
         int compNumber = getCountComputersSearch(search);
-        return compNumber / eltNumber;
+        return compNumber % eltNumber == 0 ? compNumber / eltNumber
+                : compNumber / eltNumber + 1;
     }
 
     @Override

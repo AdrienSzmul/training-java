@@ -61,7 +61,8 @@ public class CompanyDAO implements ICompanyDAO {
         logger.info("count Company Pages");
         int companyCount = 0;
         companyCount = getCountCompanies();
-        return companyCount / taille;
+        return companyCount % taille == 0 ? companyCount / taille
+                : companyCount / taille + 1;
     }
 
     @Override

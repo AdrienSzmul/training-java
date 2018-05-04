@@ -168,10 +168,15 @@ public class Computer {
      */
     @Override
     public String toString() {
-        return new StringBuilder().append("Computer : ").append(id)
+        StringBuilder sb = new StringBuilder().append("Computer : ").append(id)
                 .append(" name: ").append(name).append(" introduced in: ")
                 .append(introduced).append(" discontinued in: ")
-                .append(discontinued).append(" from the company: ")
-                .append(company.getName()).toString();
+                .append(discontinued).append(" from the company: ");
+        if (company != null) {
+            sb.append(company.getName());
+        } else {
+            sb.append("null");
+        }
+        return sb.toString();
     }
 }
