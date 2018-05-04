@@ -97,7 +97,20 @@
 					<configuration>
 						<url>http://localhost:8080/manager/text</url>
 						<server>TomcatServer</server>
-						<path>/computer-database</path>
+						<webapps>
+							<webapp>
+								<groupId>com.excilys.formation.computerdatabase</groupId>
+								<artifactId>computer-database-webapp</artifactId>
+								<path>/computer-database</path>
+								<asWebapp>true</asWebapp>
+								<type>war</type>
+							</webapp>
+							<webapp>
+								<groupId>com.excilys.formation.computerdatabase</groupId>
+								<artifactId>computer-database-webservices</artifactId>
+								<type>war</type>
+							</webapp>
+						</webapps>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -333,5 +346,6 @@
 		<module>computer-database-persistence</module>
 		<module>computer-database-service</module>
 		<module>computer-database-webapp</module>
+		<module>computer-database-webservices</module>
 	</modules>
 </project>
