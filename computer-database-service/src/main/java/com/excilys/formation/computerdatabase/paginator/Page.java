@@ -71,7 +71,7 @@ public abstract class Page<T> {
     }
 
     public final List<T> lastPage() throws ServiceException {
-        this.refresh(this.maxNumberOfPages());
+        this.refresh(this.maxNumberOfPages() - 1);
         return this.pageActive;
     }
 

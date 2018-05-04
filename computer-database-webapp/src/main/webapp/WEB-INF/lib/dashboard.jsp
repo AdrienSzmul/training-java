@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tag"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -61,9 +62,9 @@
 		</div>
 	</div>
 
-	<form id="deleteForm" action="dashboard" method="POST">
+	<form:form id="deleteForm" action="dashboard" method="POST">
 		<input type="hidden" name="selection">
-	</form>
+	</form:form>
 
 	<div class="container" style="margin-top: 10px;">
 		<table class="table table-striped table-bordered">
