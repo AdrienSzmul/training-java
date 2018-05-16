@@ -49,6 +49,8 @@
 		<!-- Hibernate -->
 		<hibernate.version>5.2.16.Final</hibernate.version>
 		<dom4j.version>1.6.1</dom4j.version>
+		<!-- REST -->
+		<jackson-databind.version>2.9.5</jackson-databind.version>
 	</properties>
 
 	<build>
@@ -97,7 +99,20 @@
 					<configuration>
 						<url>http://localhost:8080/manager/text</url>
 						<server>TomcatServer</server>
-						<path>/computer-database</path>
+						<webapps>
+							<webapp>
+								<groupId>com.excilys.formation.computerdatabase</groupId>
+								<artifactId>computer-database-webapp</artifactId>
+								<path>/computer-database</path>
+								<asWebapp>true</asWebapp>
+								<type>war</type>
+							</webapp>
+							<webapp>
+								<groupId>com.excilys.formation.computerdatabase</groupId>
+								<artifactId>computer-database-webservices</artifactId>
+								<type>war</type>
+							</webapp>
+						</webapps>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -278,6 +293,11 @@
 				<artifactId>dom4j</artifactId>
 				<version>${dom4j.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson-databind.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -333,5 +353,6 @@
 		<module>computer-database-persistence</module>
 		<module>computer-database-service</module>
 		<module>computer-database-webapp</module>
+		<module>computer-database-webservices</module>
 	</modules>
 </project>
