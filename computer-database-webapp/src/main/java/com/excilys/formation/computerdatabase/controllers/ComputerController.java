@@ -23,8 +23,8 @@ import com.excilys.formation.computerdatabase.model.Company;
 import com.excilys.formation.computerdatabase.model.Computer;
 import com.excilys.formation.computerdatabase.model.dto.CompanyDTO;
 import com.excilys.formation.computerdatabase.model.dto.ComputerDTO;
-import com.excilys.formation.computerdatabase.persistence.dao.CompanyDAO;
 import com.excilys.formation.computerdatabase.persistence.dao.DAOException;
+import com.excilys.formation.computerdatabase.persistence.dao.ICompanyDAO;
 import com.excilys.formation.computerdatabase.service.ComputerService;
 import com.excilys.formation.computerdatabase.service.ServiceException;
 import com.excilys.formation.computerdatabase.service.ValidationException;
@@ -33,13 +33,13 @@ import com.excilys.formation.computerdatabase.service.ValidationException;
 public class ComputerController {
     private static final Logger logger = LoggerFactory
             .getLogger(ComputerController.class);
-    private CompanyDAO companyDAO;
+    private ICompanyDAO companyDAO;
     private ComputerService computerService;
     private CompanyMapperDTO companyMapperDTO;
     private ComputerMapperDTO computerMapperDTO;
     private DashboardController dashboardController;
 
-    public ComputerController(CompanyDAO companyDAO,
+    public ComputerController(ICompanyDAO companyDAO,
             ComputerService computerService, CompanyMapperDTO companyMapperDTO,
             ComputerMapperDTO computerMapperDTO,
             DashboardController dashboardController) {

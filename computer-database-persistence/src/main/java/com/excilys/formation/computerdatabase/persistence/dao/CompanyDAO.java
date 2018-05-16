@@ -3,22 +3,25 @@
  */
 package com.excilys.formation.computerdatabase.persistence.dao;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sql.DataSource;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.stereotype.Repository;
 
-import com.excilys.formation.computerdatabase.mapper.CompanyMapper;
 import com.excilys.formation.computerdatabase.model.Company;
+import com.excilys.formation.computerdatabase.model.Company_;
 
 /**
  * @author excilys
@@ -29,36 +32,28 @@ public class CompanyDAO implements ICompanyDAO {
      *
      */
     private final Logger logger = LoggerFactory.getLogger(CompanyDAO.class);
-    private CompanyMapper companyMapper;
-    private JdbcTemplate jdbcTemplate;
-    private DataSource dataSource;
-    private final String SELECT_LIST_COMPANIES = "SELECT ca_id, ca_name FROM company ORDER BY ca_id LIMIT ? OFFSET ?;";
-    private final String COUNT_COMPANIES = "SELECT count(ca_id) FROM company;";
-    private final String SELECT_ONE_COMPANY = "SELECT ca_id, ca_name FROM company WHERE ca_id = ?;";
-    private final String DELETE_ONE_COMPANY = "DELETE FROM company WHERE ca_id = ?";
-
-    public CompanyDAO(CompanyMapper companyMapper, DataSource dataSource) {
-        this.companyMapper = companyMapper;
-        jdbcTemplate = new JdbcTemplate(dataSource);
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public List<Company> getListCompanies(final int pageNumber,
             final int taille) throws DAOException {
         logger.info("get List Companies");
         List<Company> listCompanies = new ArrayList<>();
-        listCompanies = jdbcTemplate.query(SELECT_LIST_COMPANIES,
-                new PreparedStatementSetter() {
-                    @Override
-                    public void setValues(PreparedStatement ps)
-                            throws SQLException {
-                        ps.setInt(1, taille);
-                        ps.setInt(2, pageNumber * taille);
-                    }
-                }, (ResultSet st, int arg1) -> {
-                    return companyMapper.createCompany(st);
-                });
-        return listCompanies;
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Company> criteria = builder.createQuery(Company.class);
+        Root<Company> companyRoot = criteria.from(Company.class);
+        CriteriaQuery<Company> select = criteria.select(companyRoot);
+        select.orderBy(builder.asc(companyRoot.get(Company_.id)));
+        TypedQuery<Company> typedQuery = entityManager.createQuery(select);
+        typedQuery.setFirstResult(pageNumber * taille);
+        typedQuery.setMaxResults(taille);
+        listCompanies = typedQuery.getResultList();
+        if (!listCompanies.isEmpty()) {
+            return listCompanies;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -66,24 +61,31 @@ public class CompanyDAO implements ICompanyDAO {
         logger.info("count Company Pages");
         int companyCount = 0;
         companyCount = getCountCompanies();
-        return companyCount / taille;
+        return companyCount % taille == 0 ? companyCount / taille
+                : companyCount / taille + 1;
     }
 
     @Override
     public int getCountCompanies() throws DAOException {
         logger.info("count Companies");
-        int nombreRes = 0;
-        nombreRes = jdbcTemplate.queryForObject(COUNT_COMPANIES, Integer.class);
-        return nombreRes;
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> count = builder.createQuery(Long.class);
+        count.select(builder.count(count.from(Company.class)));
+        Long nombreRes = entityManager.createQuery(count).getSingleResult();
+        return nombreRes.intValue();
     }
 
     @Override
-    public Company getCompanyById(Long id) throws DAOException {
+    public Company getCompanyById(Long id)
+            throws DAOException, NoResultException {
         logger.info("get one Company");
-        Company company = jdbcTemplate.queryForObject(SELECT_ONE_COMPANY,
-                new Object[] { id }, (ResultSet st, int arg1) -> {
-                    return companyMapper.createCompany(st);
-                });
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Company> getCompany = builder.createQuery(Company.class);
+        Root<Company> root = getCompany.from(Company.class);
+        getCompany.select(root);
+        getCompany.where(builder.equal(root.get(Company_.id), id));
+        Company company = entityManager.createQuery(getCompany)
+                .getSingleResult();
         return company;
     }
 
@@ -95,7 +97,12 @@ public class CompanyDAO implements ICompanyDAO {
     public void deleteCompany(Company company)
             throws DAOException, SQLException {
         logger.info("company deletion");
-        jdbcTemplate.update(DELETE_ONE_COMPANY,
-                new Object[] { company.getId() });
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaDelete<Company> deleteCompany = builder
+                .createCriteriaDelete(Company.class);
+        Root<Company> root = deleteCompany.from(Company.class);
+        deleteCompany
+                .where(builder.equal(root.get(Company_.id), company.getId()));
+        entityManager.createQuery(deleteCompany).executeUpdate();
     }
 }

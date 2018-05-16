@@ -615,3 +615,31 @@ insert into computer (cu_id,cu_name,cu_introduced,cu_discontinued,cu_ca_id) valu
 insert into computer (cu_id,cu_name,cu_introduced,cu_discontinued,cu_ca_id) values (572,'Dell Vostro',null,null,null);
 insert into computer (cu_id,cu_name,cu_introduced,cu_discontinued,cu_ca_id) values (573,'Gateway LT3103U','2008-01-01',null,null);
 insert into computer (cu_id,cu_name,cu_introduced,cu_discontinued,cu_ca_id) values (574,'iPhone 4S','2011-10-14',null,1);
+
+insert into users (id, username, password, enabled) values (1,'adrien', '123adr', true);
+insert into users (id, username, password, enabled) values (2,'josé', '123jos', false);
+insert into users (id, username, password, enabled) values (3,'maxb', '123max', true);
+
+insert into roles (id, name) values (1, 'ADMIN');
+insert into roles (id, name) values (2, 'USER');
+
+insert into privileges (id, name) values (1, 'VIEW_DASHBOARD');
+insert into privileges (id, name) values (2, 'EDIT_COMPUTER');
+insert into privileges (id, name) values (3, 'ADD_COMPUTER');
+insert into privileges (id, name) values (4, 'DELETE_COMPUTER');
+insert into privileges (id, name) values (5, 'SEARCH_COMPUTER');
+
+insert into users_role (role_id, user_id) values (2,1);
+insert into users_role (role_id, user_id) values (2,2);
+insert into users_role (role_id, user_id) values (1,3);
+
+insert into role_privileges (role_id, privilege_id) values (1, 1);
+insert into role_privileges (role_id, privilege_id) values (1, 2);
+insert into role_privileges (role_id, privilege_id) values (1, 3);
+insert into role_privileges (role_id, privilege_id) values (1, 4);
+insert into role_privileges (role_id, privilege_id) values (1, 5);
+insert into role_privileges (role_id, privilege_id) values (2, 1);
+insert into role_privileges (role_id, privilege_id) values (2, 5);
+
+
+

@@ -30,7 +30,7 @@ public class PageComputerSearchSorted extends PageComputerSearch {
     public void refresh(int pageNumber) throws ServiceException {
         this.pageActive = computerService.getListComputersSearchSorted(
                 pageNumber, this.tailleMax.getValue(), search,
-                orderby.getValue(), ascdesc);
+                orderby.name().toLowerCase(), ascdesc);
     }
 
     public ColumnNames getOrderby() {
