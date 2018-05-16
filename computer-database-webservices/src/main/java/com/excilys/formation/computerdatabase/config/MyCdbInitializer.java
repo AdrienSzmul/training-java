@@ -8,12 +8,12 @@ public class MyCdbInitializer
         extends AbstractAnnotationConfigDispatcherServletInitializer {
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class[] { MyWebMvcConfig.class, MySecurityConfig.class };
+        return new Class[] { MyWebMvcConfig.class };
     }
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class[] { MyWebAppConfig.class };
+        return null;
     }
 
     @Override

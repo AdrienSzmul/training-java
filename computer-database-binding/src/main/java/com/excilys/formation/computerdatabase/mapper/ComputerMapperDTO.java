@@ -2,6 +2,7 @@ package com.excilys.formation.computerdatabase.mapper;
 
 import java.time.LocalDate;
 
+import org.apache.maven.shared.utils.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.excilys.formation.computerdatabase.model.Computer;
@@ -40,11 +41,11 @@ public class ComputerMapperDTO {
         if (!computerDTO.getName().isEmpty()) {
             bComputer.withName(computerDTO.getName());
         }
-        if (!computerDTO.getIntroduced().isEmpty()) {
+        if (!StringUtils.isBlank(computerDTO.getIntroduced())) {
             bComputer.withIntroduced(
                     LocalDate.parse(computerDTO.getIntroduced()));
         }
-        if (!computerDTO.getDiscontinued().isEmpty()) {
+        if (!StringUtils.isBlank(computerDTO.getDiscontinued())) {
             bComputer.withDiscontinued(
                     LocalDate.parse(computerDTO.getDiscontinued()));
         }

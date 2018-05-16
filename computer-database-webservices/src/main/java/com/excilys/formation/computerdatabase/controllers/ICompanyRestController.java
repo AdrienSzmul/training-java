@@ -9,5 +9,5 @@ import com.excilys.formation.computerdatabase.model.dto.CompanyDTO;
 public interface ICompanyRestController {
     ResponseEntity<CompanyDTO> getCompany(long id);
 
-    List<CompanyDTO> getCompanies();
+    ResponseEntity<List<CompanyDTO>> getCompanies();
 }
